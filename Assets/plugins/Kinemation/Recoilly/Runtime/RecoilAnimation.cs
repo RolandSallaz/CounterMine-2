@@ -154,6 +154,15 @@ namespace Kinemation.Recoilly
             _pushTarget = 0f;
             _noiseTarget = Vector2.zero;
 
+            // Init is also used when a weapon is re-enabled. Clear the previous shot completely.
+            _rawRotOut = _rawLocOut = _smoothRotOut = _smoothLocOut = Vector3.zero;
+            _startValRot = _startValLoc = Vector3.zero;
+            _noiseOut = Vector2.zero;
+            _pushOut = _playBack = _lastFrameTime = 0f;
+            _lastTimeShot = float.NegativeInfinity;
+            _isPlaying = _isLooping = _enableSmoothing = false;
+            _stateIndex = 0;
+
             SetupStateMachine();
         }
 

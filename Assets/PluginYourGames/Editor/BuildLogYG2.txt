@@ -1,0 +1,3 @@
+﻿Build path: C:/Users/Roland/CounterMine 2/Temp/BulletNetworkBuild/BulletTest.exe
+Build number: 4
+PluginYG version: 0

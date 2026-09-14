@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb42e753c576b74794134306d6db8b3, type: 3}
+  m_Name: AK74_Handling
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponHandlingProfile
+  ergonomics: 55
+  lowErgonomicsAimTime: 0.5
+  highErgonomicsAimTime: 0.16
+  aimOutTimeMultiplier: 0.8
+  aimedSensitivity: 0.7
+  aimedMovementSpeed: 0.65
+  sightSwitchTime: 0.16

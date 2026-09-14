@@ -11,7 +11,7 @@ namespace YG
         {
             if (YG2.infoYG.Basic.syncInitSDK)
             {
-#if !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
                 if (IsInitSDK_js())
                     YG2.SyncInitialization();
 #else
@@ -24,7 +24,7 @@ namespace YG
         private static extern void InitGame_js();
         public void InitComplete()
         {
-#if !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             InitGame_js();
 #endif
         }
@@ -34,7 +34,7 @@ namespace YG
 
         public void GameReadyAPI()
         {
-#if !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             GameReadyAPI_js();
 #endif
         }
@@ -44,7 +44,7 @@ namespace YG
 
         public void GameplayStart()
         {
-#if !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             GameplayStart_js();
 #endif
         }
@@ -54,14 +54,21 @@ namespace YG
 
         public void GameplayStop()
         {
-#if !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             GameplayStop_js();
 #endif
         }
 
         [DllImport("__Internal")]
         private static extern void LogStyledMessage(string message);
-        public void Message(string message) => LogStyledMessage(message);
+        public void Message(string message)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            LogStyledMessage(message);
+#else
+            UnityEngine.Debug.Log(message);
+#endif
+        }
     }
 }
 

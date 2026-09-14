@@ -40,6 +40,11 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - PlayFire
+  - DieNetworked
+  - ConfirmShot
+  - RequestShot
+  - ConfirmImpact
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0
