@@ -1,0 +1,19 @@
+{
+  "backup": "C:\\Users\\Roland\\CounterMine 2\\Backups\\EquipReload_20260917_121312",
+  "fps": 60,
+  "jobs": [
+    {
+      "action": "Equip",
+      "first": 0,
+      "last": 52,
+      "duration": 0.8666666666666667
+    },
+    {
+      "action": "Reload",
+      "first": 0,
+      "last": 173,
+      "duration": 2.8833333333333333
+    }
+  ],
+  "reloadWeapon": "AK74_Reload_Weapon"
+}

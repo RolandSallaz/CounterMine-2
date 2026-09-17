@@ -1,0 +1,1 @@
+PASS: original TPS leg bindings; 240 directional leg IK samples reach targets within 0.1 mm without changing bone lengths. Player prefab includes PlayerWalkAnimation. Live multiplayer and visual gait review still require Play Mode.

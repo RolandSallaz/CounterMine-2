@@ -1,0 +1,3 @@
+PASS: RootMotion BipedRagdollCreator, 14 bodies, 13 connected ConfigurableJoints, 72,825kg.
+Kinematic bodies/colliders disabled until ragdoll; animated skeleton and weapon suspended; camera follows head; F8 debug; death connected.
+Debug reset returns to entry position and idle. Backup: Backups/RagdollSetup_20260916_194603

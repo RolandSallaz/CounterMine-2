@@ -1,0 +1,4 @@
+PASS: imports use animationCompression=Off; all curves kept; paths resolve against main character and AK-74 models.
+Equip duration: 0,8500001 seconds; frame rate: 60
+Idle single pose: 0 / 0 seconds; equip endpoint mismatch: 2,550668E-07m.
+Assigned equip/idle pairs, hand grips, authored camera-space offset, aim/recoil/fire gates.

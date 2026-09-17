@@ -13,6 +13,7 @@ public class PlayerCameraLook : MonoBehaviourPun
     [SerializeField] private float maximumPitch = 80f;
     [SerializeField] private float maximumLeanRoll = 8f;
 
+    private WeaponIdleSynchronizer weaponAnimation;
     private float pitch;
     private float lean;
 
@@ -20,6 +21,7 @@ public class PlayerCameraLook : MonoBehaviourPun
 
     private void Awake()
     {
+        weaponAnimation = GetComponentInChildren<WeaponIdleSynchronizer>(true);
         if (playerCamera == null)
         {
             playerCamera = GetComponentInChildren<Camera>(true);
@@ -87,11 +89,17 @@ public class PlayerCameraLook : MonoBehaviourPun
         ApplyRotation();
     }
 
+    private void LateUpdate()
+    {
+        if (!PhotonNetwork.InRoom || photonView.IsMine) ApplyRotation();
+    }
+
     private void ApplyRotation()
     {
         if (playerCamera != null)
         {
-            playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, -lean * maximumLeanRoll);
+            Quaternion animated = weaponAnimation != null ? weaponAnimation.CameraRotationOffset : Quaternion.identity;
+            playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, -lean * maximumLeanRoll) * animated;
         }
     }
 

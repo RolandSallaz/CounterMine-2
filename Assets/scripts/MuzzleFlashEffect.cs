@@ -28,7 +28,8 @@ public sealed class MuzzleFlashEffect : MonoBehaviour
         follow = muzzle; origin = position;
         // Stable per-shot variation does not change Unity's global recoil/spread random state.
         variation = ((uint)sequence * 2654435761u & 65535u) / 65535f;
-        orientation = Quaternion.LookRotation(direction.sqrMagnitude > .0001f ? direction : Vector3.forward) * Quaternion.Euler(0, 0, variation * 360f);
+        Vector3 flashDirection = muzzle != null ? muzzle.forward : direction;
+        orientation = Quaternion.LookRotation(flashDirection.sqrMagnitude > .0001f ? flashDirection : Vector3.forward) * Quaternion.Euler(0, 0, variation * 360f);
         if (follow != null) followRotation = Quaternion.Inverse(follow.rotation) * orientation;
         duration = Mathf.Clamp(seconds, .015f, .1f);
         brightness = Mathf.Max(0f, intensity);

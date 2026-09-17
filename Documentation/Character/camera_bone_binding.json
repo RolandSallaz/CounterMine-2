@@ -1,0 +1,43 @@
+{
+  "backup": "Backups\\CameraBone_20260917_001939",
+  "results": [
+    {
+      "file": "Assets/models/character.blend",
+      "frame": 1,
+      "bone_world_position": [
+        0.0,
+        -0.11999999731779099,
+        1.649999976158142
+      ],
+      "camera_position": [
+        0.0,
+        -0.12000000476837158,
+        1.649999976158142
+      ],
+      "max_camera_change_existing_frames": 1.5099581673894136e-07,
+      "max_other_bone_change": 0,
+      "tested_rotation_degrees": 14.999932342892414,
+      "camera_shift_during_rotation": 0.0,
+      "checked_frames": 120
+    },
+    {
+      "file": "Assets/Anims/AK74_Equip.blend",
+      "frame": 38,
+      "bone_world_position": [
+        0.0,
+        -0.11999999731779099,
+        1.649999976158142
+      ],
+      "camera_position": [
+        0.0,
+        -0.12000000476837158,
+        1.649999976158142
+      ],
+      "max_camera_change_existing_frames": 1.5099581673894136e-07,
+      "max_other_bone_change": 0,
+      "tested_rotation_degrees": 14.999932342892414,
+      "camera_shift_during_rotation": 0.0,
+      "checked_frames": 173
+    }
+  ]
+}

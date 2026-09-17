@@ -1,0 +1,3 @@
+Compilation: PASS. Runtime code and Editor diagnostics compile with Unity's Roslyn compiler and project assembly references. Only existing LobbyManager deprecation warning.
+Behavioral diagnostics: pending Unity refresh. Assets/Editor/ValidateCombatChanges.cs checks delayed idle + repeated IK, hit zones, rewind and impact shader.
+Live two-client late-join rendering, physical falling direction and visual impact appearance: not yet verified.

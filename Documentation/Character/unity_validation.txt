@@ -1,0 +1,12 @@
+Skin/materials OK: arms
+Skin/materials OK: Belt_Buckle
+Skin/materials OK: characterTps
+Skin/materials OK: Goggles_Lens
+Skin/materials OK: Magazine_Pouch
+Skin/materials OK: Magazine_Pouch.001
+Skin/materials OK: Magazine_Pouch.002
+Skin/materials OK: Vest_Shoulder_Strap
+Skin/materials OK: Vest_Shoulder_Strap.001
+Team 2 palette: OK (19 slots)
+Team 1 palette: OK (19 slots)
+Player prefab references character.blend; no embedded animations; PASS

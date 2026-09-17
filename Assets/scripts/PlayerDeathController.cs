@@ -14,6 +14,7 @@ public class PlayerDeathController : MonoBehaviourPun
     [SerializeField] private PuppetMaster puppetMaster;
     [SerializeField] private Rigidbody ragdollImpactBody;
     [SerializeField] private Transform ragdollCameraAnchor;
+    [SerializeField] private PlayerRagdollController ragdoll;
 
     public bool IsDead { get; private set; }
     public Transform RagdollCameraAnchor => ragdollCameraAnchor;
@@ -43,6 +44,11 @@ public class PlayerDeathController : MonoBehaviourPun
         }
 
         IsDead = true;
+        if (ragdoll != null)
+        {
+            ragdoll.EnterRagdoll(impactForce, impactPoint);
+            return;
+        }
         characterController.enabled = false;
         playerController.enabled = false;
         cameraLook.enabled = false;

@@ -1,0 +1,1 @@
+Stamina bar added below health; bound to PlayerController.StaminaNormalized, low stamina turns red. Existing HUD preserved.

@@ -1,0 +1,1 @@
+PASS: Bot prefab built from Player with health, AK74 equip/idle/reload catalog, hand IK, ragdoll and PhotonView. Human input behaviours, cameras and audio listeners disabled. Six room slots spawn under master authority. Live multiplayer combat and master handover not tested.

@@ -1,0 +1,3 @@
+PASS: actual Animancer graphs sampled at 5 equip times; IK skips actions; FireLocalShot rejects action shots; automatic idle transition; generic PlayAction uses same gates.
+Idle transition error: 0m; idle IK correction: 2,665601E-07m.
+Multiplayer room was not started.

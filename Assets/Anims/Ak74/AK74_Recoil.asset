@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb7d8e4396d33a41a17d0d6e89aee5d, type: 3}
   m_Name: AK74_Recoil
   m_EditorClassIdentifier: Assembly-CSharp-firstpass::Kinemation.Recoilly.RecoilAnimData
-  pitch: {x: -2.4, y: -1.6}
+  pitch: {x: -1.6, y: -1.6}
   roll: {x: -0.7, y: -0.2, z: 0.2, w: 0.7}
   yaw: {x: -0.6, y: -0.2, z: 0.2, w: 0.6}
   kickback: {x: -0.004, y: -0.0025}

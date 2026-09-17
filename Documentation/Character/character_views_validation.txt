@@ -1,0 +1,2 @@
+PASS: real prefab local/remote presentation, FPS only arms and no shadows/rigidbodies, TPS world root 15cm back, remote TPS renderers active including arms, animation rebound to correct skeleton, ragdoll keeps weapon and hides FPS, debug reset restores FPS and idle/fire.
+Editor validation only; two-client transport/rendering and physical fall direction not simulated.

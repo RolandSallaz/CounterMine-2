@@ -1,17 +1,58 @@
+using System;
 using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView), typeof(CharacterController))]
 public sealed class PlayerHealth : MonoBehaviourPunCallbacks
 {
+    public readonly struct KillInfo
+    {
+        public readonly int victimActorNr;
+        public readonly int killerActorNr;
+        public readonly int assisterActorNr;
+        public readonly string victimName;
+        public readonly string killerName;
+        public readonly string assisterName;
+        public readonly int victimTeam;
+        public readonly int killerTeam;
+        public readonly int assisterTeam;
+
+        public KillInfo(int victimActorNr, int killerActorNr, int assisterActorNr, string victimName, string killerName, string assisterName, int victimTeam, int killerTeam, int assisterTeam)
+        {
+            this.victimActorNr = victimActorNr;
+            this.killerActorNr = killerActorNr;
+            this.assisterActorNr = assisterActorNr;
+            this.victimName = victimName;
+            this.killerName = killerName;
+            this.assisterName = assisterName;
+            this.victimTeam = victimTeam;
+            this.killerTeam = killerTeam;
+            this.assisterTeam = assisterTeam;
+        }
+    }
+
+    public static event Action<KillInfo> OnKilled;
     public static readonly HashSet<PlayerHealth> ActivePlayers = new HashSet<PlayerHealth>();
     [SerializeField, Min(1)] private int maximumHealth = 100;
     [SerializeField] private PlayerDeathController deathController;
+    [Header("Regeneration (Battlefield-style)")]
+    [SerializeField, Min(0f)] private float regenDelay = 5f;
+    [SerializeField, Min(0f)] private float regenPerSecond = 20f;
+    [SerializeField, Min(.05f)] private float regenPushInterval = .15f;
+    [Header("Assists")]
+    [SerializeField, Min(1f)] private float assistWindowSeconds = 10f;
+    private readonly Dictionary<int, double> recentAttackers = new Dictionary<int, double>();
+    private readonly List<int> staleAttackers = new List<int>();
+    private double lastDamageTime;
+    private double lastHealPushTime;
+    private float healPool;
     private CharacterController capsule;
     private int revision;
     private int registeredViewId;
+    public int MaximumHealth => maximumHealth;
     public int CurrentHealth { get; private set; }
     public bool IsDead => CurrentHealth <= 0 || (deathController != null && deathController.IsDead);
     private string PropertyKey => "hp/" + photonView.ViewID;
@@ -25,11 +66,31 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         capsule = GetComponent<CharacterController>();
         deathController ??= GetComponent<PlayerDeathController>();
         CurrentHealth = maximumHealth;
+        if (GetComponent<PlayerHitboxes>() == null) gameObject.AddComponent<PlayerHitboxes>();
     }
     public override void OnEnable() { base.OnEnable(); ActivePlayers.Add(this); }
     public override void OnDisable() { ActivePlayers.Remove(this); base.OnDisable(); }
-    private void Start() { registeredViewId = photonView.ViewID; ReadSnapshot(); Record(NetworkTime); }
+    private void Start() { registeredViewId = photonView.ViewID; lastDamageTime = NetworkTime; ReadSnapshot(); Record(NetworkTime); }
     private void LateUpdate() => Record(NetworkTime);
+
+    private void Update()
+    {
+        // Only the damage authority regenerates; everyone else follows via room snapshots.
+        if (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) return;
+        if (IsDead || CurrentHealth >= maximumHealth || regenPerSecond <= 0f) { healPool = 0f; return; }
+        double now = NetworkTime;
+        if (now - lastDamageTime < regenDelay) return;
+        healPool += regenPerSecond * Time.deltaTime;
+        if (healPool < 1f || now - lastHealPushTime < regenPushInterval) return;
+        int amount = Mathf.Min(Mathf.FloorToInt(healPool), maximumHealth - CurrentHealth);
+        if (amount <= 0) { healPool = 0f; return; }
+        healPool -= amount;
+        lastHealPushTime = now;
+        int nextRevision = revision + 1;
+        ApplySnapshot(nextRevision, CurrentHealth + amount, Vector3.zero, Vector3.zero, -1);
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, CurrentHealth, Vector3.zero, Vector3.zero, -1 } } });
+    }
     private static double NetworkTime => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
 
     private Sample CurrentCapsule(double time)
@@ -72,34 +133,118 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         bottom = sample.bottom; top = sample.top; radius = sample.radius;
     }
 
-    public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point)
+    public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point, Player killer = null, int killerBotViewId = 0)
     {
         if ((PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || IsDead || amount <= 0) return;
         int nextHealth = Mathf.Max(0, CurrentHealth - amount);
         int nextRevision = revision + 1;
-        ApplySnapshot(nextRevision, nextHealth, force, point);
+        int killerActorNr = killer != null ? killer.ActorNumber : -1;
+        lastDamageTime = NetworkTime;
+        healPool = 0f;
+        if (killerActorNr > 0) recentAttackers[killerActorNr] = NetworkTime;
+        int assisterActorNr = nextHealth == 0 ? ComputeAssister(killerActorNr) : -1;
+        if (nextHealth == 0) recentAttackers.Clear();
+        ApplySnapshot(nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId);
         if (PhotonNetwork.InRoom)
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point } } });
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId } } });
     }
-    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point)
+    /// <summary>Latest damager besides the killer inside the assist window (master-side only).</summary>
+    private int ComputeAssister(int killerActorNr)
+    {
+        double now = NetworkTime;
+        staleAttackers.Clear();
+        int best = -1;
+        double bestTime = double.NegativeInfinity;
+        foreach (var pair in recentAttackers)
+        {
+            if (now - pair.Value > assistWindowSeconds) { staleAttackers.Add(pair.Key); continue; }
+            if (pair.Key == killerActorNr) continue;
+            if (pair.Value > bestTime) { bestTime = pair.Value; best = pair.Key; }
+        }
+        foreach (int stale in staleAttackers) recentAttackers.Remove(stale);
+        return best;
+    }
+    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point, int killerActorNr = -1, int assisterActorNr = -1, int killerBotViewId = 0)
     {
         if (nextRevision <= revision) return;
+        bool wasAlive = CurrentHealth > 0;
         revision = nextRevision;
         CurrentHealth = Mathf.Clamp(hp, 0, maximumHealth);
-        if (CurrentHealth == 0) deathController?.ApplyNetworkDeath(force, point);
+        if (CurrentHealth == 0 && wasAlive)
+        {
+            try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId)); } catch (Exception e) { Debug.LogException(e); }
+            deathController?.ApplyNetworkDeath(force, point);
+        }
     }
     private void ReadSnapshot()
     {
         if (!PhotonNetwork.InRoom) return;
-        if (PhotonNetwork.CurrentRoom.CustomProperties[PropertyKey] is object[] state && state.Length == 4 &&
+        if (!(PhotonNetwork.CurrentRoom.CustomProperties[PropertyKey] is object[] state)) return;
+        if (state.Length >= 6 &&
+            state[0] is int version6 && state[1] is int hp6 && state[2] is Vector3 force6 && state[3] is Vector3 point6 &&
+            state[4] is int killer6 && state[5] is int assister6)
+        {
+            ApplySnapshot(version6, hp6, force6, point6, killer6, assister6, state.Length >= 7 && state[6] is int botView ? botView : 0);
+            return;
+        }
+        if (state.Length == 5 &&
+            state[0] is int version5 && state[1] is int hp5 && state[2] is Vector3 force5 && state[3] is Vector3 point5 && state[4] is int killerActorNr)
+        {
+            ApplySnapshot(version5, hp5, force5, point5, killerActorNr, -1);
+            return;
+        }
+        // Backward compatibility with rooms written before killer tracking.
+        if (state.Length == 4 &&
             state[0] is int version && state[1] is int hp && state[2] is Vector3 force && state[3] is Vector3 point)
-            ApplySnapshot(version, hp, force, point);
+            ApplySnapshot(version, hp, force, point, -1, -1);
     }
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         if (propertiesThatChanged.ContainsKey(PropertyKey)) ReadSnapshot();
     }
-    public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient) => ReadSnapshot();
+    public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
+    {
+        // New authority restarts the regen delay conservatively instead of healing instantly.
+        lastDamageTime = NetworkTime;
+        healPool = 0f;
+        ReadSnapshot();
+    }
+
+    private KillInfo BuildKillInfo(int killerActorNr, int assisterActorNr, int killerBotViewId = 0)
+    {
+        int victimActorNr = photonView != null ? photonView.OwnerActorNr : -1;
+        Player victimPlayer = photonView != null ? photonView.Owner : null;
+        Player killerPlayer = null;
+        Player assisterPlayer = null;
+        if (PhotonNetwork.InRoom)
+        {
+            if (killerActorNr > 0) killerPlayer = PhotonNetwork.CurrentRoom.GetPlayer(killerActorNr);
+            if (assisterActorNr > 0) assisterPlayer = PhotonNetwork.CurrentRoom.GetPlayer(assisterActorNr);
+        }
+        string victimName = DisplayName(victimPlayer, victimActorNr);
+        var victimBot = GetComponent<BotController>();
+        if (victimBot != null) { victimName = victimBot.DisplayName; victimActorNr = -photonView.ViewID; }
+        string killerName = DisplayName(killerPlayer, killerActorNr);
+        var killerBot = killerBotViewId > 0 ? PhotonView.Find(killerBotViewId)?.GetComponent<BotController>() : null;
+        if (killerBot != null) { killerName = killerBot.DisplayName; killerActorNr = -killerBotViewId; }
+        string assisterName = assisterActorNr > 0 ? DisplayName(assisterPlayer, assisterActorNr) : "";
+        return new KillInfo(victimActorNr, killerActorNr, assisterActorNr, victimName, killerName, assisterName,
+            victimBot != null ? victimBot.Team : TeamOf(victimPlayer), killerBot != null ? killerBot.Team : TeamOf(killerPlayer), TeamOf(assisterPlayer));
+    }
+
+    private static string DisplayName(Player player, int actorNr)
+    {
+        if (player != null && !string.IsNullOrEmpty(player.NickName)) return player.NickName;
+        return actorNr > 0 ? $"Player {actorNr}" : "World";
+    }
+
+    private static int TeamOf(Player player)
+    {
+        if (player != null && player.CustomProperties.TryGetValue("team", out object value) && value is int team)
+            return team;
+        return 0;
+    }
+
     private void OnDestroy()
     {
         ActivePlayers.Remove(this);

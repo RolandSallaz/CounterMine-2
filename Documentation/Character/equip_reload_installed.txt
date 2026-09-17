@@ -1,0 +1,1 @@
+PASS: four FBX clips reimported without compression; pair paths resolved; equip 0,8666667s, reload 2,883333s; idle rebuilt from equip endpoint; reload registered; neutral camera rotation measured from main character rig.

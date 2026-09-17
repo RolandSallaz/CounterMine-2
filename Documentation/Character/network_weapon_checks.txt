@@ -1,0 +1,3 @@
+PASS: all runtime scripts compiled with Unity Roslyn and project editor references; only pre-existing LobbyManager deprecation warning.
+PASS: prefab has unique object IDs, network component on Player root and in Photon ObservedComponents; AK74 catalog has valid local animator/aim/muzzle/grip references and four clip asset references.
+Unity behavioral diagnostic did not run (editor refresh pending); two-client transport and rendering remain unverified. Diagnostic source retained in Temp/WeaponNetworkDiagnostics.

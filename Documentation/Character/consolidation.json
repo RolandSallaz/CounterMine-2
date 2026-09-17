@@ -1,0 +1,19 @@
+{
+  "archive": "C:\\Users\\Roland\\CounterMine 2\\Backups\\CharacterConsolidation_20260916_114934",
+  "moved": [
+    "Assets\\Anims\\Ak74\\Equip",
+    "Assets\\Anims\\Ak74\\Soldier",
+    "Assets\\models\\FpsChar_Reviewed",
+    "Assets\\models\\FpsChar.blend",
+    "Assets\\models\\FpsChar.blend1",
+    "Assets\\models\\FpsChar.fbx",
+    "Assets\\models\\FpsChar_Reviewed.blend",
+    "Assets\\models\\character.blend1",
+    "Assets\\Anims\\Ak74\\AkAnims.blend",
+    "Assets\\Anims\\Ak74\\AkAnims.blend1",
+    "Assets\\Anims\\Ak74\\AkAnims.fbx"
+  ],
+  "mapped_model_references": 5,
+  "removed_obsolete_overrides": 389,
+  "new_model_guid": "fc8e1ddca0bed6c4bbdd5249269a50f0"
+}

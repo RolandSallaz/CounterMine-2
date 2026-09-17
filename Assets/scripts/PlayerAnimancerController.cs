@@ -11,7 +11,10 @@ public class PlayerAnimancerController : MonoBehaviourPun, IPunObservable
         Idle,
         Walk,
         Run,
-        Fire
+        Fire,
+        Crouch,
+        CrouchWalk,
+        Slide
     }
 
     [SerializeField] private AnimancerComponent animancer;
@@ -27,6 +30,8 @@ public class PlayerAnimancerController : MonoBehaviourPun, IPunObservable
     private PlayerController playerController;
     private AnimationKind currentAnimation;
     private float actionEndTime;
+    public bool IsCrouching => currentAnimation == AnimationKind.Crouch || currentAnimation == AnimationKind.CrouchWalk || currentAnimation == AnimationKind.Slide;
+    public bool IsSliding => currentAnimation == AnimationKind.Slide;
 
     private void Awake()
     {
@@ -42,7 +47,7 @@ public class PlayerAnimancerController : MonoBehaviourPun, IPunObservable
 
     private void Update()
     {
-        if (!photonView.IsMine)
+        if (PhotonNetwork.InRoom && !photonView.IsMine)
         {
             return;
         }
@@ -80,8 +85,11 @@ public class PlayerAnimancerController : MonoBehaviourPun, IPunObservable
 
     private AnimationKind GetLocomotionAnimation()
     {
+        if (playerController != null && playerController.IsSliding) return AnimationKind.Slide;
         Vector3 horizontalVelocity = characterController.velocity;
         horizontalVelocity.y = 0f;
+        if (playerController != null && playerController.IsCrouching)
+            return horizontalVelocity.sqrMagnitude > movementThreshold * movementThreshold ? AnimationKind.CrouchWalk : AnimationKind.Crouch;
         if (horizontalVelocity.sqrMagnitude <= movementThreshold * movementThreshold)
         {
             return AnimationKind.Idle;

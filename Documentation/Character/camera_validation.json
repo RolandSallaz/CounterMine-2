@@ -1,0 +1,17 @@
+{
+  "unity_position": [
+    0.0,
+    1.65,
+    0.12
+  ],
+  "blender_position": [
+    0.0,
+    -0.11999999731779099,
+    1.649999976158142
+  ],
+  "vertical_fov": 75.00000061635836,
+  "near": 0.009999999776482582,
+  "far": 1000.0,
+  "preview_aspect": "16:9",
+  "fbx_unchanged": true
+}

@@ -10,6 +10,7 @@ public sealed class WeaponAimController : MonoBehaviour
     [SerializeField] private PlayerCameraLook cameraLook;
     [SerializeField] private PlayerDeathController deathController;
     [SerializeField] private WeaponAimRig weapon;
+    [SerializeField] private WeaponIdleSynchronizer weaponAnimation;
     private Vector3 restPosition, alignmentPosition, switchPosition;
     private Quaternion restRotation, alignmentRotation, switchRotation;
     private float restFieldOfView, progress, switchProgress = 1f, alignmentFov, switchFov;
@@ -46,6 +47,7 @@ public sealed class WeaponAimController : MonoBehaviour
     private void Update()
     {
         bool canAim = playerCamera != null && playerCamera.isActiveAndEnabled &&
+            (weaponAnimation == null || weaponAnimation.IsIdlePlaying) &&
             cameraLook != null && cameraLook.isActiveAndEnabled &&
             (deathController == null || !deathController.IsDead) &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&

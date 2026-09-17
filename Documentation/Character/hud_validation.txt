@@ -1,0 +1,1 @@
+PASS: HUD prefab references and non-blocking graphics; initial health and damage updates; reload action visible and crosshair hidden. Screenshot rendered at 1600x900. Multiplayer owner-only creation uses the existing Photon ownership gate; live two-client UI not tested.

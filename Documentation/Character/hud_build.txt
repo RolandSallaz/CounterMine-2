@@ -1,0 +1,1 @@
+PASS: HUD prefab created with serialized UI references, fonts, safe-area scaling, health/action bars and owner binding. No ammo values fabricated. Existing scene killfeed unchanged.

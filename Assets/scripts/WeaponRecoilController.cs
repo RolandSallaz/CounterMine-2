@@ -16,6 +16,7 @@ public sealed class WeaponRecoilController : MonoBehaviour
     [SerializeField] private PlayerDeathController deathController;
     [SerializeField] private PlayerAnimancerController animationController;
     [SerializeField] private NetworkWeapon networkWeapon;
+    [SerializeField] private WeaponIdleSynchronizer weaponAnimation;
     [SerializeField, Min(1f)] private float roundsPerMinute = 600f;
     [SerializeField] private bool automatic = true;
     [SerializeField, Min(0f)] private float heatPerShot = .14f;
@@ -23,6 +24,12 @@ public sealed class WeaponRecoilController : MonoBehaviour
     [SerializeField, Min(1f)] private float sustainedFireMultiplier = 1.6f;
     [SerializeField] private Vector2 cameraPitch = new Vector2(.35f, .6f);
     [SerializeField, Min(0f)] private float cameraYaw = .2f;
+    [Header("Spread (degrees, drives bullets and crosshair)")]
+    [SerializeField, Min(0f)] private float hipSpread = 1.2f;
+    [SerializeField, Min(0f)] private float heatSpread = 3.5f;
+    [SerializeField, Min(0f)] private float moveSpread = 4.2f;
+    [SerializeField, Min(0f)] private float airSpread = 2.2f;
+    [SerializeField, Range(0f, 1f)] private float crouchSpreadMultiplier = .7f;
 
     private PhotonView owner;
     private Vector3 restPosition;
@@ -36,6 +43,22 @@ public sealed class WeaponRecoilController : MonoBehaviour
     public float Heat { get; private set; }
     public int ShotsFired { get; private set; }
     public float RoundsPerMinute => roundsPerMinute;
+    /// <summary>Single source of truth: current bullet spread cone (degrees) and crosshair gap.</summary>
+    public float CurrentSpreadDegrees => ComputeSpread();
+
+    private float ComputeSpread()
+    {
+        float aim = aimController != null ? aimController.AimAmount : 0f;
+        float spread = hipSpread + heatSpread * Heat;
+        if (playerController != null)
+        {
+            spread += moveSpread * Mathf.Clamp01(playerController.HorizontalSpeed / Mathf.Max(.01f, playerController.TopSpeed));
+            if (!playerController.IsGrounded) spread += airSpread;
+            if (playerController.IsCrouching) spread *= crouchSpreadMultiplier;
+        }
+        // ADS removes spread entirely: only hip fire deviates.
+        return Mathf.Max(0f, spread * (1f - aim));
+    }
 
     private void Awake()
     {
@@ -68,6 +91,7 @@ public sealed class WeaponRecoilController : MonoBehaviour
         if (!initialized) return;
         Heat = Mathf.MoveTowards(Heat, 0f, heatRecovery * Time.deltaTime);
         bool allowed = (owner == null || (owner.IsMine && (!PhotonNetwork.InRoom || owner.OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber))) && cameraLook != null && cameraLook.isActiveAndEnabled &&
+            (weaponAnimation == null || weaponAnimation.CanFire) &&
             (deathController == null || !deathController.IsDead) &&
             (playerController == null || !playerController.IsSprinting) &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&

@@ -1,9 +1,54 @@
 fileFormatVersion: 2
-guid: fc8e1ddca0bed6c4bbdd5249269a50f0
+guid: aa48beb6b8f24f92a1e4e89c05c94525
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Pouches_Sand
+    second: {fileID: 2100000, guid: db4143f4a8774851805c6545d61b39df, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Rubber_Charcoal
+    second: {fileID: 2100000, guid: 1489486613fe46359b4e94fccf570175, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Skin
+    second: {fileID: 2100000, guid: 6315bd9ab6dc4dffb6c5e35d58b2e87c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Straps_Dark
+    second: {fileID: 2100000, guid: 47f6a9f3f29e4f6790d20031d3da1753, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Uniform_Olive
+    second: {fileID: 2100000, guid: ded7f77b69974777b7a6f2e234ddcc15, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Uniform_Sage
+    second: {fileID: 2100000, guid: bc18a0ae034946919a23b0f960401bad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Uniform_Shadow
+    second: {fileID: 2100000, guid: e7e6532637864c7ba1ae42282f538d0c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Vest_Coyote
+    second: {fileID: 2100000, guid: bd5756e68a1c4ebca4a375cff111b498, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MIL_Visor
+    second: {fileID: 2100000, guid: 4903d1c17c4848b494baaba09ab2a592, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -41,7 +86,7 @@ ModelImporter:
     importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
+    importCameras: 0
     importLights: 1
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
@@ -79,7 +124,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []

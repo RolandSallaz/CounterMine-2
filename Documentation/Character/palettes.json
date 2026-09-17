@@ -1,0 +1,38 @@
+{
+  "MIL_Uniform_Olive": [
+    "#405b76",
+    "#80504a"
+  ],
+  "MIL_Uniform_Sage": [
+    "#637e96",
+    "#a27261"
+  ],
+  "MIL_Uniform_Shadow": [
+    "#2e4054",
+    "#533a37"
+  ],
+  "MIL_Vest_Coyote": [
+    "#777866",
+    "#817354"
+  ],
+  "MIL_Pouches_Sand": [
+    "#9d9d82",
+    "#a48c63"
+  ],
+  "MIL_Straps_Dark": [
+    "#2b343c",
+    "#3d302d"
+  ],
+  "MIL_Rubber_Charcoal": [
+    "#242a2e",
+    "#292829"
+  ],
+  "MIL_Skin": [
+    "#bd9879",
+    "#bd9879"
+  ],
+  "MIL_Visor": [
+    "#4f8596",
+    "#917752"
+  ]
+}

@@ -19,7 +19,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if (GetComponent<BotRoomSpawner>() == null) gameObject.AddComponent<BotRoomSpawner>();
         PhotonNetwork.AutomaticallySyncScene = true;
+        KillRewards.EnsureSubscribed();
+        YandexPlayerData.Load();
+#if UNITY_WEBGL && !UNITY_EDITOR
+        YandexCloudSave.RequestPlayerName(playerName =>
+        {
+            if (!string.IsNullOrEmpty(playerName)) PhotonNetwork.NickName = playerName;
+        });
+#endif
     }
 
     private void SelectTeam(int team)
@@ -101,18 +110,41 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        PhotonNetwork.Instantiate(playerPrefabResourceName, GetSpawnPosition(), Quaternion.identity);
+        PhotonNetwork.Instantiate(playerPrefabResourceName, GetSpawnPosition(selectedTeam), Quaternion.identity);
         playerSpawned = true;
     }
 
-    private Vector3 GetSpawnPosition()
+    /// <summary>Respawn after death: destroys the corpse and spawns a fresh player on the team spawn.</summary>
+    public void RespawnPlayer(GameObject deadPlayer)
+    {
+        int team = selectedTeam;
+        if (PhotonNetwork.LocalPlayer.CustomProperties["team"] is int t) team = t;
+        selectedTeam = team;
+        Vector3 position = GetSpawnPosition(team);
+        if (deadPlayer != null)
+        {
+            if (PhotonNetwork.InRoom) PhotonNetwork.Destroy(deadPlayer);
+            else Destroy(deadPlayer);
+        }
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.Instantiate(playerPrefabResourceName, position, Quaternion.identity);
+        }
+        else if (Resources.Load<GameObject>(playerPrefabResourceName) is GameObject prefab)
+        {
+            Instantiate(prefab, position, Quaternion.identity);
+        }
+        playerSpawned = true;
+    }
+
+    private Vector3 GetSpawnPosition(int team)
     {
         TeamSpawnPoint[] spawnPoints = FindObjectsOfType<TeamSpawnPoint>();
         int matchingPoints = 0;
 
         foreach (TeamSpawnPoint spawnPoint in spawnPoints)
         {
-            if (spawnPoint.Team == selectedTeam)
+            if (spawnPoint.Team == team)
             {
                 matchingPoints++;
             }
@@ -120,14 +152,14 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (matchingPoints == 0)
         {
-            Debug.LogWarning($"No spawn points found for team {selectedTeam}. Using fallback position.");
+            Debug.LogWarning($"No spawn points found for team {team}. Using fallback position.");
             return fallbackSpawnPosition;
         }
 
         int spawnIndex = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % matchingPoints;
         foreach (TeamSpawnPoint spawnPoint in spawnPoints)
         {
-            if (spawnPoint.Team == selectedTeam && spawnIndex-- == 0)
+            if (spawnPoint.Team == team && spawnIndex-- == 0)
             {
                 return spawnPoint.transform.position;
             }
@@ -138,6 +170,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void OnGUI()
     {
+        if (playerSpawned) return;
         GUI.Box(new Rect(16f, 16f, 430f, 128f), "CounterMine test lobby");
         GUI.Label(new Rect(30f, 45f, 400f, 24f), status);
         GUI.Label(new Rect(30f, 70f, 400f, 24f), $"Region: {PhotonNetwork.CloudRegion}");

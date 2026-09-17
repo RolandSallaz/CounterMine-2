@@ -16,9 +16,23 @@ public sealed class WeaponHandIK : MonoBehaviour
     private IKSolverLimb leftSolver;
     private IKSolverLimb rightSolver;
 
+    public void CopyConfigurationTo(WeaponHandIK target, System.Collections.Generic.Dictionary<Transform, Transform> bones)
+    {
+        target.animationSource = animationSource;
+        target.leftHand = bones[leftHand]; target.rightHand = bones[rightHand];
+        target.leftGrip = leftGrip; target.rightGrip = rightGrip;
+        target.leftHandWeight = leftHandWeight; target.rightHandWeight = rightHandWeight;
+    }
+
+    public void SetGrips(Transform left, Transform right)
+    {
+        leftGrip = left; rightGrip = right; leftSolver = rightSolver = null;
+    }
+
     private void LateUpdate()
     {
-        if (animationSource == null || !animationSource.isActiveAndEnabled) return;
+        if (animationSource == null || !animationSource.isActiveAndEnabled ||
+            animationSource.LastEvaluatedFrame != Time.frameCount || !animationSource.IsIdlePlaying) return;
         Solve();
     }
 
@@ -27,20 +41,26 @@ public sealed class WeaponHandIK : MonoBehaviour
         if (leftHand == null || rightHand == null || leftGrip == null || rightGrip == null) return;
         leftSolver ??= CreateSolver(leftHand, leftGrip, AvatarIKGoal.LeftHand);
         rightSolver ??= CreateSolver(rightHand, rightGrip, AvatarIKGoal.RightHand);
-        UpdateSolver(leftSolver, leftHandWeight);
-        UpdateSolver(rightSolver, rightHandWeight);
+        UpdateSolver(leftSolver, leftGrip, leftHandWeight);
+        UpdateSolver(rightSolver, rightGrip, rightHandWeight);
     }
 
     private IKSolverLimb CreateSolver(Transform hand, Transform target, AvatarIKGoal goal)
     {
         if (hand.parent == null || hand.parent.parent == null) return null;
-        var solver = new IKSolverLimb(goal) { target = target, bendModifier = IKSolverLimb.BendModifier.Animation };
+        // Animation mode stores a bend axis at initialization. Instead, derive the
+        // pole from the freshly sampled elbow each frame, including one-frame poses.
+        var solver = new IKSolverLimb(goal) { target = target, bendModifierWeight = 0f };
         return solver.SetChain(hand.parent.parent, hand.parent, hand, transform) ? solver : null;
     }
 
-    private static void UpdateSolver(IKSolverLimb solver, float weight)
+    private static void UpdateSolver(IKSolverLimb solver, Transform grip, float weight)
     {
         if (solver == null) return;
+        solver.target = grip;
+        solver.IKPosition = grip.position;
+        // This is still the animated elbow, before IK modifies the chain.
+        solver.SetBendGoalPosition(solver.bone2.transform.position, 1f);
         solver.IKPositionWeight = weight;
         solver.IKRotationWeight = weight;
         solver.Update();

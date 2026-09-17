@@ -1,0 +1,3 @@
+Validation status: runtime scripts compiled successfully and prefab setup completed in Unity.
+14 Rigidbody components, 13 connected ConfigurableJoint components; serialized runtime references assigned.
+Physics simulation and Play Mode input/multiplayer checks remain unverified. The first editor simulation attempt could not create a local physics scene outside Play Mode; revised preview-scene diagnostic is retained in Temp/RagdollDiagnostics.

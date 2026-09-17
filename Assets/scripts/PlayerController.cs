@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviourPun
 {
     [Header("Movement")]
     [SerializeField, Min(0f)] private float walkSpeed = 3.2f;
-    [SerializeField, Min(0f)] private float sprintSpeed = 5.5f;
+    [SerializeField, Min(0f)] private float sprintSpeed = 7.15f;
     [SerializeField, Min(0f)] private float crouchSpeed = 1.7f;
     [SerializeField, Min(0f)] private float groundAcceleration = 18f;
     [SerializeField, Min(0f)] private float groundDeceleration = 24f;
@@ -32,6 +32,15 @@ public class PlayerController : MonoBehaviourPun
     [SerializeField, Min(0f)] private float stanceTransitionSpeed = 7f;
     [SerializeField] private Camera playerCamera;
     [SerializeField] private WeaponAimController aimController;
+    [Header("Slide")]
+    [SerializeField, Min(0f)] private float slideMinimumSpeed = 4f;
+    [SerializeField, Min(.1f)] private float slideDuration = .85f;
+    [SerializeField, Min(0f)] private float slideFriction = 4.5f;
+    [SerializeField, Min(.5f)] private float slideHeight = .85f;
+    [SerializeField, Min(0f)] private float slideStaminaCost = 12f;
+    [SerializeField, Min(0f)] private float slideCooldown = .8f;
+    private float slideRemaining, nextSlideTime;
+    private readonly Collider[] headroom = new Collider[32];
 
     private CharacterController controller;
     private Vector3 horizontalVelocity;
@@ -43,8 +52,22 @@ public class PlayerController : MonoBehaviourPun
 
     public bool IsSprinting { get; private set; }
     public bool IsCrouching { get; private set; }
+    public bool IsSliding { get; private set; }
+    public float CrouchAmount => Mathf.Clamp01((standingHeight - controller.height) / Mathf.Max(.01f, standingHeight - crouchHeight));
     public bool IsGrounded => controller.isGrounded;
     public float StaminaNormalized => stamina / maximumStamina;
+    public float HorizontalSpeed => horizontalVelocity.magnitude;
+    public float TopSpeed => sprintSpeed;
+
+    public void ResetMotion()
+    {
+        horizontalVelocity = Vector3.zero;
+        verticalVelocity = 0f;
+        IsSprinting = false;
+        IsCrouching = false;
+        IsSliding = false;
+        slideRemaining = 0;
+    }
 
     private void Awake()
     {
@@ -65,11 +88,19 @@ public class PlayerController : MonoBehaviourPun
 
     private void Update()
     {
-        if (!photonView.IsMine) return;
+        if (PhotonNetwork.InRoom && !photonView.IsMine) return;
 
         Keyboard keyboard = Keyboard.current;
         Vector3 input = ReadMovement(keyboard);
-        IsCrouching = keyboard?.cKey.isPressed == true;
+        bool crouchHeld = keyboard?.cKey.isPressed == true || keyboard?.leftCtrlKey.isPressed == true || keyboard?.rightCtrlKey.isPressed == true;
+        if (keyboard?.cKey.wasPressedThisFrame == true || keyboard?.leftCtrlKey.wasPressedThisFrame == true || keyboard?.rightCtrlKey.wasPressedThisFrame == true) TryStartSlide();
+        if (IsSliding)
+        {
+            slideRemaining -= Time.deltaTime;
+            if (slideRemaining <= 0 || !controller.isGrounded || horizontalVelocity.magnitude < crouchSpeed)
+                EndSlide();
+        }
+        IsCrouching = IsSliding || crouchHeld || !CanStand();
         bool wantsSprint = !IsCrouching && (aimController == null || !aimController.BlocksSprint) &&
             keyboard?.leftShiftKey.isPressed == true && input.z > 0f;
         IsSprinting = wantsSprint && !isExhausted && stamina > 0f;
@@ -105,15 +136,47 @@ public class PlayerController : MonoBehaviourPun
             acceleration *= airControl;
         }
 
-        horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * Time.deltaTime);
+        horizontalVelocity = IsSliding
+            ? Vector3.MoveTowards(horizontalVelocity, Vector3.zero, slideFriction * Time.deltaTime)
+            : Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * Time.deltaTime);
         verticalVelocity = Mathf.Max(verticalVelocity + gravity * Time.deltaTime, terminalVelocity);
 
         Vector3 velocity = horizontalVelocity + Vector3.up * verticalVelocity;
-        controller.Move(velocity * Time.deltaTime);
+        CollisionFlags collisions = controller.Move(velocity * Time.deltaTime);
+        if (IsSliding && (collisions & CollisionFlags.Sides) != 0) EndSlide();
+    }
+
+    private bool TryStartSlide()
+    {
+        if (IsSliding || !IsSprinting || !controller.isGrounded || Time.time < nextSlideTime ||
+            horizontalVelocity.magnitude < slideMinimumSpeed || stamina < slideStaminaCost) return false;
+        IsSliding = true;
+        slideRemaining = slideDuration;
+        stamina = Mathf.Max(0, stamina - slideStaminaCost);
+        return true;
+    }
+
+    private void EndSlide()
+    {
+        IsSliding = false;
+        slideRemaining = 0;
+        nextSlideTime = Time.time + slideCooldown;
+    }
+
+    private bool CanStand()
+    {
+        if (controller.height >= standingHeight - .001f) return true;
+        float radius = Mathf.Max(.01f, controller.radius - controller.skinWidth);
+        Vector3 bottom = transform.position + transform.up * (controller.height - radius);
+        Vector3 top = transform.position + transform.up * (standingHeight - radius);
+        int count = Physics.OverlapCapsuleNonAlloc(bottom, top, radius, headroom, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++) if (!headroom[i].transform.IsChildOf(transform)) return false;
+        return count < headroom.Length;
     }
 
     private void UpdateStamina()
     {
+        if (IsSliding) return;
         if (IsSprinting)
         {
             stamina = Mathf.Max(0f, stamina - sprintStaminaDrain * Time.deltaTime);
@@ -144,7 +207,8 @@ public class PlayerController : MonoBehaviourPun
 
     private void UpdateStance()
     {
-        float targetHeight = IsCrouching ? crouchHeight : standingHeight;
+        float targetHeight = IsSliding ? slideHeight : IsCrouching ? crouchHeight : standingHeight;
+        targetHeight = Mathf.Max(controller.radius * 2, targetHeight);
         controller.height = Mathf.MoveTowards(controller.height, targetHeight, stanceTransitionSpeed * Time.deltaTime);
         controller.center = new Vector3(0f, controller.height * 0.5f, 0f);
 
@@ -154,7 +218,7 @@ public class PlayerController : MonoBehaviourPun
         }
 
         Vector3 cameraPosition = playerCamera.transform.localPosition;
-        float targetCameraHeight = IsCrouching ? standingCameraHeight * crouchHeight / standingHeight : standingCameraHeight;
+        float targetCameraHeight = standingCameraHeight * controller.height / standingHeight;
         cameraPosition.y = Mathf.MoveTowards(cameraPosition.y, targetCameraHeight, stanceTransitionSpeed * Time.deltaTime);
         playerCamera.transform.localPosition = cameraPosition;
     }

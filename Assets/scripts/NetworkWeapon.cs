@@ -12,6 +12,8 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     [SerializeField] private Transform muzzle;
     [SerializeField] private WeaponRecoilController recoil;
     [SerializeField] private PlayerHealth health;
+    [SerializeField] private WeaponIdleSynchronizer weaponAnimation;
+    [SerializeField] private WeaponAmmo ammo;
     [SerializeField] private Material tracerMaterial;
     [SerializeField] private LayerMask hitMask = ~0;
     [SerializeField, Min(1f)] private float range = 200f;
@@ -28,6 +30,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     [SerializeField, Range(.1f, 3f)] private float muzzleFlashScale = 1.8f;
     [SerializeField, Range(0f, 4f)] private float muzzleFlashBrightness = 1f;
     [SerializeField, Range(.015f, .1f)] private float muzzleFlashDuration = .055f;
+    [SerializeField, Min(1f)] private float impactLifetime = 15f;
     private MuzzleFlashEffect flashEffect;
     private int nextSequence;
     private int lastAcceptedSequence;
@@ -37,6 +40,8 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private readonly Dictionary<int, BulletTrail> predictions = new Dictionary<int, BulletTrail>();
     private readonly Queue<int> predictionOrder = new Queue<int>();
     private int lastLocalShotFrame = -1;
+    private PlayerController movement;
+    private WeaponSway weaponSway;
     private sealed class Flight
     {
         public Vector3 position, velocity;
@@ -49,19 +54,69 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
     private long ShotKey(int sequence) => ((long)photonView.ViewID << 32) | (uint)sequence;
 
+    public void SetMuzzle(Transform nextMuzzle) => muzzle = nextMuzzle;
+
+    public bool FireBotShot(Vector3 eye, Vector3 direction, float spreadDegrees)
+    {
+        if (!BotController.IsBot(this) || (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) ||
+            muzzle == null || health == null || health.IsDead || weaponAnimation == null || !weaponAnimation.CanFire) return false;
+        if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
+        nextSequence = Mathf.Max(nextSequence, lastAcceptedSequence, lastConfirmedSequence) + 1;
+        Vector3 deviated = Deviate(direction, spreadDegrees);
+        if (!ProcessShot(null, nextSequence, Now, eye, deviated, muzzle.position)) return false;
+        ammo?.Consume(); PlayMuzzleFlash(muzzle.position, deviated, nextSequence);
+        return true;
+    }
+
+    private void Awake()
+    {
+        ammo ??= GetComponentInParent<WeaponAmmo>();
+        movement = GetComponent<PlayerController>();
+        weaponSway = GetComponentInChildren<WeaponSway>(true);
+    }
+
+    /// <summary>Perturbs the aim direction inside a spread cone. Master simulates from this direction, so visuals and damage stay consistent.</summary>
+    private Vector3 ApplySpread(Vector3 direction)
+    {
+        float spread = recoil != null ? recoil.CurrentSpreadDegrees : 0f;
+        if (spread <= 0f || playerCamera == null) return direction;
+        return Deviate(direction, playerCamera.transform.right, playerCamera.transform.up, spread);
+    }
+
+    private static Vector3 Deviate(Vector3 direction, float spreadDegrees)
+    {
+        Vector3 right = Vector3.Cross(direction, Vector3.up);
+        if (right.sqrMagnitude < .000001f) right = Vector3.Cross(direction, Vector3.forward);
+        right.Normalize();
+        return Deviate(direction, right, Vector3.Cross(right, direction).normalized, spreadDegrees);
+    }
+
+    private static Vector3 Deviate(Vector3 direction, Vector3 right, Vector3 up, float spreadDegrees)
+    {
+        if (spreadDegrees <= 0f) return direction;
+        float radius = Mathf.Tan(spreadDegrees * Mathf.Deg2Rad);
+        Vector2 disc = Random.insideUnitCircle * radius;
+        Vector3 deviated = direction + right * disc.x + up * disc.y;
+        return deviated.sqrMagnitude > .000001f ? deviated.normalized : direction;
+    }
+
     public bool FireLocalShot()
     {
+        if (weaponAnimation != null && !weaponAnimation.CanFire) return false;
+        if ((movement != null && movement.IsSprinting) || (weaponSway != null && weaponSway.SprintAmount > .05f)) return false;
+        if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
         if (!photonView.IsMine || (PhotonNetwork.InRoom && photonView.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber) ||
             playerCamera == null || muzzle == null || (health != null && health.IsDead) || lastLocalShotFrame == Time.frameCount) return false;
         lastLocalShotFrame = Time.frameCount;
         int sequence = ++nextSequence;
         double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
         Vector3 eye = playerCamera.transform.position;
-        Vector3 direction = playerCamera.transform.forward;
+        Vector3 direction = ApplySpread(playerCamera.transform.forward);
         Vector3 start = muzzle.position;
         if (!PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient)
         {
             if (!ProcessShot(photonView.Owner, sequence, now, eye, direction, start)) return false;
+            ammo?.Consume();
             PlayMuzzleFlash(start, direction, sequence);
             return true;
         }
@@ -70,6 +125,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         PlayMuzzleFlash(start, direction, sequence);
         predictionOrder.Enqueue(sequence);
         while (predictionOrder.Count > 64) predictions.Remove(predictionOrder.Dequeue());
+        ammo?.Consume();
         photonView.RPC(nameof(RequestShot), RpcTarget.MasterClient, sequence, now, eye, direction, start);
         return true;
     }
@@ -168,7 +224,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
             effect.transform.SetParent(transform, false);
             flashEffect = effect.AddComponent<MuzzleFlashEffect>();
         }
-        flashEffect.Play(photonView.IsMine ? muzzle : null, start, direction, sequence,
+        flashEffect.Play(muzzle, start, direction, sequence,
             muzzleFlashScale, muzzleFlashBrightness, muzzleFlashDuration);
     }
 
@@ -195,23 +251,25 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
                 flight.time += dt; flight.age += dt; flight.distance += distance;
                 flight.position = hit.point;
                 if (!hit.didHit && flight.distance < range && flight.age < 10f) continue;
-                if (hit.player != null && (friendlyFire || !SameTeam(photonView.Owner, hit.player.photonView.Owner)))
-                    hit.player.ApplyMasterDamage(damage, flight.velocity.normalized * 4f, hit.point);
-                PresentImpact(sequence, hit.point);
-                if (PhotonNetwork.InRoom) photonView.RPC(nameof(ConfirmImpact), RpcTarget.Others, sequence, hit.point);
+                if (hit.player != null && (friendlyFire || health == null || BotController.TeamOf(health) == 0 || BotController.TeamOf(health) != BotController.TeamOf(hit.player)))
+                    hit.player.ApplyMasterDamage(Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier)), flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0);
+                bool environmentHit = hit.didHit && hit.player == null;
+                PresentImpact(sequence, hit.point, hit.normal, environmentHit);
+                if (PhotonNetwork.InRoom) photonView.RPC(nameof(ConfirmImpact), RpcTarget.Others, sequence, hit.point, hit.normal, environmentHit);
                 break;
             }
         }
     }
     [PunRPC]
-    private void ConfirmImpact(int sequence, Vector3 point, PhotonMessageInfo info)
+    private void ConfirmImpact(int sequence, Vector3 point, Vector3 normal, bool environmentHit, PhotonMessageInfo info)
     {
-        if (info.Sender != null && info.Sender.IsMasterClient) PresentImpact(sequence, point);
+        if (info.Sender != null && info.Sender.IsMasterClient) PresentImpact(sequence, point, normal, environmentHit);
     }
-    private void PresentImpact(int sequence, Vector3 point)
+    private void PresentImpact(int sequence, Vector3 point, Vector3 normal, bool environmentHit)
     {
         if (!flights.TryGetValue(sequence, out var flight)) return;
         if (flight.visual != null) flight.visual.Impact(point, ShotKey(sequence));
+        if (environmentHit && BulletHitUtility.IsFinite(point) && BulletHitUtility.IsFinite(normal)) BulletImpactEffect.Spawn(point, normal, sequence, impactLifetime);
         flights.Remove(sequence);
     }
     public override void OnMasterClientSwitched(Player newMasterClient)

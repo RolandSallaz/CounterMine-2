@@ -1,0 +1,2 @@
+PASS: OBB ray hit/miss; late idle snapshot at distant spawn + 300 animation/IK updates while translating player stays within 4m; animated ragdoll has no interpolation; TPS head detection and damage multipliers; historical head hit survives player displacement, current hit misses; impact material/shader exists without shader errors.
+Editor checks only; exact reported two-client stretching and VFX appearance still need live verification.

@@ -10,6 +10,7 @@ public static class BulletHitUtility
         public Vector3 point;
         public Vector3 normal;
         public PlayerHealth player;
+        public float damageMultiplier;
         public bool didHit;
     }
 
@@ -33,12 +34,23 @@ public static class BulletHitUtility
         {
             if (player == null || player.transform == shooter || player.IsDead || !player.isActiveAndEnabled) continue;
             if ((mask.value & (1 << player.gameObject.layer)) == 0) continue;
+            var boxes = player.GetComponent<PlayerHitboxes>();
+            if (boxes != null && boxes.Ready)
+            {
+                if (boxes.Raycast(origin, direction, nearest, time, out float boxDistance, out var boxNormal, out var zone))
+                {
+                    nearest = boxDistance;
+                    result = new Hit { point = origin + direction * boxDistance, normal = boxNormal, player = player,
+                        damageMultiplier = boxes.Multiplier(zone), didHit = true };
+                }
+                continue;
+            }
             player.GetCapsule(time, out Vector3 bottom, out Vector3 top, out float radius);
             if (!RayCapsule(origin, direction, bottom, top, radius, out float distance) || distance >= nearest) continue;
             nearest = distance;
             Vector3 point = origin + direction * distance;
             Vector3 axis = Vector3.Lerp(bottom, top, Mathf.Clamp01(Vector3.Dot(point - bottom, top - bottom) / Mathf.Max((top - bottom).sqrMagnitude, .000001f)));
-            result = new Hit { point = point, normal = (point - axis).normalized, player = player, didHit = true };
+            result = new Hit { point = point, normal = (point - axis).normalized, player = player, damageMultiplier = 1f, didHit = true };
         }
         return result;
     }
