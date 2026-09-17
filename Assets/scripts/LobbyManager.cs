@@ -13,6 +13,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField, Min(1)] private int maxRoomsToTry = 50;
     [SerializeField] private string playerPrefabResourceName = "Player";
     [SerializeField] private Vector3 fallbackSpawnPosition = new Vector3(0f, 2f, 0f);
+    [SerializeField] private bool autoJoinOnStart = true;
 
     private string status = "Choose a team.";
     private bool playerSpawned;
@@ -31,6 +32,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             if (!string.IsNullOrEmpty(playerName)) PhotonNetwork.NickName = playerName;
         });
 #endif
+        if (autoJoinOnStart) Connect();
     }
 
     private void SelectTeam(int team)
@@ -65,7 +67,27 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         status = $"In room {PhotonNetwork.CurrentRoom.Name} ({PhotonNetwork.CurrentRoom.PlayerCount}/{maxPlayers})";
+        if (selectedTeam == 0) AutoPickTeam();
         SpawnPlayer();
+    }
+
+    /// <summary>Auto-balance: join the weaker side (humans + bots), random on tie.</summary>
+    private void AutoPickTeam()
+    {
+        int team1 = 0, team2 = 0;
+        foreach (var player in PhotonNetwork.PlayerList)
+        {
+            if (player.CustomProperties["team"] is int t) { if (t == 2) team2++; else team1++; }
+        }
+        foreach (var bot in FindObjectsByType<BotController>(FindObjectsSortMode.None))
+        {
+            if (bot == null) continue;
+            if (bot.Team == 2) team2++; else team1++;
+        }
+        int team = team1 == team2 ? Random.Range(1, 3) : team2 < team1 ? 2 : 1;
+        selectedTeam = team;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { TeamProperty, team } });
+        status = $"Auto-joined team {team}.";
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -201,7 +223,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         GUI.Label(new Rect(30f, 45f, 400f, 24f), status);
         GUI.Label(new Rect(30f, 70f, 400f, 24f), $"Region: {PhotonNetwork.CloudRegion}");
 
-        if (selectedTeam == 0)
+        if (selectedTeam == 0 && !autoJoinOnStart)
         {
             if (GUI.Button(new Rect(30f, 100f, 180f, 28f), "Join Team 1"))
             {

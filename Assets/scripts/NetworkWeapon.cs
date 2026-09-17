@@ -252,7 +252,11 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
                 flight.position = hit.point;
                 if (!hit.didHit && flight.distance < range && flight.age < 10f) continue;
                 if (hit.player != null && (friendlyFire || health == null || BotController.TeamOf(health) == 0 || BotController.TeamOf(health) != BotController.TeamOf(hit.player)))
-                    hit.player.ApplyMasterDamage(Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier)), flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0);
+                {
+                    int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier));
+                    hit.player.ApplyMasterDamage(finalDamage, flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0);
+                    ReportDamageNumber(photonView.Owner, finalDamage, hit.point, hit.damageMultiplier > 1.01f);
+                }
                 bool environmentHit = hit.didHit && hit.player == null;
                 PresentImpact(sequence, hit.point, hit.normal, environmentHit);
                 if (PhotonNetwork.InRoom) photonView.RPC(nameof(ConfirmImpact), RpcTarget.Others, sequence, hit.point, hit.normal, environmentHit);
@@ -264,6 +268,30 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private void ConfirmImpact(int sequence, Vector3 point, Vector3 normal, bool environmentHit, PhotonMessageInfo info)
     {
         if (info.Sender != null && info.Sender.IsMasterClient) PresentImpact(sequence, point, normal, environmentHit);
+    }
+    /// <summary>Damage feedback goes only to the local shooter: bots' hits never spawn numbers.</summary>
+    private void ReportDamageNumber(Player shooter, int amount, Vector3 point, bool crit)
+    {
+        if (!BulletHitUtility.IsFinite(point)) return;
+        amount = Mathf.Clamp(amount, 1, 500);
+        if (!PhotonNetwork.InRoom)
+        {
+            DamageNumber.Spawn(point, amount, crit);
+            return;
+        }
+        if (shooter != null && shooter.IsLocal)
+        {
+            DamageNumber.Spawn(point, amount, crit);
+            return;
+        }
+        if (shooter != null) photonView.RPC(nameof(ReceiveDamageNumber), shooter, amount, point, crit);
+    }
+    [PunRPC]
+    private void ReceiveDamageNumber(int amount, Vector3 point, bool crit, PhotonMessageInfo info)
+    {
+        if (info.Sender == null || !info.Sender.IsMasterClient) return;
+        if (!BulletHitUtility.IsFinite(point)) return;
+        DamageNumber.Spawn(point, Mathf.Clamp(amount, 1, 500), crit);
     }
     private void PresentImpact(int sequence, Vector3 point, Vector3 normal, bool environmentHit)
     {

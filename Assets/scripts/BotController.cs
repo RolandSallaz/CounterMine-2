@@ -25,8 +25,12 @@ public sealed class BotController : MonoBehaviourPun
     [SerializeField, Min(0f)] private float combatSpeed = 2.3f;
     [SerializeField, Min(1f)] private float patrolMinDistance = 6f;
     [SerializeField, Min(1f)] private float patrolMaxDistance = 20f;
-    [Header("Objective: push the enemy base")]
+    [Header("Objective: push the enemy base, then roam")]
     [SerializeField, Min(1f)] private float baseHoldRadius = 5f;
+    [SerializeField, Min(1f)] private float roamMinDistance = 10f;
+    [SerializeField, Min(1f)] private float roamMaxDistance = 30f;
+    [Header("Wall avoidance")]
+    [SerializeField, Min(.5f)] private float avoidDistance = 2.4f;
     [Header("Sprint")]
     [SerializeField, Min(0f)] private float sprintSpeed = 4.5f;
     [SerializeField, Min(1f)] private float sprintDistance = 12f;
@@ -43,7 +47,8 @@ public sealed class BotController : MonoBehaviourPun
     private Vector3 stuckReference;
     private Vector3 objectivePoint;
     private bool hasObjective;
-    private bool detourNext;
+    private bool reachedBase;
+    private int stuckCount;
 
     private void Awake()
     {
@@ -95,6 +100,8 @@ public sealed class BotController : MonoBehaviourPun
         bool sprinting = false;
         if (target != null && !target.IsDead)
         {
+            stuckCount = 0;
+            hasPatrolPoint = false;
             Vector3 aim = target.transform.position + Vector3.up * 1.1f;
             Vector3 flat = aim - transform.position; flat.y = 0;
             if (flat.sqrMagnitude > .01f)
@@ -127,33 +134,30 @@ public sealed class BotController : MonoBehaviourPun
         }
         else
         {
-            // No enemy in sight: push the enemy base. Hold around it once reached,
-            // take a random detour only to unstick from geometry.
+            // Phase 1: push the enemy base. Phase 2 (reached once): roam the map freely.
+            // A random detour is only used to unstick from geometry.
             if (!hasObjective) FindObjective();
-            float objectiveDistance = hasObjective ? FlatDistance(transform.position, objectivePoint) : 0f;
-            bool holdingBase = hasObjective && objectiveDistance <= baseHoldRadius;
+            if (hasObjective && !reachedBase && FlatDistance(transform.position, objectivePoint) <= baseHoldRadius)
+                reachedBase = true;
             Vector3 flatPatrol = hasPatrolPoint ? patrolPoint - transform.position : Vector3.zero;
             flatPatrol.y = 0;
             if (!hasPatrolPoint || flatPatrol.magnitude < 1.2f)
             {
-                if (hasPatrolPoint) idleUntil = Time.time + Random.Range(1f, 3f);
+                if (hasPatrolPoint) { idleUntil = Time.time + Random.Range(.4f, 1.2f); stuckCount = 0; }
                 hasPatrolPoint = false;
-                if (hasObjective && !holdingBase && !detourNext)
+                if (hasObjective && !reachedBase && stuckCount < 2)
                 {
                     patrolPoint = objectivePoint;
                     hasPatrolPoint = true;
                 }
                 else
                 {
-                    Vector3 anchor;
+                    Vector3 anchor = transform.position;
                     float minDistance, maxDistance;
-                    if (detourNext || !hasObjective)
-                    { anchor = transform.position; minDistance = patrolMinDistance; maxDistance = patrolMaxDistance; }
-                    else
-                    { anchor = objectivePoint; minDistance = 1.5f; maxDistance = baseHoldRadius; }
+                    if (!hasObjective || reachedBase) { minDistance = roamMinDistance; maxDistance = roamMaxDistance; }
+                    else { minDistance = patrolMinDistance; maxDistance = patrolMaxDistance; }
                     hasPatrolPoint = TryPickPatrolPoint(anchor, minDistance, maxDistance, out patrolPoint);
                 }
-                detourNext = false;
                 stuckReference = transform.position;
                 stuckCheckAt = Time.time + 1.5f;
             }
@@ -167,8 +171,9 @@ public sealed class BotController : MonoBehaviourPun
                     transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(flatPatrol), 180f * Time.deltaTime);
                 if (Time.time >= stuckCheckAt)
                 {
-                    // Barely moved while trying to walk: stuck on geometry, detour once, then resume the push.
-                    if ((transform.position - stuckReference).sqrMagnitude < .09f) { hasPatrolPoint = false; detourNext = true; }
+                    // Barely moved while trying to walk: drop the point, a new one gets picked above.
+                    // Two stucks in a row force a wide roam point to escape dead ends.
+                    if ((transform.position - stuckReference).sqrMagnitude < .09f) { hasPatrolPoint = false; stuckCount++; }
                     stuckReference = transform.position;
                     stuckCheckAt = Time.time + 1.5f;
                 }
@@ -177,13 +182,33 @@ public sealed class BotController : MonoBehaviourPun
         if (sprinting) speed = sprintSpeed;
         if (moveDirection.sqrMagnitude > .01f)
         {
-            Vector3 origin = transform.position + Vector3.up * .6f;
-            var obstacle = BulletHitUtility.Cast(origin, moveDirection.normalized, 1.1f, transform, Time.timeAsDouble, ~0);
-            if (obstacle.didHit) moveDirection = Vector3.Cross(Vector3.up, obstacle.normal).normalized * (Slot % 2 == 0 ? 1 : -1);
-            if (!Physics.Raycast(origin + moveDirection.normalized * .8f, Vector3.down, 1.5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) moveDirection = Vector3.zero;
+            // Whisker avoidance: straight ahead first, then fan out. Beats wall sliding in corners.
+            moveDirection = Steer(moveDirection);
+            if (moveDirection.sqrMagnitude > .01f)
+            {
+                Vector3 origin = transform.position + Vector3.up * .6f;
+                if (!Physics.Raycast(origin + moveDirection.normalized * .8f, Vector3.down, 1.5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) moveDirection = Vector3.zero;
+            }
         }
         vertical = capsule.isGrounded ? -2f : Mathf.Max(-25f, vertical - 24f * Time.deltaTime);
         capsule.Move((moveDirection * speed + Vector3.up * vertical) * Time.deltaTime);
+    }
+
+    /// <summary>Steer around walls: forward probe, then whiskers at increasing angles. Returns zero when boxed in.</summary>
+    private Vector3 Steer(Vector3 desired)
+    {
+        Vector3 direction = desired.normalized;
+        Vector3 origin = transform.position + Vector3.up * .6f;
+        double time = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+        if (!BulletHitUtility.Cast(origin, direction, avoidDistance, transform, time, ~0).didHit) return direction;
+        float side = Slot % 2 == 0 ? 1f : -1f;
+        float[] angles = { 25f * side, -25f * side, 50f * side, -50f * side, 85f * side, -85f * side, 130f * side };
+        foreach (float angle in angles)
+        {
+            Vector3 candidate = Quaternion.Euler(0f, angle, 0f) * direction;
+            if (!BulletHitUtility.Cast(origin, candidate, avoidDistance, transform, time, ~0).didHit) return candidate;
+        }
+        return Vector3.zero;
     }
 
     /// <summary>Random reachable ground point around a center, same sampling as the room spawner.</summary>
