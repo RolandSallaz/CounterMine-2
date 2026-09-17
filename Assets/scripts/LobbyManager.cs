@@ -8,14 +8,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private const string GameVersion = "CounterMine-0.1";
     private const string TeamProperty = "team";
 
-    [SerializeField] private string roomName = "CounterMine-Test";
+    [SerializeField] private string roomPrefix = "CounterMine";
     [SerializeField] private byte maxPlayers = 16;
+    [SerializeField, Min(1)] private int maxRoomsToTry = 50;
     [SerializeField] private string playerPrefabResourceName = "Player";
     [SerializeField] private Vector3 fallbackSpawnPosition = new Vector3(0f, 2f, 0f);
 
     private string status = "Choose a team.";
     private bool playerSpawned;
     private int selectedTeam;
+    private int matchmakingIndex = 1;
 
     private void Start()
     {
@@ -43,7 +45,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsConnected)
         {
-            JoinRoom();
+            matchmakingIndex = 1;
+            JoinFirstAvailableRoom();
             return;
         }
 
@@ -55,7 +58,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         status = "Connected. Joining room...";
-        JoinRoom();
+        matchmakingIndex = 1;
+        JoinFirstAvailableRoom();
     }
 
     public override void OnJoinedRoom()
@@ -76,6 +80,25 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        // Bucket matchmaking: full room -> next bucket, missing room -> create it.
+        if (returnCode == ErrorCode.GameFull)
+        {
+            matchmakingIndex++;
+            if (matchmakingIndex > Mathf.Max(1, maxRoomsToTry))
+            {
+                status = "All rooms are full, try again later.";
+                Debug.LogError(status);
+                return;
+            }
+            JoinFirstAvailableRoom();
+            return;
+        }
+        if (returnCode == ErrorCode.GameDoesNotExist)
+        {
+            RoomOptions options = new RoomOptions { MaxPlayers = maxPlayers };
+            PhotonNetwork.JoinOrCreateRoom(BucketName(matchmakingIndex), options, TypedLobby.Default);
+            return;
+        }
         status = $"Could not join room ({returnCode}): {message}";
         Debug.LogError(status);
     }
@@ -86,15 +109,18 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         status = $"Disconnected: {cause}";
     }
 
-    private void JoinRoom()
+    private string BucketName(int index) => $"{roomPrefix}-{index}";
+
+    private void JoinFirstAvailableRoom()
     {
         if (PhotonNetwork.InRoom)
         {
             return;
         }
 
-        RoomOptions options = new RoomOptions { MaxPlayers = maxPlayers };
-        PhotonNetwork.JoinOrCreateRoom(roomName, options, TypedLobby.Default);
+        matchmakingIndex = Mathf.Max(1, matchmakingIndex);
+        status = $"Looking for a room ({BucketName(matchmakingIndex)})...";
+        PhotonNetwork.JoinRoom(BucketName(matchmakingIndex));
     }
 
     private void SpawnPlayer()
