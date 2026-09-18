@@ -20,6 +20,9 @@ public sealed class BotController : MonoBehaviourPun
     private Camera aimCamera;
     private float thinkAt, fireAt, vertical;
     private Vector3 moveDirection;
+    private static readonly float[] AvoidAngles = { 25f, -25f, 50f, -50f, 85f, -85f, 130f };
+    private float visibilityAt, patrolRetryAt, objectiveRetryAt;
+    private bool targetVisible;
     [Header("Patrol (no target)")]
     [SerializeField, Min(0f)] private float patrolSpeed = 1.7f;
     [SerializeField, Min(0f)] private float combatSpeed = 2.3f;
@@ -32,7 +35,7 @@ public sealed class BotController : MonoBehaviourPun
     [Header("Wall avoidance")]
     [SerializeField, Min(.5f)] private float avoidDistance = 2.4f;
     [Header("Sprint")]
-    [SerializeField, Min(0f)] private float sprintSpeed = 4.5f;
+    [SerializeField, Min(0f)] private float sprintSpeed = 7.15f;
     [SerializeField, Min(1f)] private float sprintDistance = 12f;
     [Header("Spread (degrees)")]
     [SerializeField, Min(0f)] private float botBaseSpread = 2f;
@@ -72,6 +75,8 @@ public sealed class BotController : MonoBehaviourPun
     /// <summary>Nearest enemy team spawn: the push objective. Spawn points are static, so one lookup is enough.</summary>
     private void FindObjective()
     {
+        if (Time.time < objectiveRetryAt) return;
+        objectiveRetryAt = Time.time + 2f;
         hasObjective = false;
         float best = float.PositiveInfinity;
         foreach (var point in FindObjectsByType<TeamSpawnPoint>(FindObjectsSortMode.None))
@@ -87,6 +92,7 @@ public sealed class BotController : MonoBehaviourPun
         if (Time.time >= thinkAt)
         {
             thinkAt = Time.time + .25f;
+            var previousTarget = target;
             target = null; float best = 40f * 40f;
             foreach (var candidate in PlayerHealth.ActivePlayers)
             {
@@ -94,6 +100,7 @@ public sealed class BotController : MonoBehaviourPun
                 float distance = (candidate.transform.position - transform.position).sqrMagnitude;
                 if (distance < best) { best = distance; target = candidate; }
             }
+            if (target != previousTarget) { visibilityAt = 0; targetVisible = false; }
         }
         moveDirection = Vector3.zero;
         float speed = combatSpeed;
@@ -109,8 +116,12 @@ public sealed class BotController : MonoBehaviourPun
             Vector3 eye = aimCamera.transform.position;
             Vector3 direction = (aim - eye).normalized;
             aimCamera.transform.rotation = Quaternion.LookRotation(direction);
-            var sight = BulletHitUtility.Cast(eye, direction, 40f, transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0);
-            bool visible = sight.player == target;
+            if (Time.time >= visibilityAt)
+            {
+                visibilityAt = Time.time + .15f;
+                targetVisible = BulletHitUtility.Cast(eye, direction, 40f, transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == target;
+            }
+            bool visible = targetVisible;
             if (flat.magnitude > (visible ? 9f : 2f))
             {
                 moveDirection = flat.normalized;
@@ -199,14 +210,12 @@ public sealed class BotController : MonoBehaviourPun
     {
         Vector3 direction = desired.normalized;
         Vector3 origin = transform.position + Vector3.up * .6f;
-        double time = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
-        if (!BulletHitUtility.Cast(origin, direction, avoidDistance, transform, time, ~0).didHit) return direction;
+        if (!BulletHitUtility.CastCover(origin, direction, avoidDistance, transform, ~0, true).didHit) return direction;
         float side = Slot % 2 == 0 ? 1f : -1f;
-        float[] angles = { 25f * side, -25f * side, 50f * side, -50f * side, 85f * side, -85f * side, 130f * side };
-        foreach (float angle in angles)
+        foreach (float angle in AvoidAngles)
         {
-            Vector3 candidate = Quaternion.Euler(0f, angle, 0f) * direction;
-            if (!BulletHitUtility.Cast(origin, candidate, avoidDistance, transform, time, ~0).didHit) return candidate;
+            Vector3 candidate = Quaternion.Euler(0f, angle * side, 0f) * direction;
+            if (!BulletHitUtility.CastCover(origin, candidate, avoidDistance, transform, ~0, true).didHit) return candidate;
         }
         return Vector3.zero;
     }
@@ -215,6 +224,8 @@ public sealed class BotController : MonoBehaviourPun
     private bool TryPickPatrolPoint(Vector3 center, float minDistance, float maxDistance, out Vector3 point)
     {
         point = transform.position;
+        if (Time.time < patrolRetryAt) return false;
+        patrolRetryAt = Time.time + .5f;
         maxDistance = Mathf.Max(minDistance, maxDistance);
         for (int attempt = 0; attempt < 12; attempt++)
         {
@@ -229,7 +240,7 @@ public sealed class BotController : MonoBehaviourPun
             if (toCandidate.magnitude > 2f)
             {
                 Vector3 origin = transform.position + Vector3.up * .6f;
-                var wall = BulletHitUtility.Cast(origin, toCandidate.normalized, toCandidate.magnitude, transform, Time.timeAsDouble, ~0);
+                var wall = BulletHitUtility.CastCover(origin, toCandidate.normalized, toCandidate.magnitude, transform, ~0, true);
                 if (wall.didHit) continue;
             }
             point = candidate;

@@ -1,0 +1,5 @@
+Hips parent=root
+Spine parent=Hips
+Chest parent=Spine
+crouch error=0,0001372099
+slide error=0,007441601

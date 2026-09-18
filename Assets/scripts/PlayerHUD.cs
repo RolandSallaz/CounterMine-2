@@ -22,7 +22,7 @@ public sealed class PlayerHUD : MonoBehaviour
     [SerializeField, Min(1)] private int killfeedMaxEntries = 5;
     [SerializeField, Min(1f)] private float killfeedLifetime = 6f;
     [SerializeField, Min(0f)] private float killfeedFade = .8f;
-    [SerializeField, Min(8)] private int killfeedFontSize = 18;
+    [SerializeField, Min(8)] private int killfeedFontSize = 20;
     [Header("Respawn")]
     [SerializeField, Min(0f)] private float respawnDelay = 3f;
     private float deathAt = -1f;
@@ -45,6 +45,7 @@ public sealed class PlayerHUD : MonoBehaviour
     private Camera playerCam;
     private Canvas hudCanvas;
     private Vector2[] baseArmSizes;
+    private float lastStaminaValue = -1f;
     private static readonly Vector2[] Directions = { Vector2.left, Vector2.right, Vector2.up, Vector2.down };
     public void Bind(PlayerHealth player)
     {
@@ -52,7 +53,6 @@ public sealed class PlayerHUD : MonoBehaviour
         aim=player.GetComponentInChildren<WeaponAimController>(true);recoil=player.GetComponentInChildren<WeaponRecoilController>(true);
         movement=player.GetComponent<PlayerController>();ragdoll=player.GetComponent<PlayerRagdollController>();
         ammo=player.GetComponent<WeaponAmmo>();
-        Debug.Log($"[PlayerHUD] Bind ammoLabel={(ammoLabel!=null?"ok":"MISSING")} ammo={(ammo!=null?ammo.MagAmmo.ToString():"MISSING")}",this);
         playerCam=player.GetComponentInChildren<Camera>(true);hudCanvas=GetComponent<Canvas>();
         if(crosshairArms!=null&&crosshairArms.Length>0)
         {
@@ -76,17 +76,18 @@ public sealed class PlayerHUD : MonoBehaviour
     private void OnDisable()
     {
         PlayerHealth.OnKilled -= HandleKillfeedKill;
+        foreach (var entry in killfeedEntries) if (entry != null) Destroy(entry);
         killfeedEntries.Clear();
     }
 
     private void HandleKillfeedKill(PlayerHealth.KillInfo info)
     {
         if (killfeedRoot == null && !EnsureKillfeed()) return;
-        bool suicide = string.IsNullOrEmpty(info.killerName) || info.killerActorNr <= 0 ||
-                       info.killerActorNr == info.victimActorNr || info.killerName == info.victimName;
+        bool suicide = string.IsNullOrEmpty(info.killerName) || info.killerActorNr == -1 || info.killerActorNr == 0 ||
+                       info.killerActorNr == info.victimActorNr;
         string killerText = !suicide && !string.IsNullOrEmpty(info.assisterName)
             ? info.killerName + " + " + info.assisterName : info.killerName;
-        AddKillfeedEntry(killerText, info.victimName, KillfeedTeamColor(info.killerTeam), KillfeedTeamColor(info.victimTeam), suicide);
+        AddKillfeedEntry(killerText, info.victimName, KillfeedTeamColor(info.killerTeam), KillfeedTeamColor(info.victimTeam), suicide, GameAudio.WeaponName(info.weaponId));
     }
 
     private bool EnsureKillfeed()
@@ -94,7 +95,8 @@ public sealed class PlayerHUD : MonoBehaviour
         if (killfeedRoot != null) return true;
         if (hudCanvas == null) hudCanvas = GetComponent<Canvas>();
         if (hudCanvas == null) return false;
-        killfeedFont = (weaponName != null ? weaponName.font : null) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        killfeedFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        hudCanvas.pixelPerfect = true;
         var rootGo = new GameObject("Killfeed");
         rootGo.transform.SetParent(hudCanvas.transform, false);
         killfeedRoot = rootGo.AddComponent<RectTransform>();
@@ -102,7 +104,7 @@ public sealed class PlayerHUD : MonoBehaviour
         killfeedRoot.anchorMax = new Vector2(1f, 1f);
         killfeedRoot.pivot = new Vector2(1f, 1f);
         killfeedRoot.anchoredPosition = new Vector2(-16f, -16f);
-        killfeedRoot.sizeDelta = new Vector2(420f, 0f);
+        killfeedRoot.sizeDelta = new Vector2(660f, 0f);
         var layout = rootGo.AddComponent<VerticalLayoutGroup>();
         layout.childAlignment = TextAnchor.UpperRight;
         layout.spacing = 6f;
@@ -118,13 +120,13 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private Color KillfeedTeamColor(int team) => team == 1 ? teamOne : team == 2 ? teamTwo : Color.white;
 
-    private void AddKillfeedEntry(string killerName, string victimName, Color killerColor, Color victimColor, bool suicide)
+    private void AddKillfeedEntry(string killerName, string victimName, Color killerColor, Color victimColor, bool suicide, string weapon)
     {
         var entry = new GameObject("Kill Entry");
         entry.transform.SetParent(killfeedRoot, false);
         entry.transform.SetAsLastSibling();
         var bg = entry.AddComponent<Image>();
-        bg.color = new Color(0f, 0f, 0f, .55f);
+        bg.color = new Color(.025f, .035f, .045f, .9f);
         bg.raycastTarget = false;
         var group = entry.AddComponent<HorizontalLayoutGroup>();
         group.childAlignment = TextAnchor.MiddleRight;
@@ -144,7 +146,7 @@ public sealed class PlayerHUD : MonoBehaviour
         else
         {
             AddKillfeedLabel(entry.transform, killerName, killerColor, TextAnchor.MiddleRight);
-            AddKillfeedLabel(entry.transform, "\u2192", new Color(1f, 1f, 1f, .65f), TextAnchor.MiddleCenter);
+            AddKillfeedLabel(entry.transform, "\u2192 " + weapon + " \u2192", Color.white, TextAnchor.MiddleCenter);
             AddKillfeedLabel(entry.transform, victimName, victimColor, TextAnchor.MiddleRight);
         }
         killfeedEntries.Add(entry);
@@ -164,7 +166,8 @@ public sealed class PlayerHUD : MonoBehaviour
         var label = go.AddComponent<Text>();
         label.font = killfeedFont;
         label.fontSize = killfeedFontSize;
-        label.fontStyle = FontStyle.Bold;
+        label.fontStyle = FontStyle.Normal;
+        label.resizeTextForBestFit = false;
         label.alignment = alignment;
         label.horizontalOverflow = HorizontalWrapMode.Overflow;
         label.verticalOverflow = VerticalWrapMode.Overflow;
@@ -204,8 +207,11 @@ public sealed class PlayerHUD : MonoBehaviour
         bool dead=health.IsDead;bool action=animationSource!=null&&animationSource.IsPlayingAction;
         bool canAim=!dead&&(ragdoll==null||!ragdoll.IsRagdoll)&&animationSource!=null&&animationSource.CanFire&&(movement==null||!movement.IsSprinting);
         crosshair.alpha=canAim?1f-(aim!=null?aim.AimAmount:0):0;
-        float gap=CrosshairHalfGap(recoil!=null?recoil.CurrentSpreadDegrees:0f);
-        for(int i=0;i<crosshairArms.Length;i++)crosshairArms[i].anchoredPosition=Directions[i]*gap;
+        if (crosshair.alpha > .001f)
+        {
+            float gap=CrosshairHalfGap(recoil!=null?recoil.CurrentSpreadDegrees:0f);
+            for(int i=0;i<crosshairArms.Length;i++)crosshairArms[i].anchoredPosition=Directions[i]*gap;
+        }
         actionGroup.alpha=action&&!dead?1:0;
         actionFill.rectTransform.anchorMax=new Vector2(animationSource!=null?animationSource.ActionProgress:0,1);
         UpdateRespawn(dead);
@@ -294,6 +300,7 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private void OnRespawnClicked()
     {
+        GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);
         if (respawnButton != null) respawnButton.interactable = false;
         // Inside the click handler, so pointer-lock requests stay browser-legal.
         Cursor.lockState = CursorLockMode.Locked;
@@ -339,7 +346,9 @@ public sealed class PlayerHUD : MonoBehaviour
     private void RefreshStamina()
     {
         float value = movement != null ? Mathf.Clamp01(movement.StaminaNormalized) : 0f;
-        Color color = value <= .2f ? danger : new Color(.72f, .83f, .64f);
+        if (Mathf.Approximately(value, lastStaminaValue)) return;
+        lastStaminaValue = value;
+        Color color = Color.Lerp(danger, new Color(.72f, .83f, .64f), Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.2f, .4f, value)));
         if (staminaFill != null)
         {
             staminaFill.rectTransform.anchorMax = new Vector2(value, 1f);

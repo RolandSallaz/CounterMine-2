@@ -21,6 +21,7 @@ public sealed class WeaponAmmo : MonoBehaviour
     private PhotonView photonView;
     private bool animDriven;
     private float reloadEndsAt;
+    private float nextDrySound;
     private bool IsOwner => !PhotonNetwork.InRoom || (photonView != null && photonView.IsMine);
 
     private void Awake()
@@ -40,6 +41,12 @@ public sealed class WeaponAmmo : MonoBehaviour
 
     public void HandleDryFire()
     {
+        if (!IsReloading && Time.time >= nextDrySound && weaponAnimation != null)
+        {
+            var profile = weaponAnimation.AudioProfile;
+            if (profile != null) GameAudio.Play(profile.dryFire, transform.position + Vector3.up, .35f, 10f, !BotController.IsBot(this) && IsOwner);
+            nextDrySound = Time.time + .25f;
+        }
         if (!IsReloading && autoReloadOnEmpty && MagAmmo <= 0) TryStartReload();
     }
 

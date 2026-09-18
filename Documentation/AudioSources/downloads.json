@@ -1,0 +1,56 @@
+[
+  [
+    {
+      "source": "guns",
+      "url": "https://opengameart.org/sites/default/files/Prepared%20SFX%20Library.7z",
+      "file": "Prepared SFX Library.7z",
+      "bytes": 193954738,
+      "sha256": "cc1ab5a99a0a365105c7c5dd783f4b0b1fe90938114d3ceec53856bfe005f7d6"
+    }
+  ],
+  [
+    {
+      "source": "reload",
+      "url": "https://opengameart.org/sites/default/files/assaultriflereload1_0.wav",
+      "file": "assaultriflereload1_0.wav",
+      "bytes": 274476,
+      "sha256": "efb2d724d634eabe6ba8d3065686abca848bb7497d4d43a5e4aed5e5ea23016f"
+    }
+  ],
+  [
+    {
+      "source": "steps",
+      "url": "https://opengameart.org/sites/default/files/footsteps_0.zip",
+      "file": "footsteps_0.zip",
+      "bytes": 414824,
+      "sha256": "542564e7f6b3a0b89a0d08542438e030e77a46303855fe5bf1644a48185861e9"
+    }
+  ],
+  [
+    {
+      "source": "clicks",
+      "url": "https://opengameart.org/sites/default/files/equipment_clicks3.wav",
+      "file": "equipment_clicks3.wav",
+      "bytes": 2021420,
+      "sha256": "1cd2612f226886a7c0badbe26e9732e097a448e97cbea72a3e3cd2c8aa91ace8"
+    }
+  ],
+  [
+    {
+      "source": "ui",
+      "url": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+      "file": "kenney_interface-sounds.zip",
+      "bytes": 834536,
+      "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232"
+    }
+  ],
+  [
+    {
+      "source": "impacts",
+      "url": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
+      "file": "kenney_impact-sounds.zip",
+      "bytes": 800850,
+      "sha256": "029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8"
+    }
+  ]
+]

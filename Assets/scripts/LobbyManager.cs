@@ -37,6 +37,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void SelectTeam(int team)
     {
+        GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);
         selectedTeam = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { TeamProperty, team } });
         status = $"Team {team} selected. Connecting to Photon...";

@@ -61,11 +61,11 @@ public sealed class KillfeedManager : MonoBehaviour
     private void HandleKill(PlayerHealth.KillInfo info)
     {
         AddEntry(info.killerName, info.victimName, info.killerTeam, info.victimTeam,
-            info.killerActorNr, info.victimActorNr, info.assisterName, info.assisterTeam);
+            info.killerActorNr, info.victimActorNr, info.assisterName, info.assisterTeam, GameAudio.WeaponName(info.weaponId));
     }
 
     public void AddEntry(string killerName, string victimName, int killerTeam, int victimTeam,
-        int killerActorNr = -2, int victimActorNr = -2, string assisterName = null, int assisterTeam = 0)
+        int killerActorNr = -2, int victimActorNr = -2, string assisterName = null, int assisterTeam = 0, string weaponName = "Unknown")
     {
         if (feedRoot == null || entryPrefab == null)
         {
@@ -73,14 +73,13 @@ public sealed class KillfeedManager : MonoBehaviour
             return;
         }
 
-        bool suicide = string.IsNullOrEmpty(killerName) || killerActorNr <= 0 ||
-                       (killerActorNr == victimActorNr && killerActorNr != -2) ||
-                       (!string.IsNullOrEmpty(killerName) && killerName == victimName);
+        bool suicide = string.IsNullOrEmpty(killerName) || (killerActorNr == -1 || killerActorNr == 0) ||
+                       (killerActorNr == victimActorNr && killerActorNr != -2);
         string killerText = !suicide && !string.IsNullOrEmpty(assisterName) ? killerName + " + " + assisterName : killerName;
 
         var entry = Instantiate(entryPrefab, feedRoot, false);
         entry.transform.SetAsLastSibling();
-        entry.Configure(killerText, victimName, TeamColor(killerTeam), TeamColor(victimTeam), suicide);
+        entry.Configure(killerText, victimName, TeamColor(killerTeam), TeamColor(victimTeam), suicide, weaponName);
 
         entries.Add(entry);
         while (entries.Count > Mathf.Max(1, maxEntries))

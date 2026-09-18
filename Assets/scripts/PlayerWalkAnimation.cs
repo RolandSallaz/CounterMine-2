@@ -122,10 +122,10 @@ public sealed class PlayerWalkAnimation : MonoBehaviourPun
         if (spine != null) spine.position = spinePosition;
         // Lower the entire torso for crouching (including the shoulders). The
         // camera/weapon lowers with the capsule, and hand IK preserves the grip.
-        hips.position -= transform.up * (.49f * crouchBlend + .14f * slideBlend);
-        hips.position -= transform.forward * (.06f * crouchBlend + .07f * slideBlend);
+        hips.position -= transform.up * (.49f * crouchBlend + .25f * slideBlend);
+        hips.position -= transform.forward * (.06f * crouchBlend + .02f * slideBlend);
         if (spine != null && animationSource.IsIdlePlaying)
-            spine.rotation = Quaternion.AngleAxis(7f * runBlend * weight + 12f * crouchBlend - 30f * slideBlend, transform.right) * spine.rotation;
+            spine.rotation = Quaternion.AngleAxis(7f * runBlend * weight + 12f * crouchBlend - 18f * slideBlend, transform.right) * spine.rotation;
         ApplyLeg(left, phase, direction, stride, lift);
         ApplyLeg(right, Mathf.Repeat(phase + .5f, 1f), direction, stride, lift);
     }

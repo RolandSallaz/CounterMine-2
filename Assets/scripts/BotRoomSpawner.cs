@@ -4,15 +4,19 @@ using UnityEngine;
 
 public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
 {
-    [SerializeField, Min(1f)] private float corpseLifetime = 5f;
+    [SerializeField, Min(1f)] private float corpseLifetime = 1f;
     private float checkAt;
+    private float sweepAt;
     private readonly System.Collections.Generic.Dictionary<BotController, float> deathTimes = new System.Collections.Generic.Dictionary<BotController, float>();
+    private readonly System.Collections.Generic.HashSet<BotController> seen = new System.Collections.Generic.HashSet<BotController>();
+    private readonly System.Collections.Generic.List<BotController> expired = new System.Collections.Generic.List<BotController>(6);
+    private readonly System.Collections.Generic.List<BotController> forgotten = new System.Collections.Generic.List<BotController>(6);
     public override void OnJoinedRoom() => checkAt = Time.time + 1f;
     public override void OnMasterClientSwitched(Player newMasterClient) => checkAt = Time.time + 1f;
     private void Update()
     {
         if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
-        SweepCorpses();
+        if (Time.time >= sweepAt) { sweepAt = Time.time + .25f; SweepCorpses(); }
         if (Time.time < checkAt) return;
         checkAt = Time.time + 3f;
         if (Resources.Load<GameObject>("Bot") == null) return;
@@ -57,8 +61,8 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
     private void SweepCorpses()
     {
         var bots = FindObjectsByType<BotController>(FindObjectsSortMode.None);
-        var seen = new System.Collections.Generic.HashSet<BotController>();
-        var expired = new System.Collections.Generic.List<BotController>();
+        seen.Clear();
+        expired.Clear();
         foreach (var bot in bots)
         {
             if (bot == null) continue;
@@ -69,7 +73,7 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
             else if (Time.time - diedAt >= corpseLifetime) expired.Add(bot);
         }
         // Forget bots that vanished without us (destroyed externally).
-        var forgotten = new System.Collections.Generic.List<BotController>();
+        forgotten.Clear();
         foreach (var pair in deathTimes) if (!seen.Contains(pair.Key)) forgotten.Add(pair.Key);
         foreach (var bot in forgotten) deathTimes.Remove(bot);
         foreach (var corpse in expired)

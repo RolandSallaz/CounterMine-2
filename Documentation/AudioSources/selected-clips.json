@@ -1,0 +1,68 @@
+[
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\shot0.wav",
+    "source": "C_28P.wav, shot near 0.61s (AK-47 recording used as AK-74 placeholder)",
+    "duration": 0.9508843537414966,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\shot1.wav",
+    "source": "C_28P.wav, shot near 3.26s (AK-47 recording used as AK-74 placeholder)",
+    "duration": 0.9546485260770975,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\shot2.wav",
+    "source": "C_28P.wav, shot near 6.02s (AK-47 recording used as AK-74 placeholder)",
+    "duration": 0.9513151927437642,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\reload.wav",
+    "source": "SpringySpringo: assaultriflereload1_0.wav",
+    "duration": 1.555736961451247,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\equip.wav",
+    "source": "LFA: equipment_clicks3.wav 0.78-1.13s",
+    "duration": 0.34997732426303857,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\AK74\\dry.wav",
+    "source": "LFA: equipment_clicks3.wav 0.16-0.39s",
+    "duration": 0.23,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\Steps\\step0.wav",
+    "source": "Kenney Impact Sounds: Audio/footstep_concrete_000.ogg",
+    "duration": 0.10591836734693877,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\Steps\\step1.wav",
+    "source": "Kenney Impact Sounds: Audio/footstep_concrete_001.ogg",
+    "duration": 0.10764172335600906,
+    "peak": 0.852109219821907
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\Steps\\step2.wav",
+    "source": "Kenney Impact Sounds: Audio/footstep_concrete_002.ogg",
+    "duration": 0.1127891156462585,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\Steps\\step3.wav",
+    "source": "Kenney Impact Sounds: Audio/footstep_concrete_003.ogg",
+    "duration": 0.11049886621315193,
+    "peak": 0.89
+  },
+  {
+    "asset": "Assets\\Resources\\Audio\\UI\\click.wav",
+    "source": "Kenney Interface Sounds: click_001.ogg",
+    "duration": 0.10002267573696146,
+    "peak": 0.8850068074273331
+  }
+]

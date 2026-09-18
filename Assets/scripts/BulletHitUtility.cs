@@ -3,6 +3,29 @@ using UnityEngine;
 /// <summary>Swept flight queries against physical cover and historical player capsules.</summary>
 public static class BulletHitUtility
 {
+    private static readonly RaycastHit[] CoverHits = new RaycastHit[64];
+    public static Hit CastCover(Vector3 origin, Vector3 direction, float range, Transform shooter, LayerMask mask, bool includeCharacters = false)
+    {
+        direction.Normalize();
+        var result = new Hit { point = origin + direction * range, normal = -direction };
+        int count = Physics.RaycastNonAlloc(origin, direction, CoverHits, range, mask, QueryTriggerInteraction.Ignore);
+        RaycastHit[] hits = CoverHits;
+        // A full buffer may omit the nearest wall. Preserve correctness in dense scenes.
+        if (count == CoverHits.Length)
+        {
+            hits = Physics.RaycastAll(origin, direction, range, mask, QueryTriggerInteraction.Ignore);
+            count = hits.Length;
+        }
+        float nearest = range;
+        for (int i = 0; i < count; i++)
+        {
+            var hit = hits[i];
+            if (hit.distance >= nearest || (shooter != null && hit.transform.IsChildOf(shooter)) || (!includeCharacters && hit.collider.GetComponentInParent<PlayerHealth>() != null)) continue;
+            nearest = hit.distance;
+            result = new Hit { point = hit.point, normal = hit.normal, didHit = true };
+        }
+        return result;
+    }
     public static Vector3 FlightPosition(Vector3 origin, Vector3 velocity, float gravity, float time) =>
         origin + velocity * time + Vector3.down * (.5f * gravity * time * time);
     public struct Hit
@@ -20,21 +43,13 @@ public static class BulletHitUtility
     public static Hit Cast(Vector3 origin, Vector3 direction, float range, Transform shooter, double time, LayerMask mask)
     {
         direction.Normalize();
-        var result = new Hit { point = origin + direction * range, normal = -direction };
-        float nearest = range;
-        // RaycastAll avoids dropping a wall when multiple self-colliders occupy the ray origin.
-        foreach (var hit in Physics.RaycastAll(origin, direction, range, mask, QueryTriggerInteraction.Ignore))
-        {
-            if (hit.collider.transform.IsChildOf(shooter) || hit.collider.GetComponentInParent<PlayerHealth>() != null) continue;
-            if (hit.distance >= nearest) continue;
-            nearest = hit.distance;
-            result = new Hit { point = hit.point, normal = hit.normal, didHit = true };
-        }
+        var result = CastCover(origin, direction, range, shooter, mask);
+        float nearest = result.didHit ? Vector3.Distance(origin, result.point) : range;
         foreach (var player in PlayerHealth.ActivePlayers)
         {
             if (player == null || player.transform == shooter || player.IsDead || !player.isActiveAndEnabled) continue;
             if ((mask.value & (1 << player.gameObject.layer)) == 0) continue;
-            var boxes = player.GetComponent<PlayerHitboxes>();
+            var boxes = player.Hitboxes;
             if (boxes != null && boxes.Ready)
             {
                 if (boxes.Raycast(origin, direction, nearest, time, out float boxDistance, out var boxNormal, out var zone))

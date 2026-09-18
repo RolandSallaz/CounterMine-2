@@ -30,11 +30,13 @@ public class PlayerOwnershipSetup : MonoBehaviourPun
             bool local = !BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine);
             playerCamera.gameObject.SetActive(true);
             playerCamera.enabled = local;
+            if (local && playerCamera.GetComponentInChildren<AudioListener>(true) == null) playerCamera.gameObject.AddComponent<AudioListener>();
             foreach (var listener in playerCamera.GetComponentsInChildren<AudioListener>(true)) listener.enabled = local;
         }
         if (GetComponent<NetworkWeaponPresentation>() == null) gameObject.AddComponent<NetworkWeaponPresentation>();
         if (GetComponent<PlayerModelPresentation>() == null) gameObject.AddComponent<PlayerModelPresentation>();
         if (GetComponent<PlayerWalkAnimation>() == null) gameObject.AddComponent<PlayerWalkAnimation>();
+        if (GetComponent<PlayerAudio>() == null) gameObject.AddComponent<PlayerAudio>();
         if (GetComponent<WeaponAmmo>() == null) gameObject.AddComponent<WeaponAmmo>();
         if (thirdPersonModel != null) thirdPersonModel.SetActive(true);
     }

@@ -15,13 +15,13 @@ static class ValidateSlideCrouch
     static object Call(object obj, string name, params object[] args) => obj.GetType().GetMethod(name, Flags).Invoke(obj, args);
     static void Set(object obj, string name, object value) => obj.GetType().GetField(name, Flags).SetValue(obj, value);
     static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
-    static void Run()
+    public static void Run()
     {
         if (File.Exists(Report) || EditorApplication.isPlayingOrWillChangePlaymode) return;
         var previous = SceneManager.GetActiveScene(); Scene scene = default;
         try
         {
-            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, Application.isBatchMode ? NewSceneMode.Single : NewSceneMode.Additive);
             var player = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Player.prefab"), scene);
             player.transform.position = new Vector3(10000, .05f, 10000);
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube); floor.transform.position = new Vector3(10000, -.5f, 10000); floor.transform.localScale = new Vector3(20, 1, 20);
@@ -74,12 +74,12 @@ static class ValidateSlideCrouch
                 RenderPose(scene, player, slide ? "slide" : "crouch");
                 details += (slide ? "slide" : "crouch") + " error=" + poseError + "\n";
             }
-            File.WriteAllText("Temp/stance_details.txt", details);
+            File.WriteAllText("Documentation/Character/stance_details.txt", details);
             Check(worstGripError < .03f, "Crouch/slide grip out of reach: " + worstGripError);
             File.WriteAllText(Report, "PASS: grounded sprint slide gate, low-speed rejection, 12 stamina cost, no retrigger, cooldown, low-ceiling stand prevention, clear-space stand. 48 crouch/slide poses; maximum hand/grip error " + worstGripError.ToString("F6") + " m. Live two-client gameplay not tested.");
         }
         catch (Exception ex) { File.WriteAllText("Temp/slide_crouch_error.txt", ex.ToString()); Debug.LogException(ex); }
-        finally { if (scene.IsValid()) EditorSceneManager.CloseScene(scene, true); if (previous.IsValid()) SceneManager.SetActiveScene(previous); }
+        finally { if (scene.IsValid() && SceneManager.sceneCount > 1) EditorSceneManager.CloseScene(scene, true); if (previous.IsValid() && previous.isLoaded) SceneManager.SetActiveScene(previous); }
     }
 
     static void RenderPose(Scene scene, GameObject player, string name)

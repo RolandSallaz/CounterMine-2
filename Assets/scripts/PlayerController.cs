@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviourPun
 {
     [Header("Movement")]
     [SerializeField, Min(0f)] private float walkSpeed = 3.2f;
-    [SerializeField, Min(0f)] private float sprintSpeed = 7.15f;
+    [SerializeField, Min(0f)] private float sprintSpeed = 14.3f;
     [SerializeField, Min(0f)] private float crouchSpeed = 1.7f;
     [SerializeField, Min(0f)] private float groundAcceleration = 18f;
     [SerializeField, Min(0f)] private float groundDeceleration = 24f;

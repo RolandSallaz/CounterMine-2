@@ -14,7 +14,7 @@ public sealed class KillfeedEntry : MonoBehaviour
 
     public CanvasGroup Group => canvasGroup;
 
-    public void Configure(string killerName, string victimName, Color killerColor, Color victimColor, bool suicide)
+    public void Configure(string killerName, string victimName, Color killerColor, Color victimColor, bool suicide, string weaponName = "Unknown")
     {
         if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
 
@@ -37,7 +37,7 @@ public sealed class KillfeedEntry : MonoBehaviour
             killerLabel.text = string.IsNullOrEmpty(killerName) ? "?" : killerName;
             killerLabel.color = killerColor;
         }
-        if (separatorLabel != null) separatorLabel.text = "\u2192";
+        if (separatorLabel != null) separatorLabel.text = "\u2192 " + weaponName + " \u2192";
         if (victimLabel != null)
         {
             victimLabel.gameObject.SetActive(true);

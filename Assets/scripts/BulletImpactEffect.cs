@@ -13,6 +13,10 @@ public sealed class BulletImpactEffect : MonoBehaviour
     private Vector3[] velocities;
     private Vector3 origin;
     private float age, lifetime;
+    private bool sparksVisible;
+    private MeshRenderer markRenderer;
+    private MaterialPropertyBlock markColor;
+    private static readonly int ColorId = Shader.PropertyToID("_Color");
 
     public static void Spawn(Vector3 point, Vector3 normal, int seed, float duration)
     {
@@ -36,6 +40,8 @@ public sealed class BulletImpactEffect : MonoBehaviour
         foreach (var hit in Physics.RaycastAll(point + normal*.025f, -normal, .06f, ~0, QueryTriggerInteraction.Ignore))
             if (hit.collider.GetComponentInParent<PlayerHealth>() == null) { instance.transform.SetParent(hit.collider.transform, true); break; }
         instance.age = 0; instance.lifetime = Mathf.Max(1, duration);
+        instance.sparksVisible = true;
+        instance.SetMarkAlpha(1f);
         for (int i=0;i<instance.sparks.Length;i++)
         {
             float angle=(float)random.NextDouble()*Mathf.PI*2;
@@ -43,6 +49,7 @@ public sealed class BulletImpactEffect : MonoBehaviour
             instance.velocities[i] = Quaternion.LookRotation(normal) * local.normalized * (1f+(float)random.NextDouble()*2);
             instance.sparks[i].gameObject.SetActive(true);
             instance.sparks[i].position=instance.origin;
+            instance.sparks[i].rotation=Quaternion.LookRotation(instance.velocities[i]);
             instance.sparks[i].localScale=Vector3.one*.012f;
         }
         instance.gameObject.SetActive(true);
@@ -57,26 +64,40 @@ public sealed class BulletImpactEffect : MonoBehaviour
             sparkMesh=new Mesh {name="Impact spark"};sparkMesh.vertices=new[]{Vector3.up*2,Vector3.down*2,Vector3.left,Vector3.right,Vector3.forward};
             sparkMesh.triangles=new[]{0,2,4,0,4,3,1,4,2,1,3,4,0,3,2,1,2,3};sparkMesh.RecalculateBounds();
         }
-        AddRenderer(transform,disk,new Color(.012f,.01f,.008f));
+        markRenderer = AddRenderer(transform,disk,new Color(.012f,.01f,.008f));
+        markColor = new MaterialPropertyBlock();
         sparks=new Transform[7];velocities=new Vector3[7];
         for(int i=0;i<sparks.Length;i++){sparks[i]=new GameObject("Spark").transform;sparks[i].SetParent(transform,false);AddRenderer(sparks[i],sparkMesh,new Color(3f,1.5f,.15f));}
     }
-    private static void AddRenderer(Transform target,Mesh mesh,Color color)
+    private static MeshRenderer AddRenderer(Transform target,Mesh mesh,Color color)
     {
         target.gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;
         var renderer=target.gameObject.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;
         renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
         var block=new MaterialPropertyBlock();block.SetColor("_Color",color);renderer.SetPropertyBlock(block);
+        return renderer;
+    }
+    private void SetMarkAlpha(float alpha)
+    {
+        markColor.SetColor(ColorId, new Color(.012f, .01f, .008f, alpha));
+        markRenderer.SetPropertyBlock(markColor);
     }
     private void Update()
     {
         age+=Time.deltaTime;
         if(age>=lifetime){gameObject.SetActive(false);return;}
+        float remaining = lifetime - age;
+        if (remaining < 1.5f) SetMarkAlpha(Mathf.SmoothStep(0, 1, remaining / Mathf.Min(1.5f, lifetime)));
+        if (!sparksVisible) return;
+        if (age > .28f)
+        {
+            foreach (var spark in sparks) spark.gameObject.SetActive(false);
+            sparksVisible = false;
+            return;
+        }
         for(int i=0;i<sparks.Length;i++)
         {
-            if(age>.28f){sparks[i].gameObject.SetActive(false);continue;}
             sparks[i].position=origin+velocities[i]*age+Vector3.down*(4.9f*age*age);
-            sparks[i].rotation=Quaternion.LookRotation(velocities[i]);
             sparks[i].localScale=Vector3.one*(.012f*(1-age/.28f));
         }
     }

@@ -1,0 +1,1 @@
+PASS: 80-collider saturated fallback, self-collider filtering, nearest cover and empty ray. Damage numbers bounded at 30 and all 30 reused after expiry. Allocation counter unavailable: this Unity runtime reports zero for both the optimized and allocating reference implementation. This is a query fixture, not a game FPS benchmark.

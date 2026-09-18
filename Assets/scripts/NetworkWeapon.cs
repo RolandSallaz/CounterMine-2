@@ -35,6 +35,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private int nextSequence;
     private int lastAcceptedSequence;
     private int lastConfirmedSequence;
+    private int lastSoundSequence;
     private double tokenTime;
     private float tokens = 2f;
     private readonly Dictionary<int, BulletTrail> predictions = new Dictionary<int, BulletTrail>();
@@ -48,6 +49,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         public double time;
         public float distance, age;
         public BulletTrail visual;
+        public string weaponId;
     }
     private readonly Dictionary<int, Flight> flights = new Dictionary<int, Flight>();
     private readonly List<int> flightKeys = new List<int>();
@@ -210,13 +212,19 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         }
         else if (!photonView.IsMine || !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient)
             tracer = SpawnVisual(start, velocity, sequence, age);
-        flights[sequence] = new Flight { position = start, velocity = velocity, time = time, visual = tracer };
+        flights[sequence] = new Flight { position = start, velocity = velocity, time = time, visual = tracer, weaponId = weaponAnimation != null ? weaponAnimation.WeaponId : "ak74" };
     }
     private BulletTrail SpawnVisual(Vector3 start, Vector3 velocity, int sequence, float age) =>
         BulletTrail.Spawn(start, velocity, gravity, range, tracerMaterial, tracerLength, tracerWidth, bulletSize, ShotKey(sequence), age);
 
     private void PlayMuzzleFlash(Vector3 start, Vector3 direction, int sequence)
     {
+        if (sequence > lastSoundSequence)
+        {
+            lastSoundSequence = sequence;
+            GameAudio.Shot(weaponAnimation != null ? weaponAnimation.AudioProfile : GameAudio.Profile("ak74"), start, sequence,
+                !BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine));
+        }
         if (!muzzleFlashEnabled) return;
         if (flashEffect == null)
         {
@@ -254,7 +262,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
                 if (hit.player != null && (friendlyFire || health == null || BotController.TeamOf(health) == 0 || BotController.TeamOf(health) != BotController.TeamOf(hit.player)))
                 {
                     int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier));
-                    hit.player.ApplyMasterDamage(finalDamage, flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0);
+                    hit.player.ApplyMasterDamage(finalDamage, flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0, flight.weaponId);
                     ReportDamageNumber(photonView.Owner, finalDamage, hit.point, hit.damageMultiplier > 1.01f);
                 }
                 bool environmentHit = hit.didHit && hit.player == null;

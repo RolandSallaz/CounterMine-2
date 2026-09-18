@@ -2,11 +2,12 @@ Shader "CounterMine/BulletImpact"
 {
  Properties { _Color ("Color", Color) = (1,1,1,1) }
  SubShader {
- Tags { "RenderPipeline"="UniversalPipeline" "Queue"="Geometry+10" "RenderType"="Opaque" }
+ Tags { "RenderPipeline"="UniversalPipeline" "Queue"="Transparent" "RenderType"="Transparent" }
  Pass {
  Tags { "LightMode"="SRPDefaultUnlit" }
  Cull Off
  ZWrite Off
+ Blend SrcAlpha OneMinusSrcAlpha
  Offset -1, -1
  HLSLPROGRAM
  #pragma vertex Vert

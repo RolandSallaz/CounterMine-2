@@ -1,0 +1,1 @@
+PASS: grounded sprint slide gate, low-speed rejection, 12 stamina cost, no retrigger, cooldown, low-ceiling stand prevention, clear-space stand. 48 crouch/slide poses; maximum hand/grip error 0,007442 m. Live two-client gameplay not tested.

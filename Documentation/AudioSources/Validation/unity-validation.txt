@@ -1,0 +1,3 @@
+PASS: 11 imported non-silent mono clips; AK74 audio profile assigned to Player and Bot; bot killer, duplicate nicknames and assist retain killer -> AK-74 -> victim; dynamic fonts with best-fit disabled. Impact audio removed.
+Generated killfeed-preview.png.
+Not a live two-client or audible playback test.

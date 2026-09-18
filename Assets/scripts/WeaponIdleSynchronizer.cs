@@ -20,6 +20,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     [Serializable] public sealed class WeaponEntry
     {
         public string id;
+        public WeaponAudioProfile audioProfile;
         public AnimancerComponent animator;
         public WeaponAimRig aimRig;
         public Transform muzzle, leftGrip, rightGrip;
@@ -71,6 +72,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     }
     private bool applyingNetwork;
     private WeaponEntry currentWeapon;
+    public WeaponAudioProfile AudioProfile => currentWeapon != null && currentWeapon.audioProfile != null ? currentWeapon.audioProfile : GameAudio.Profile(WeaponId);
     public Transform RightGrip => currentWeapon != null ? currentWeapon.rightGrip : null;
     private bool IsRemote => PhotonNetwork.InRoom && !GetComponentInParent<PhotonView>().IsMine;
 

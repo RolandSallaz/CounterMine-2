@@ -11,6 +11,7 @@ public sealed class PlayerHitboxes : MonoBehaviour
     [SerializeField] private float headMultiplier = 3f, torsoMultiplier = 1f, armMultiplier = .65f, legMultiplier = .75f;
     [SerializeField] private bool drawHitboxes;
     private Collider[] shapes;
+    private Zone[] zones;
     private Pose[][] history;
     private readonly double[] times = new double[40];
     private int count, next;
@@ -27,6 +28,7 @@ public sealed class PlayerHitboxes : MonoBehaviour
         foreach (var shape in root.GetComponentsInChildren<Collider>(true))
             if (shape is BoxCollider || shape is CapsuleCollider) found.Add(shape);
         shapes = found.ToArray(); history = new Pose[times.Length][];
+        zones = Array.ConvertAll(shapes, shape => Classify(shape.name));
         for (int i = 0; i < history.Length; i++) history[i] = new Pose[shapes.Length];
     }
     private void LateUpdate() => Record(Now);
@@ -34,14 +36,14 @@ public sealed class PlayerHitboxes : MonoBehaviour
     {
         if (!Ready) return;
         if (count > 0 && time - times[(next + times.Length - 1) % times.Length] < 1d / 90d) return;
-        for (int i = 0; i < shapes.Length; i++) history[next][i] = Capture(shapes[i]);
+        for (int i = 0; i < shapes.Length; i++) history[next][i] = Capture(shapes[i], zones[i]);
         times[next] = time; next = (next + 1) % times.Length; count = Mathf.Min(count + 1, times.Length);
     }
-    private static Pose Capture(Collider shape)
+    private static Pose Capture(Collider shape, Zone zone)
     {
         var t = shape.transform; Vector3 scale = t.lossyScale;
         scale = new Vector3(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
-        var pose = new Pose { rotation = t.rotation, zone = Classify(t.name) };
+        var pose = new Pose { rotation = t.rotation, zone = zone };
         if (shape is BoxCollider box) { pose.center = t.TransformPoint(box.center); pose.size = Vector3.Scale(box.size, scale) * .5f; }
         else if (shape is CapsuleCollider capsule)
         {
@@ -80,7 +82,7 @@ public sealed class PlayerHitboxes : MonoBehaviour
         bool found = false;
         for (int i = 0; i < shapes.Length; i++)
         {
-            Pose p = lower < 0 ? Capture(shapes[i]) : history[lower][i];
+            Pose p = lower < 0 ? Capture(shapes[i], zones[i]) : history[lower][i];
             if (upper != lower)
             {
                 Pose q = history[upper][i]; p.center = Vector3.Lerp(p.center, q.center, blend); p.end = Vector3.Lerp(p.end, q.end, blend);
@@ -120,7 +122,7 @@ public sealed class PlayerHitboxes : MonoBehaviour
         if (!drawHitboxes || !Ready) return;
         foreach (var shape in shapes)
         {
-            Pose p = Capture(shape); Gizmos.color = p.zone == Zone.Head ? Color.red : p.zone == Zone.Torso ? Color.yellow : Color.cyan;
+            Pose p = Capture(shape, Classify(shape.name)); Gizmos.color = p.zone == Zone.Head ? Color.red : p.zone == Zone.Torso ? Color.yellow : Color.cyan;
             if (p.radius > 0) { Gizmos.DrawWireSphere(p.center,p.radius); Gizmos.DrawWireSphere(p.end,p.radius); Gizmos.DrawLine(p.center,p.end); }
             else { Gizmos.matrix = Matrix4x4.TRS(p.center,p.rotation,Vector3.one); Gizmos.DrawWireCube(Vector3.zero,p.size*2); Gizmos.matrix=Matrix4x4.identity; }
         }

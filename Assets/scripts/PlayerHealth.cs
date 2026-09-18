@@ -13,6 +13,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         public readonly int victimActorNr;
         public readonly int killerActorNr;
         public readonly int assisterActorNr;
+        public readonly string weaponId;
         public readonly string victimName;
         public readonly string killerName;
         public readonly string assisterName;
@@ -20,8 +21,9 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         public readonly int killerTeam;
         public readonly int assisterTeam;
 
-        public KillInfo(int victimActorNr, int killerActorNr, int assisterActorNr, string victimName, string killerName, string assisterName, int victimTeam, int killerTeam, int assisterTeam)
+        public KillInfo(int victimActorNr, int killerActorNr, int assisterActorNr, string victimName, string killerName, string assisterName, int victimTeam, int killerTeam, int assisterTeam, string weaponId = "")
         {
+            this.weaponId = weaponId;
             this.victimActorNr = victimActorNr;
             this.killerActorNr = killerActorNr;
             this.assisterActorNr = assisterActorNr;
@@ -53,6 +55,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     private int revision;
     private int registeredViewId;
     public int MaximumHealth => maximumHealth;
+    public PlayerHitboxes Hitboxes { get; private set; }
     public int CurrentHealth { get; private set; }
     public bool IsDead => CurrentHealth <= 0 || (deathController != null && deathController.IsDead);
     private string PropertyKey => "hp/" + photonView.ViewID;
@@ -66,7 +69,8 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         capsule = GetComponent<CharacterController>();
         deathController ??= GetComponent<PlayerDeathController>();
         CurrentHealth = maximumHealth;
-        if (GetComponent<PlayerHitboxes>() == null) gameObject.AddComponent<PlayerHitboxes>();
+        Hitboxes = GetComponent<PlayerHitboxes>();
+        if (Hitboxes == null) Hitboxes = gameObject.AddComponent<PlayerHitboxes>();
     }
     public override void OnEnable() { base.OnEnable(); ActivePlayers.Add(this); }
     public override void OnDisable() { ActivePlayers.Remove(this); base.OnDisable(); }
@@ -133,7 +137,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         bottom = sample.bottom; top = sample.top; radius = sample.radius;
     }
 
-    public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point, Player killer = null, int killerBotViewId = 0)
+    public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point, Player killer = null, int killerBotViewId = 0, string weaponId = "")
     {
         if ((PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || IsDead || amount <= 0) return;
         int nextHealth = Mathf.Max(0, CurrentHealth - amount);
@@ -144,9 +148,9 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         if (killerActorNr > 0) recentAttackers[killerActorNr] = NetworkTime;
         int assisterActorNr = nextHealth == 0 ? ComputeAssister(killerActorNr) : -1;
         if (nextHealth == 0) recentAttackers.Clear();
-        ApplySnapshot(nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId);
+        ApplySnapshot(nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId);
         if (PhotonNetwork.InRoom)
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId } } });
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId ?? "" } } });
     }
     /// <summary>Latest damager besides the killer inside the assist window (master-side only).</summary>
     private int ComputeAssister(int killerActorNr)
@@ -164,7 +168,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         foreach (int stale in staleAttackers) recentAttackers.Remove(stale);
         return best;
     }
-    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point, int killerActorNr = -1, int assisterActorNr = -1, int killerBotViewId = 0)
+    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point, int killerActorNr = -1, int assisterActorNr = -1, int killerBotViewId = 0, string weaponId = "")
     {
         if (nextRevision <= revision) return;
         bool wasAlive = CurrentHealth > 0;
@@ -172,7 +176,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         CurrentHealth = Mathf.Clamp(hp, 0, maximumHealth);
         if (CurrentHealth == 0 && wasAlive)
         {
-            try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId)); } catch (Exception e) { Debug.LogException(e); }
+            try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId, weaponId)); } catch (Exception e) { Debug.LogException(e); }
             deathController?.ApplyNetworkDeath(force, point);
         }
     }
@@ -184,7 +188,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
             state[0] is int version6 && state[1] is int hp6 && state[2] is Vector3 force6 && state[3] is Vector3 point6 &&
             state[4] is int killer6 && state[5] is int assister6)
         {
-            ApplySnapshot(version6, hp6, force6, point6, killer6, assister6, state.Length >= 7 && state[6] is int botView ? botView : 0);
+            ApplySnapshot(version6, hp6, force6, point6, killer6, assister6, state.Length >= 7 && state[6] is int botView ? botView : 0, state.Length >= 8 ? state[7] as string ?? "" : "");
             return;
         }
         if (state.Length == 5 &&
@@ -210,7 +214,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         ReadSnapshot();
     }
 
-    private KillInfo BuildKillInfo(int killerActorNr, int assisterActorNr, int killerBotViewId = 0)
+    private KillInfo BuildKillInfo(int killerActorNr, int assisterActorNr, int killerBotViewId = 0, string weaponId = "")
     {
         int victimActorNr = photonView != null ? photonView.OwnerActorNr : -1;
         Player victimPlayer = photonView != null ? photonView.Owner : null;
@@ -229,7 +233,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         if (killerBot != null) { killerName = killerBot.DisplayName; killerActorNr = -killerBotViewId; }
         string assisterName = assisterActorNr > 0 ? DisplayName(assisterPlayer, assisterActorNr) : "";
         return new KillInfo(victimActorNr, killerActorNr, assisterActorNr, victimName, killerName, assisterName,
-            victimBot != null ? victimBot.Team : TeamOf(victimPlayer), killerBot != null ? killerBot.Team : TeamOf(killerPlayer), TeamOf(assisterPlayer));
+            victimBot != null ? victimBot.Team : TeamOf(victimPlayer), killerBot != null ? killerBot.Team : TeamOf(killerPlayer), TeamOf(assisterPlayer), weaponId);
     }
 
     private static string DisplayName(Player player, int actorNr)

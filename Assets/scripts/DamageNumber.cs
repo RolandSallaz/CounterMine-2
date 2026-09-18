@@ -11,6 +11,7 @@ public sealed class DamageNumber : MonoBehaviour
     private const int MaxActive = 30;
 
     private static readonly List<DamageNumber> active = new List<DamageNumber>();
+    private static readonly Stack<DamageNumber> pool = new Stack<DamageNumber>();
     private static Camera viewCamera;
     private static Font cachedFont;
 
@@ -28,21 +29,32 @@ public sealed class DamageNumber : MonoBehaviour
             if (cachedFont == null) cachedFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
             if (cachedFont == null) return;
         }
+        DamageNumber number = null;
         while (active.Count >= MaxActive)
         {
             var oldest = active[0];
             active.RemoveAt(0);
-            if (oldest != null) Destroy(oldest.gameObject);
+            if (oldest != null) { number = oldest; break; }
         }
-
+        while (number == null && pool.Count > 0) number = pool.Pop();
+        if (number == null) number = Create();
+        number.age = 0;
+        number.group.alpha = 1;
+        number.transform.position = position + Random.insideUnitSphere * .15f + Vector3.up * .1f;
+        number.transform.localScale = Vector3.one * (crit ? .011f : .008f);
+        number.label.color = crit ? new Color(1f, .72f, .25f) : new Color(.95f, .97f, 1f);
+        number.label.text = amount.ToString();
+        if (viewCamera != null) number.transform.rotation = viewCamera.transform.rotation;
+        number.gameObject.SetActive(true);
+        active.Add(number);
+    }
+    private static DamageNumber Create()
+    {
         var go = new GameObject("Damage Number");
-        go.transform.position = position + Random.insideUnitSphere * .15f + Vector3.up * .1f;
         var canvas = go.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace;
         var rect = (RectTransform)go.transform;
         rect.sizeDelta = new Vector2(2.4f, 1.2f);
-        float scale = crit ? .011f : .008f;
-        go.transform.localScale = Vector3.one * scale;
 
         var text = go.AddComponent<Text>();
         text.font = cachedFont;
@@ -53,8 +65,6 @@ public sealed class DamageNumber : MonoBehaviour
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
-        text.color = crit ? new Color(1f, .15f, .1f) : new Color(1f, .3f, .25f);
-        text.text = amount.ToString();
         var outline = go.AddComponent<Outline>();
         outline.effectColor = new Color(0f, 0f, 0f, .85f);
         outline.effectDistance = new Vector2(3f, -3f);
@@ -62,7 +72,8 @@ public sealed class DamageNumber : MonoBehaviour
         var number = go.AddComponent<DamageNumber>();
         number.label = text;
         number.group = go.AddComponent<CanvasGroup>();
-        active.Add(number);
+        number.group.blocksRaycasts = false;
+        return number;
     }
 
     /// <summary>MainCamera tag first (player camera), otherwise any enabled camera.</summary>
@@ -85,7 +96,11 @@ public sealed class DamageNumber : MonoBehaviour
         if (age >= lifetime)
         {
             active.Remove(this);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            if (pool.Count < MaxActive) pool.Push(this); else Destroy(gameObject);
         }
     }
+    private void OnDestroy() => active.Remove(this);
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetPools() { active.Clear(); pool.Clear(); viewCamera = null; cachedFont = null; }
 }

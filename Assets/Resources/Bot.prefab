@@ -914,6 +914,7 @@ MonoBehaviour:
   defaultWeaponId: ak74
   weapons:
   - id: ak74
+    audioProfile: {fileID: 11400000, guid: c9f1e521e9bf43bfbfb60ae507028726, type: 2}
     animator: {fileID: 7411613275310006637}
     aimRig: {fileID: 2978393641252685351}
     muzzle: {fileID: 5603999647888856476}
