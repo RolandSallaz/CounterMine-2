@@ -1,0 +1,8 @@
+{
+  "triangles": 1924,
+  "mesh_objects": 7,
+  "units": "meters",
+  "height_about_m": 0.105,
+  "source": "SourceArt/Grenade/grenade.blend",
+  "export": "Assets/Resources/Grenade/grenade.fbx"
+}

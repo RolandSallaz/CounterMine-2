@@ -28,7 +28,7 @@ using System;using System.IO;using System.Linq;using UnityEngine;using UnityEdit
  var rag=player.GetComponent<PlayerRagdollController>();var gun=sync.WeaponRoot;var originalParent=gun.parent;
  rag.EnterRagdoll(Vector3.forward*4,body.position+Vector3.up);
  Check(!fps.gameObject.activeSelf&&gun.parent.name=="hand_R"&&gun.gameObject.activeInHierarchy,"Ragdoll presentation failed");
- rag.ExitDebugRagdoll();Check(fps.gameObject.activeSelf&&sync.CharacterAnimator.transform==fps&&gun.parent==originalParent&&sync.CanFire,"F8 reset failed");
+ rag.ExitRagdoll();Check(fps.gameObject.activeSelf&&sync.CharacterAnimator.transform==fps&&gun.parent==originalParent&&sync.CanFire,"Ragdoll reset failed");
  File.WriteAllText(report,"PASS: real prefab local/remote presentation, FPS only arms and no shadows/rigidbodies, TPS world root 15cm back, remote TPS renderers active including arms, animation rebound to correct skeleton, ragdoll keeps weapon and hides FPS, debug reset restores FPS and idle/fire.\nEditor validation only; two-client transport/rendering and physical fall direction not simulated.\n");
  }catch(Exception ex){File.WriteAllText("Temp/character_views_validation_error.txt",ex.ToString());Debug.LogException(ex);}
  finally{if(player)PrefabUtility.UnloadPrefabContents(player);}

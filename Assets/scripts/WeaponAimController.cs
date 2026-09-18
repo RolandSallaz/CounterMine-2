@@ -11,6 +11,9 @@ public sealed class WeaponAimController : MonoBehaviour
     [SerializeField] private PlayerDeathController deathController;
     [SerializeField] private WeaponAimRig weapon;
     [SerializeField] private WeaponIdleSynchronizer weaponAnimation;
+    [SerializeField, Range(0f, 15f)] private float sprintFovBoost = 8f;
+    private PlayerController movement;
+    private float sprintFov;
     private Vector3 restPosition, alignmentPosition, switchPosition;
     private Quaternion restRotation, alignmentRotation, switchRotation;
     private float restFieldOfView, progress, switchProgress = 1f, alignmentFov, switchFov;
@@ -30,6 +33,7 @@ public sealed class WeaponAimController : MonoBehaviour
 
     private void Awake()
     {
+        movement = GetComponentInParent<PlayerController>();
         restPosition = transform.localPosition;
         restRotation = transform.localRotation;
         if (playerCamera != null) restFieldOfView = playerCamera.fieldOfView;
@@ -91,8 +95,13 @@ public sealed class WeaponAimController : MonoBehaviour
         {
             transform.localPosition = Vector3.Lerp(restPosition, alignmentPosition, AimAmount);
             transform.localRotation = Quaternion.Slerp(restRotation, alignmentRotation, AimAmount);
-            if (playerCamera != null) playerCamera.fieldOfView = Mathf.Lerp(restFieldOfView, alignmentFov, AimAmount);
         }
+        // One FOV writer owns both ADS and sprint, so offsets cannot accumulate.
+        float targetSprintFov = movement != null && movement.IsSprinting && movement.HorizontalSpeed > .5f &&
+            (weaponAnimation == null || !weaponAnimation.IsPlayingAction) ? sprintFovBoost : 0f;
+        sprintFov = Mathf.Lerp(sprintFov, targetSprintFov, 1f - Mathf.Exp(-10f * deltaTime));
+        if (playerCamera != null)
+            playerCamera.fieldOfView = Mathf.Lerp(restFieldOfView + sprintFov, hasAlignment ? alignmentFov : restFieldOfView, AimAmount);
     }
     private bool TryCalculateAlignment(WeaponSight sight, out Vector3 position, out Quaternion rotation)
     {

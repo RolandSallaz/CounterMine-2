@@ -518,4 +518,9 @@
 /utf8output
 /preferreduilang:en-US
 /additionalfile:"Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.UnityAdditionalFile.txt"
+"Assets/Editor/GrenadeModelImporter.cs"
+"Assets/Editor/PreviewSkillCards.cs"
 "Assets/Editor/ValidateAudioAndKillfeed.cs"
+"Assets/Editor/ValidateRadarSkill.cs"
+"Assets/Editor/ValidateRadarSpawn.cs"
+"Assets/Editor/ValidateRagdollGround.cs"

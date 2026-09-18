@@ -1,7 +1,6 @@
 using System;
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>Switches the single character skeleton between animation and physics.</summary>
 [DefaultExecutionOrder(500)]
@@ -24,11 +23,6 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
     [Header("Directional fall")]
     [SerializeField, Min(0f)] private float fallSpeed = .85f;
     [SerializeField, Min(0f)] private float impactMultiplier = 2f;
-    [Header("Debug (Editor / Development Build only)")]
-    [SerializeField] private bool debugControls = true;
-    [SerializeField] private bool showDebugHint = true;
-    [SerializeField, Min(0f)] private float debugImpulse = 1.5f;
-
     public Transform SkeletonRoot => skeletonRoot;
     public bool IsRagdoll { get; private set; }
     private Transform[] poseBones;
@@ -46,7 +40,6 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
     private Quaternion cameraRotation, cameraHeadRotation;
     private bool initialized;
     private bool IsLocal => !BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine);
-    private bool DebugAllowed => debugControls && (Application.isEditor || Debug.isDebugBuild);
 
     private void Awake() => Initialize();
 
@@ -58,6 +51,14 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
         posePositions = new Vector3[poseBones.Length];
         poseRotations = new Quaternion[poseBones.Length];
         suspendedStates = new bool[suspendWhileRagdoll.Length];
+        foreach (var body in bodies)
+        {
+            if (body == null) continue;
+            body.solverIterations = 12;
+            body.solverVelocityIterations = 4;
+            body.maxAngularVelocity = 20f;
+            body.maxDepenetrationVelocity = 3f;
+        }
         SetPhysics(false);
         // The simple low-poly body has intersecting joints in its bind pose.
         // Disable internal contacts while retaining collisions with the world.
@@ -69,45 +70,10 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
         return true;
     }
 
-    private void Update()
-    {
-        if (DebugAllowed && IsLocal && Keyboard.current?.f8Key.wasPressedThisFrame == true)
-            ToggleDebugRagdoll();
-    }
-
     private void LateUpdate()
     {
         if (!IsRagdoll || !IsLocal || playerCamera == null || head == null) return;
         playerCamera.transform.SetPositionAndRotation(head.TransformPoint(cameraHeadOffset), head.rotation * cameraHeadRotation);
-    }
-
-    [ContextMenu("Debug/Toggle Ragdoll (F8)")]
-    public void ToggleDebugRagdoll() => RequestDebugRagdoll(!IsRagdoll);
-    [ContextMenu("Debug/Enable Ragdoll")]
-    public void EnableDebugRagdoll() => RequestDebugRagdoll(true);
-    [ContextMenu("Debug/Disable Ragdoll")]
-    public void DisableDebugRagdoll() => RequestDebugRagdoll(false);
-
-    private void RequestDebugRagdoll(bool enabled)
-    {
-        if (!Application.isPlaying || !DebugAllowed || !IsLocal || (death != null && death.IsDead)) return;
-        if (PhotonNetwork.InRoom)
-            photonView.RPC(nameof(SetDebugRagdollNetworked), RpcTarget.All, enabled);
-        else ApplyDebugRagdoll(enabled);
-    }
-
-    [PunRPC]
-    private void SetDebugRagdollNetworked(bool enabled, PhotonMessageInfo info)
-    {
-        if (!DebugAllowed || info.Sender == null || info.Sender.ActorNumber != photonView.OwnerActorNr ||
-            (death != null && death.IsDead)) return;
-        ApplyDebugRagdoll(enabled);
-    }
-
-    private void ApplyDebugRagdoll(bool enabled)
-    {
-        if (enabled) EnterRagdoll(transform.forward * debugImpulse, hips ? hips.position : transform.position);
-        else ExitDebugRagdoll();
     }
 
     public void EnterRagdoll(Vector3 impulse, Vector3 impactPoint)
@@ -167,16 +133,20 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
                 if (body != null && (body.worldCenterOfMass - impactPoint).sqrMagnitude < (closest.worldCenterOfMass - impactPoint).sqrMagnitude)
                     closest = body;
             Vector3 awayFromShot = Vector3.ProjectOnPlane(impulse, Vector3.up).normalized;
-            if (awayFromShot.sqrMagnitude > .01f)
+            // Blast-strength launch for every body: bullet impulses stay under the
+            // threshold and behave exactly as before, explosions throw the whole corpse.
+            float blastPush = Mathf.Max(0f, impulse.magnitude - 8f) * .25f;
+            Vector3 launch = awayFromShot * (fallSpeed + blastPush) + Vector3.up * blastPush * .6f;
+            if (awayFromShot.sqrMagnitude > .01f || blastPush > .01f)
                 foreach (var body in bodies)
-                    if (body != null) body.AddForce(awayFromShot * fallSpeed, ForceMode.VelocityChange);
+                    if (body != null) body.AddForce(launch, ForceMode.VelocityChange);
             // Clamp the lever arm: capsule hits may be outside the actual limb collider.
             Vector3 contact = closest.worldCenterOfMass + Vector3.ClampMagnitude(impactPoint - closest.worldCenterOfMass, .3f);
-            closest.AddForceAtPosition(Vector3.ClampMagnitude(impulse * impactMultiplier, 20f), contact, ForceMode.Impulse);
+            closest.AddForceAtPosition(Vector3.ClampMagnitude(impulse * impactMultiplier, 60f), contact, ForceMode.Impulse);
         }
     }
 
-    public void ExitDebugRagdoll()
+    public void ExitRagdoll()
     {
         if (!IsRagdoll || (death != null && death.IsDead)) return;
         SetPhysics(false);
@@ -186,7 +156,7 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
             heldWeapon.localPosition = weaponLocalPosition; heldWeapon.localRotation = weaponLocalRotation;
             heldWeapon.localScale = weaponLocalScale;
         }
-        // Debug reset is deterministic on every client and avoids standing up inside walls.
+        // Pose restoration is deterministic on every client and avoids standing up inside walls.
         transform.position = entryPosition;
         RestorePose();
         if (playerCamera != null)
@@ -218,7 +188,8 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
             body.interpolation = enabled ? RigidbodyInterpolation.Interpolate : RigidbodyInterpolation.None;
             body.isKinematic = !enabled;
             body.detectCollisions = enabled;
-            if (enabled) { body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; body.WakeUp(); }
+            // Speculative CCD covers angular motion of limbs, unlike linear sweep CCD.
+            if (enabled) { body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative; body.WakeUp(); }
         }
         foreach (var collider in ragdollColliders) if (collider != null) collider.enabled = enabled;
         if (enabled)
@@ -232,10 +203,4 @@ public sealed class PlayerRagdollController : MonoBehaviourPun
         !float.IsNaN(v.x) && !float.IsNaN(v.y) && !float.IsNaN(v.z) &&
         !float.IsInfinity(v.x) && !float.IsInfinity(v.y) && !float.IsInfinity(v.z);
 
-    private void OnGUI()
-    {
-        if (!DebugAllowed || !showDebugHint || !IsLocal) return;
-        GUI.Label(new Rect(16, Screen.height - 34, 380, 24),
-            "F8  Ragdoll: " + (IsRagdoll ? "ON" : "OFF") + ((death != null && death.IsDead) ? " (dead)" : ""));
-    }
 }

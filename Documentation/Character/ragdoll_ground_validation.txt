@@ -1,0 +1,7 @@
+Player force=(0.00, 0.00, 4.00) minimum body center=0,0853
+Player force=(4.00, 0.00, 0.00) minimum body center=0,0826
+Player force=(0.00, 0.00, -10.00) minimum body center=0,0786
+Bot force=(0.00, 0.00, 4.00) minimum body center=0,0848
+Bot force=(4.00, 0.00, 0.00) minimum body center=0,0826
+Bot force=(0.00, 0.00, -10.00) minimum body center=0,0792
+PASS: six 8-second falls on a 4cm floor; no body center below -4cm; icon imported. Does not verify the live map or network corpses.

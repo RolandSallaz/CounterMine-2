@@ -13,6 +13,7 @@ public class PlayerOwnershipSetup : MonoBehaviourPun
         ApplyOwnership();
         if (!BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine))
         {
+            RadarSkill.Bind(GetComponent<PlayerHealth>(), playerCamera);
             var prefab = Resources.Load<GameObject>("UI/PlayerHUD");
             if (prefab != null) Instantiate(prefab, transform, false).GetComponent<PlayerHUD>().Bind(GetComponent<PlayerHealth>());
         }
@@ -38,6 +39,8 @@ public class PlayerOwnershipSetup : MonoBehaviourPun
         if (GetComponent<PlayerWalkAnimation>() == null) gameObject.AddComponent<PlayerWalkAnimation>();
         if (GetComponent<PlayerAudio>() == null) gameObject.AddComponent<PlayerAudio>();
         if (GetComponent<WeaponAmmo>() == null) gameObject.AddComponent<WeaponAmmo>();
+        if (GetComponent<GrenadeThrowIK>() == null) gameObject.AddComponent<GrenadeThrowIK>();
+        if (GetComponent<GrenadeThrower>() == null) gameObject.AddComponent<GrenadeThrower>();
         if (thirdPersonModel != null) thirdPersonModel.SetActive(true);
     }
 }

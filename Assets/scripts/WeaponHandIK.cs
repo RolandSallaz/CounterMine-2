@@ -15,6 +15,8 @@ public sealed class WeaponHandIK : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float rightHandWeight = 1f;
     private IKSolverLimb leftSolver;
     private IKSolverLimb rightSolver;
+    private GrenadeThrowIK grenadeThrow;
+    public Transform LeftHand => leftHand;
 
     public void CopyConfigurationTo(WeaponHandIK target, System.Collections.Generic.Dictionary<Transform, Transform> bones)
     {
@@ -41,7 +43,19 @@ public sealed class WeaponHandIK : MonoBehaviour
         if (leftHand == null || rightHand == null || leftGrip == null || rightGrip == null) return;
         leftSolver ??= CreateSolver(leftHand, leftGrip, AvatarIKGoal.LeftHand);
         rightSolver ??= CreateSolver(rightHand, rightGrip, AvatarIKGoal.RightHand);
-        UpdateSolver(leftSolver, leftGrip, leftHandWeight);
+        grenadeThrow ??= GetComponentInParent<GrenadeThrowIK>();
+        if (leftSolver != null && grenadeThrow != null &&
+            grenadeThrow.Sample(leftHand, leftGrip, out var position, out var rotation, out var elbow))
+        {
+            leftSolver.target = null;
+            leftSolver.IKPosition = position;
+            leftSolver.IKRotation = rotation;
+            leftSolver.SetBendGoalPosition(elbow, 1f);
+            leftSolver.IKPositionWeight = leftHandWeight;
+            leftSolver.IKRotationWeight = leftHandWeight;
+            leftSolver.Update();
+        }
+        else UpdateSolver(leftSolver, leftGrip, leftHandWeight);
         UpdateSolver(rightSolver, rightGrip, rightHandWeight);
     }
 

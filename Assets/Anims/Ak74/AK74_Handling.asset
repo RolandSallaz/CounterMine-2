@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: AK74_Handling
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHandlingProfile
   ergonomics: 55
-  lowErgonomicsAimTime: 0.5
-  highErgonomicsAimTime: 0.16
-  aimOutTimeMultiplier: 0.8
+  lowErgonomicsAimTime: 0.38
+  highErgonomicsAimTime: 0.12
+  aimOutTimeMultiplier: 0.65
   aimedSensitivity: 0.7
   aimedMovementSpeed: 0.65
   sightSwitchTime: 0.16
   sprintPosition: {x: 0.055, y: -0.015, z: 0.045}
   sprintRotation: {x: 10, y: -48, z: -18}
-  sprintBlendTime: 0.22
-  sprintBob: 0.012
+  sprintBlendTime: 0.14
+  sprintBob: 0.016
   sprintBobFrequency: 0.5

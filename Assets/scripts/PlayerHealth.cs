@@ -37,6 +37,27 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     }
 
     public static event Action<KillInfo> OnKilled;
+    public readonly struct DamageInfo
+    {
+        public readonly PlayerHealth victim;
+        public readonly int amount;
+        public readonly Vector3 force;
+        public readonly Vector3 point;
+        public readonly int killerActorNr;
+        public readonly int killerBotViewId;
+
+        public DamageInfo(PlayerHealth victim, int amount, Vector3 force, Vector3 point, int killerActorNr, int killerBotViewId)
+        {
+            this.victim = victim;
+            this.amount = amount;
+            this.force = force;
+            this.point = point;
+            this.killerActorNr = killerActorNr;
+            this.killerBotViewId = killerBotViewId;
+        }
+    }
+    /// <summary>Latest fresh damage snapshot on this instance (for local hit feedback).</summary>
+    public DamageInfo LastDamage { get; private set; }
     public static readonly HashSet<PlayerHealth> ActivePlayers = new HashSet<PlayerHealth>();
     [SerializeField, Min(1)] private int maximumHealth = 100;
     [SerializeField] private PlayerDeathController deathController;
@@ -53,10 +74,13 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     private float healPool;
     private CharacterController capsule;
     private int revision;
+    private bool snapshotSeen;
     private int registeredViewId;
     public int MaximumHealth => maximumHealth;
     public PlayerHitboxes Hitboxes { get; private set; }
     public int CurrentHealth { get; private set; }
+    /// <summary>Unscaled time of the latest spawn (object creation). Used to hide fresh spawns from the radar.</summary>
+    public float SpawnedAt { get; private set; }
     public bool IsDead => CurrentHealth <= 0 || (deathController != null && deathController.IsDead);
     private string PropertyKey => "hp/" + photonView.ViewID;
     private struct Sample { public double time; public Vector3 bottom, top; public float radius; }
@@ -72,7 +96,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         Hitboxes = GetComponent<PlayerHitboxes>();
         if (Hitboxes == null) Hitboxes = gameObject.AddComponent<PlayerHitboxes>();
     }
-    public override void OnEnable() { base.OnEnable(); ActivePlayers.Add(this); }
+    public override void OnEnable() { base.OnEnable(); ActivePlayers.Add(this); SpawnedAt = Time.unscaledTime; }
     public override void OnDisable() { ActivePlayers.Remove(this); base.OnDisable(); }
     private void Start() { registeredViewId = photonView.ViewID; lastDamageTime = NetworkTime; ReadSnapshot(); Record(NetworkTime); }
     private void LateUpdate() => Record(NetworkTime);
@@ -172,8 +196,14 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     {
         if (nextRevision <= revision) return;
         bool wasAlive = CurrentHealth > 0;
+        // First snapshot only syncs state for late joiners; it is not fresh damage.
+        bool fresh = snapshotSeen || !PhotonNetwork.InRoom;
+        int previousHealth = CurrentHealth;
         revision = nextRevision;
+        snapshotSeen = true;
         CurrentHealth = Mathf.Clamp(hp, 0, maximumHealth);
+        int taken = previousHealth - CurrentHealth;
+        if (taken > 0 && fresh) LastDamage = new DamageInfo(this, taken, force, point, killerActorNr, killerBotViewId);
         if (CurrentHealth == 0 && wasAlive)
         {
             try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId, weaponId)); } catch (Exception e) { Debug.LogException(e); }

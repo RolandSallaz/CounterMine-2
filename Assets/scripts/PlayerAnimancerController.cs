@@ -43,6 +43,11 @@ public class PlayerAnimancerController : MonoBehaviourPun, IPunObservable
     private void Start()
     {
         Play(AnimationKind.Idle);
+        // Pose the body synchronously: without this the first rendered frames show
+        // the unevaluated bind pose (stretched model), only fixed once the Animator
+        // ticks. Arms/weapons already evaluate synchronously via their manual clock.
+        if (animancer != null && animancer.Animator != null && animancer.Animator.isActiveAndEnabled)
+            animancer.Animator.Update(0f);
     }
 
     private void Update()

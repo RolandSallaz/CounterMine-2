@@ -1,0 +1,2 @@
+PASS: 81 baked mesh poses across idle/equip/reload at three spawn points including far from origin; all vertices within 4m; maximum world transform error 1,706026E-05.
+Live two-client spawn still needs verification.

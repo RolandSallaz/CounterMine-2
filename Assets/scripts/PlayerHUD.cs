@@ -9,7 +9,7 @@ public sealed class PlayerHUD : MonoBehaviour
 {
     [SerializeField] private RectTransform safeArea;
     [SerializeField] private Text healthValue, playerName, teamLabel, weaponName, weaponState, connection, actionLabel, deathLabel;
-    [SerializeField] private Text ammoLabel;
+    [SerializeField] private Text ammoLabel, grenadeLabel;
     [SerializeField] private Image healthFill, accent, actionFill;
     [SerializeField] private Image staminaFill;
     [SerializeField] private Text staminaLabel;
@@ -31,6 +31,12 @@ public sealed class PlayerHUD : MonoBehaviour
     private Text respawnLabel;
     private RectTransform killfeedRoot;
     private Font killfeedFont;
+    [SerializeField] private HitDirectionIndicator hitDirection;
+    [SerializeField] private ThreatArrow threatArrow;
+    private readonly System.Collections.Generic.List<GrenadeProjectile> threatScratch = new System.Collections.Generic.List<GrenadeProjectile>();
+    private readonly SkillSlotUI[] skillCards = new SkillSlotUI[RadarSkill.SlotCount];
+    private int radarProgress = -1, radarCharges = -1;
+    private bool radarWasActive;
     private readonly System.Collections.Generic.List<GameObject> killfeedEntries = new System.Collections.Generic.List<GameObject>();
     private PlayerHealth health;
     private WeaponIdleSynchronizer animationSource;
@@ -39,6 +45,7 @@ public sealed class PlayerHUD : MonoBehaviour
     private PlayerController movement;
     private PlayerRagdollController ragdoll;
     private WeaponAmmo ammo;
+    private GrenadeThrower grenades;
     private int lastHealth = -1;
     private float damageFlash, refreshAt;
     private Rect previousSafeArea;
@@ -53,7 +60,10 @@ public sealed class PlayerHUD : MonoBehaviour
         aim=player.GetComponentInChildren<WeaponAimController>(true);recoil=player.GetComponentInChildren<WeaponRecoilController>(true);
         movement=player.GetComponent<PlayerController>();ragdoll=player.GetComponent<PlayerRagdollController>();
         ammo=player.GetComponent<WeaponAmmo>();
+        grenades=player.GetComponent<GrenadeThrower>();
         playerCam=player.GetComponentInChildren<Camera>(true);hudCanvas=GetComponent<Canvas>();
+        if (hitDirection == null && hudCanvas != null) hitDirection = HitDirectionIndicator.Create(hudCanvas.transform);
+        if (threatArrow == null && hudCanvas != null) threatArrow = ThreatArrow.Create(hudCanvas.transform, new Color(1f, .6f, .1f));
         if(crosshairArms!=null&&crosshairArms.Length>0)
         {
             baseArmSizes=new Vector2[crosshairArms.Length];
@@ -72,7 +82,10 @@ public sealed class PlayerHUD : MonoBehaviour
         Refresh();
     }
 
-    private void OnEnable() => PlayerHealth.OnKilled += HandleKillfeedKill;
+    private void OnEnable()
+    {
+        PlayerHealth.OnKilled += HandleKillfeedKill;
+    }
     private void OnDisable()
     {
         PlayerHealth.OnKilled -= HandleKillfeedKill;
@@ -88,6 +101,76 @@ public sealed class PlayerHUD : MonoBehaviour
         string killerText = !suicide && !string.IsNullOrEmpty(info.assisterName)
             ? info.killerName + " + " + info.assisterName : info.killerName;
         AddKillfeedEntry(killerText, info.victimName, KillfeedTeamColor(info.killerTeam), KillfeedTeamColor(info.victimTeam), suicide, GameAudio.WeaponName(info.weaponId));
+    }
+
+    /// <summary>Hit direction wheel: a red arrow around the crosshair points at the attacker. Purely local.</summary>
+    private void ShowHitDirection(PlayerHealth.DamageInfo info)
+    {
+        if (health == null || info.victim == null || info.victim != health || hitDirection == null) return;
+        if (!TryAttackerPosition(info, out Vector3 attackerPos)) return;
+        if (TryScreenAngle(attackerPos, out float angle)) hitDirection.Show(angle);
+    }
+
+    /// <summary>Screen angle to a world point. 0 = ahead, positive = right.</summary>
+    private bool TryScreenAngle(Vector3 worldPos, out float angle)
+    {
+        angle = 0f;
+        if (health == null) return false;
+        Vector3 toTarget = worldPos - health.transform.position; toTarget.y = 0f;
+        if (toTarget.sqrMagnitude < .01f) return false;
+        Transform view = playerCam != null ? playerCam.transform : health.transform;
+        Vector3 forward = view.forward; forward.y = 0f;
+        if (forward.sqrMagnitude < .000001f) { forward = health.transform.forward; forward.y = 0f; }
+        if (forward.sqrMagnitude < .000001f) return false;
+        angle = Vector3.SignedAngle(forward.normalized, toTarget.normalized, Vector3.up);
+        return true;
+    }
+
+    /// <summary>Orange arrow tracking the nearest live grenade. Purely local.</summary>
+    private void UpdateThreatArrow()
+    {
+        if (threatArrow == null || health == null) return;
+        if (health.IsDead) { threatArrow.Hide(); return; }
+        const float maxRange = 25f;
+        threatScratch.Clear();
+        threatScratch.AddRange(GrenadeProjectile.Active);
+        GrenadeProjectile nearest = null;
+        float best = maxRange * maxRange;
+        Vector3 self = health.transform.position;
+        foreach (var grenade in threatScratch)
+        {
+            if (grenade == null) continue;
+            float distance = (grenade.Position - self).sqrMagnitude;
+            if (distance < best) { best = distance; nearest = grenade; }
+        }
+        if (nearest == null) { threatArrow.Hide(); return; }
+        if (TryScreenAngle(nearest.Position, out float angle)) threatArrow.PointAt(angle);
+        else threatArrow.Hide();
+    }
+
+    private bool TryAttackerPosition(PlayerHealth.DamageInfo info, out Vector3 attackerPos)
+    {
+        attackerPos = Vector3.zero;
+        if (info.killerBotViewId > 0)
+        {
+            var botView = PhotonView.Find(info.killerBotViewId);
+            if (botView != null) { attackerPos = botView.transform.position; return true; }
+        }
+        if (info.killerActorNr > 0)
+        {
+            foreach (var candidate in PlayerHealth.ActivePlayers)
+            {
+                if (candidate == null || candidate == health) continue;
+                var view = candidate.photonView;
+                if (view == null || view.OwnerActorNr != info.killerActorNr || BotController.IsBot(candidate)) continue;
+                attackerPos = candidate.transform.position;
+                return true;
+            }
+        }
+        // Fallback: bullet force points from the shooter to the victim.
+        Vector3 back = -info.force; back.y = 0f;
+        if (back.sqrMagnitude > .000001f) { attackerPos = health.transform.position + back.normalized * 10f; return true; }
+        return false;
     }
 
     private bool EnsureKillfeed()
@@ -200,10 +283,11 @@ public sealed class PlayerHUD : MonoBehaviour
     {
         if(health==null)return;
         if(PhotonNetwork.InRoom&&!health.photonView.IsMine){gameObject.SetActive(false);return;}
-        if(lastHealth>=0&&health.CurrentHealth<lastHealth)damageFlash=.65f;
+        if(lastHealth>=0&&health.CurrentHealth<lastHealth){damageFlash=.65f;ShowHitDirection(health.LastDamage);}
         lastHealth=health.CurrentHealth;damageFlash=Mathf.MoveTowards(damageFlash,0,Time.unscaledDeltaTime*1.4f);damageOverlay.alpha=damageFlash;
         if(Time.unscaledTime>=refreshAt){refreshAt=Time.unscaledTime+.1f;Refresh();}
         RefreshStamina();
+        RefreshRadar();
         bool dead=health.IsDead;bool action=animationSource!=null&&animationSource.IsPlayingAction;
         bool canAim=!dead&&(ragdoll==null||!ragdoll.IsRagdoll)&&animationSource!=null&&animationSource.CanFire&&(movement==null||!movement.IsSprinting);
         crosshair.alpha=canAim?1f-(aim!=null?aim.AimAmount:0):0;
@@ -214,8 +298,24 @@ public sealed class PlayerHUD : MonoBehaviour
         }
         actionGroup.alpha=action&&!dead?1:0;
         actionFill.rectTransform.anchorMax=new Vector2(animationSource!=null?animationSource.ActionProgress:0,1);
+        if (dead && hitDirection != null) hitDirection.Clear();
+        UpdateThreatArrow();
         UpdateRespawn(dead);
         if(Screen.safeArea!=previousSafeArea&&Screen.width>0&&Screen.height>0){previousSafeArea=Screen.safeArea;safeArea.anchorMin=new Vector2(previousSafeArea.xMin/Screen.width,previousSafeArea.yMin/Screen.height);safeArea.anchorMax=new Vector2(previousSafeArea.xMax/Screen.width,previousSafeArea.yMax/Screen.height);}
+    }
+    private void RefreshRadar()
+    {
+        var radar = RadarSkill.Instance;
+        if (radar == null) return;
+        bool created = skillCards[0] == null;
+        if (created)
+            for (int i = 0; i < skillCards.Length; i++)
+                skillCards[i] = SkillSlotUI.Create(safeArea != null ? safeArea : transform, i);
+        if (!created && radarProgress == radar.Progress && radarCharges == radar.Charges && radarWasActive == radar.Active) return;
+        radarProgress = radar.Progress; radarCharges = radar.Charges; radarWasActive = radar.Active;
+        for (int i = 0; i < skillCards.Length; i++)
+            skillCards[i].SetState(radar.SkillAt(i) != RadarSkill.SkillKind.None,
+                i == 0 ? radar.Progress : 0, i == 0 ? radar.Charges : 0, i == 0 && radar.Active);
     }
     private void UpdateRespawn(bool dead)
     {
@@ -335,6 +435,11 @@ public sealed class PlayerHUD : MonoBehaviour
         {
             if(ammo==null){ammoLabel.text="--";ammoLabel.color=Color.white;}
             else{ammoLabel.text=ammo.MagAmmo+" / INF";ammoLabel.color=ammo.MagAmmo<=0?danger:Color.white;}
+        }
+        if(grenadeLabel!=null)
+        {
+            if(grenades==null){grenadeLabel.text="G --";grenadeLabel.color=Color.white;}
+            else{grenadeLabel.text="G x"+grenades.Grenades;grenadeLabel.color=grenades.Grenades<=0?danger:Color.white;}
         }
         bool dead=health.IsDead;bool rag=ragdoll!=null&&ragdoll.IsRagdoll;bool action=animationSource!=null&&animationSource.IsPlayingAction;
         weaponState.text=dead?"OFFLINE":rag?"RAGDOLL":action?"BUSY":"READY";

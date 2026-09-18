@@ -179,23 +179,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133fa457004341449af8e5501a42d92c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 3.2
-  sprintSpeed: 5.5
-  crouchSpeed: 1.7
-  groundAcceleration: 18
-  groundDeceleration: 24
-  airControl: 0.35
-  strafeSpeedMultiplier: 0.8
-  backwardSpeedMultiplier: 0.7
+  walkSpeed: 4.8
+  sprintSpeed: 9.2
+  crouchSpeed: 2.6
+  groundAcceleration: 42
+  groundDeceleration: 48
+  airControl: 0.45
+  strafeSpeedMultiplier: 0.95
+  backwardSpeedMultiplier: 0.82
   maximumStamina: 100
-  sprintStaminaDrain: 18
-  staminaRecovery: 22
+  sprintStaminaDrain: 14
+  staminaRecovery: 30
   exhaustionRecoveryThreshold: 0.2
   jumpHeight: 1.15
   gravity: -24
   terminalVelocity: -45
   crouchHeight: 1.15
-  stanceTransitionSpeed: 7
+  stanceTransitionSpeed: 11
   playerCamera: {fileID: 1742482635433884194}
   aimController: {fileID: 3601849484673889335}
 --- !u!114 &3659275480847124605
@@ -271,16 +271,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3659275480847124597}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b703ae0ad44548f0b19f141c998668cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1742482635433884194}
-  walkFrequency: 8
-  sprintFrequency: 12
-  walkAmplitude: 0.035
-  sprintAmplitude: 0.055
+  walkFrequency: 10
+  sprintFrequency: 15
+  walkAmplitude: 0.045
+  sprintAmplitude: 0.08
 --- !u!114 &3659275480847124610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -476,9 +476,6 @@ MonoBehaviour:
   weaponPresentation: {fileID: 8615884910727568656}
   fallSpeed: 0.85
   impactMultiplier: 2
-  debugControls: 1
-  showDebugHint: 1
-  debugImpulse: 1.5
 --- !u!114 &7026195301803308411
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,7 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83c6a813714917c4fa11fd1c7bcbce23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerWalkAnimation
-  cycleDistance: 1.65
+  cycleDistance: 2.3
   footLift: 0.095
   blendSpeed: 10
 --- !u!1 &4477654187291597210
@@ -649,9 +646,9 @@ MonoBehaviour:
   cameraLook: {fileID: 3659275480847124608}
   aimController: {fileID: 3601849484673889335}
   fullSwayTurnSpeed: 240
-  maximumPositionOffset: 0.015
+  maximumPositionOffset: 0.02
   maximumRotation: {x: 2, y: 3, z: 1.5}
-  smoothness: 14
+  smoothness: 18
 --- !u!1 &7511875043458812247
 GameObject:
   m_ObjectHideFlags: 0

@@ -123,6 +123,12 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
             return true;
         }
         var predicted = ResolveHit(eye, direction, start, now);
+        // Чисто локальный показ: не-мастер сразу видит цифру по врагу, без ожидания мастера и без RPC.
+        if (!BotController.IsBot(this) && predicted.player != null && IsEnemyHit(predicted.player))
+        {
+            int preview = Mathf.Max(1, Mathf.RoundToInt(damage * predicted.damageMultiplier));
+            DamageNumber.Spawn(predicted.point, Mathf.Clamp(preview, 1, 500), predicted.damageMultiplier > 1.01f);
+        }
         predictions[sequence] = SpawnVisual(start, (predicted.point - start).normalized * tracerSpeed, sequence, 0f);
         PlayMuzzleFlash(start, direction, sequence);
         predictionOrder.Enqueue(sequence);
@@ -174,9 +180,6 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
             photonView.RPC(nameof(ConfirmShot), RpcTarget.Others, sequence, rewindTime, start, velocity);
         return true;
     }
-
-    private static bool SameTeam(Player a, Player b) => a != null && b != null &&
-        a.CustomProperties["team"] is int teamA && b.CustomProperties["team"] is int teamB && teamA == teamB;
 
     private BulletHitUtility.Hit ResolveHit(Vector3 eye, Vector3 direction, Vector3 start, double time)
     {
@@ -263,7 +266,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
                 {
                     int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier));
                     hit.player.ApplyMasterDamage(finalDamage, flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0, flight.weaponId);
-                    ReportDamageNumber(photonView.Owner, finalDamage, hit.point, hit.damageMultiplier > 1.01f);
+                    ReportDamageNumber(photonView.Owner, hit.player, finalDamage, hit.point, hit.damageMultiplier > 1.01f);
                 }
                 bool environmentHit = hit.didHit && hit.player == null;
                 PresentImpact(sequence, hit.point, hit.normal, environmentHit);
@@ -277,29 +280,30 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     {
         if (info.Sender != null && info.Sender.IsMasterClient) PresentImpact(sequence, point, normal, environmentHit);
     }
-    /// <summary>Damage feedback goes only to the local shooter: bots' hits never spawn numbers.</summary>
-    private void ReportDamageNumber(Player shooter, int amount, Vector3 point, bool crit)
+    /// <summary>Damage numbers are purely local: only the local shooter sees them, and only for enemy hits. No RPC.</summary>
+    private void ReportDamageNumber(Player shooter, PlayerHealth victim, int amount, Vector3 point, bool crit)
     {
-        if (!BulletHitUtility.IsFinite(point)) return;
+        if (!BulletHitUtility.IsFinite(point) || victim == null) return;
+        if (BotController.IsBot(this)) return;
+        if (!IsEnemyHit(victim)) return;
         amount = Mathf.Clamp(amount, 1, 500);
         if (!PhotonNetwork.InRoom)
         {
             DamageNumber.Spawn(point, amount, crit);
             return;
         }
-        if (shooter != null && shooter.IsLocal)
-        {
-            DamageNumber.Spawn(point, amount, crit);
-            return;
-        }
-        if (shooter != null) photonView.RPC(nameof(ReceiveDamageNumber), shooter, amount, point, crit);
+        if (shooter == null || !shooter.IsLocal) return;
+        DamageNumber.Spawn(point, amount, crit);
     }
-    [PunRPC]
-    private void ReceiveDamageNumber(int amount, Vector3 point, bool crit, PhotonMessageInfo info)
+    /// <summary>True when the victim is an enemy of the local shooter: same non-zero team or self hits are hidden.</summary>
+    private bool IsEnemyHit(PlayerHealth victim)
     {
-        if (info.Sender == null || !info.Sender.IsMasterClient) return;
-        if (!BulletHitUtility.IsFinite(point)) return;
-        DamageNumber.Spawn(point, Mathf.Clamp(amount, 1, 500), crit);
+        if (victim == null || victim == health) return false;
+        if (health == null) return true;
+        int myTeam = BotController.TeamOf(health);
+        int victimTeam = BotController.TeamOf(victim);
+        if (myTeam != 0 && victimTeam != 0 && myTeam == victimTeam) return false;
+        return true;
     }
     private void PresentImpact(int sequence, Vector3 point, Vector3 normal, bool environmentHit)
     {

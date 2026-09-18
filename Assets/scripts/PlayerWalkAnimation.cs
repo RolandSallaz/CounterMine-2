@@ -6,11 +6,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class PlayerWalkAnimation : MonoBehaviourPun
 {
-    [SerializeField, Min(.2f)] private float cycleDistance = 1.65f;
+    [SerializeField, Min(.2f)] private float cycleDistance = 2.3f;
     [SerializeField, Range(0f, .2f)] private float footLift = .095f;
     [SerializeField, Min(1f)] private float blendSpeed = 10f;
     [Header("Run")]
-    [SerializeField, Min(.5f)] private float runCycleDistance = 2.15f;
+    [SerializeField, Min(.5f)] private float runCycleDistance = 3.6f;
     [SerializeField, Range(.1f, .3f)] private float runFootLift = .19f;
     private float runBlend;
     private float crouchBlend, slideBlend;

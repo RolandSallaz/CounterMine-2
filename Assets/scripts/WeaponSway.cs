@@ -8,9 +8,9 @@ public sealed class WeaponSway : MonoBehaviour
     [SerializeField] private PlayerCameraLook cameraLook;
     [SerializeField] private WeaponAimController aimController;
     [SerializeField, Min(1f)] private float fullSwayTurnSpeed = 240f;
-    [SerializeField, Min(0f)] private float maximumPositionOffset = 0.015f;
+    [SerializeField, Min(0f)] private float maximumPositionOffset = 0.02f;
     [SerializeField] private Vector3 maximumRotation = new Vector3(2f, 3f, 1.5f);
-    [SerializeField, Min(0.1f)] private float smoothness = 14f;
+    [SerializeField, Min(0.1f)] private float smoothness = 18f;
 
     private Vector3 restPosition;
     private Quaternion restRotation;

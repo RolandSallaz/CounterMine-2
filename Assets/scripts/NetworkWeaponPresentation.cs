@@ -56,6 +56,21 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
     public bool EquipWeapon(string weaponId) => animationSource != null && animationSource.EquipWeapon(weaponId);
     public bool PlayAction(string actionId) => animationSource != null && animationSource.PlayWeaponAction(actionId);
 
+    public void SendGrenadeThrow(double startedAt)
+    {
+        if (PhotonNetwork.InRoom && photonView.IsMine)
+            photonView.RPC(nameof(GrenadeThrowRPC), RpcTarget.Others, startedAt);
+    }
+
+    [PunRPC]
+    private void GrenadeThrowRPC(double startedAt, PhotonMessageInfo info)
+    {
+        if (!IsPoseSender(info.Sender)) return;
+        var throwing = GetComponent<GrenadeThrowIK>();
+        if (throwing == null) throwing = gameObject.AddComponent<GrenadeThrowIK>();
+        throwing.Begin(startedAt);
+    }
+
     public void PrepareForRagdoll()
     {
         // Health may restore death before Start on a late-joining client.

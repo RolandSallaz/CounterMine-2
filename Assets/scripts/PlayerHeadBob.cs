@@ -5,10 +5,10 @@ using UnityEngine;
 public class PlayerHeadBob : MonoBehaviourPun
 {
     [SerializeField] private Camera playerCamera;
-    [SerializeField, Min(0f)] private float walkFrequency = 8f;
-    [SerializeField, Min(0f)] private float sprintFrequency = 12f;
-    [SerializeField, Min(0f)] private float walkAmplitude = 0.035f;
-    [SerializeField, Min(0f)] private float sprintAmplitude = 0.055f;
+    [SerializeField, Min(0f)] private float walkFrequency = 10f;
+    [SerializeField, Min(0f)] private float sprintFrequency = 15f;
+    [SerializeField, Min(0f)] private float walkAmplitude = 0.045f;
+    [SerializeField, Min(0f)] private float sprintAmplitude = 0.08f;
 
     private PlayerController playerController;
     private CharacterController characterController;
@@ -35,7 +35,7 @@ public class PlayerHeadBob : MonoBehaviourPun
 
         Vector3 horizontalVelocity = characterController.velocity;
         horizontalVelocity.y = 0f;
-        float frequency = playerController.IsSprinting ? sprintFrequency * .5f : walkFrequency;
+        float frequency = playerController.IsSprinting ? sprintFrequency * .8f : walkFrequency;
         // Camera children include the weapon and FPS arms, so this supplies one
         // shared, subtle bob without pulling the hands away from their grips.
         float amplitude = (playerController.IsSprinting ? sprintAmplitude : walkAmplitude) * .28f;
@@ -48,7 +48,7 @@ public class PlayerHeadBob : MonoBehaviourPun
         }
 
         currentAmplitude = Mathf.Lerp(currentAmplitude, amplitude, 1f - Mathf.Exp(-12f * Time.deltaTime));
-        bobTime += Time.deltaTime * frequency * Mathf.Clamp(horizontalVelocity.magnitude / 3.2f, .4f, 1.5f);
+        bobTime += Time.deltaTime * frequency * Mathf.Clamp(horizontalVelocity.magnitude / 4.8f, .4f, 1.5f);
         Vector3 cameraPosition = playerCamera.transform.localPosition;
         cameraPosition.y += Mathf.Sin(bobTime) * currentAmplitude;
         playerCamera.transform.localPosition = cameraPosition;

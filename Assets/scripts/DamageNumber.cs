@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Floating world-space damage numbers at the hit point. Spawned only on the
-/// shooter's client (see NetworkWeapon): rise, then fade out quickly.</summary>
+/// <summary>Floating world-space damage numbers at the hit point. Purely local:
+/// only the shooter's client spawns them (see NetworkWeapon) and only for enemy
+/// hits. Rise, then fade out quickly.</summary>
 public sealed class DamageNumber : MonoBehaviour
 {
     [SerializeField, Min(.1f)] private float lifetime = .8f;
@@ -42,7 +43,7 @@ public sealed class DamageNumber : MonoBehaviour
         number.group.alpha = 1;
         number.transform.position = position + Random.insideUnitSphere * .15f + Vector3.up * .1f;
         number.transform.localScale = Vector3.one * (crit ? .011f : .008f);
-        number.label.color = crit ? new Color(1f, .72f, .25f) : new Color(.95f, .97f, 1f);
+        number.label.color = crit ? new Color(1f, .1f, .1f) : new Color(1f, .3f, .3f);
         number.label.text = amount.ToString();
         if (viewCamera != null) number.transform.rotation = viewCamera.transform.rotation;
         number.gameObject.SetActive(true);

@@ -1,0 +1,2 @@
+PASS: threshold five; enemy bot kills count; other players/suicide/team kills excluded; death retains progress; duration 15 seconds; repeat refresh; room reset. URP shader compiles and renders through opaque wall; disabling removes effect.
+Live skinned player/camera isolation and two-client behavior still require Play Mode verification.

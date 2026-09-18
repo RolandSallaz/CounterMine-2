@@ -8,6 +8,7 @@ public sealed class GameAudio : MonoBehaviour
     private readonly AudioSource[] voices = new AudioSource[32];
     private readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     private static readonly Dictionary<string, WeaponAudioProfile> profiles = new Dictionary<string, WeaponAudioProfile>();
+    private AudioSource music;
     private int cursor;
     private readonly Dictionary<AudioSource, int> leases = new Dictionary<AudioSource, int>();
     private int nextLease;
@@ -86,4 +87,32 @@ public sealed class GameAudio : MonoBehaviour
         Play(profile.shots[seed % (uint)profile.shots.Length], position, profile.shotVolume, profile.shotRange, local,
             1f + ((seed % 101) / 50f - 1f) * profile.pitchVariation);
     }
+    /// <summary>Seamless looping background music on a dedicated 2D channel. Safe to call repeatedly.</summary>
+    public static void PlayMusic(string id, float volume = .35f)
+    {
+        var audio = Instance;
+        if (audio.music == null)
+        {
+            var go = new GameObject("Music");
+            go.transform.SetParent(audio.transform, false);
+            audio.music = go.AddComponent<AudioSource>();
+            audio.music.playOnAwake = false;
+            audio.music.dopplerLevel = 0;
+            audio.music.rolloffMode = AudioRolloffMode.Linear;
+        }
+        var clip = Resources.Load<AudioClip>("Audio/" + id);
+        if (clip == null) return;
+        if (audio.music.clip == clip && audio.music.isPlaying) return;
+        audio.music.Stop();
+        audio.music.clip = clip;
+        audio.music.loop = true;
+        audio.music.volume = Mathf.Clamp01(volume);
+        audio.music.pitch = 1f;
+        audio.music.spatialBlend = 0f;
+        audio.music.minDistance = 2f;
+        audio.music.maxDistance = 100f;
+        audio.music.Play();
+    }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void StartBackgroundMusic() => PlayMusic("Music/action_loop", .1f);
 }

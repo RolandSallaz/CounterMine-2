@@ -7,19 +7,19 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviourPun
 {
     [Header("Movement")]
-    [SerializeField, Min(0f)] private float walkSpeed = 3.2f;
-    [SerializeField, Min(0f)] private float sprintSpeed = 14.3f;
-    [SerializeField, Min(0f)] private float crouchSpeed = 1.7f;
-    [SerializeField, Min(0f)] private float groundAcceleration = 18f;
-    [SerializeField, Min(0f)] private float groundDeceleration = 24f;
-    [SerializeField, Range(0f, 1f)] private float airControl = 0.35f;
-    [SerializeField, Range(0f, 1f)] private float strafeSpeedMultiplier = 0.8f;
-    [SerializeField, Range(0f, 1f)] private float backwardSpeedMultiplier = 0.7f;
+    [SerializeField, Min(0f)] private float walkSpeed = 4.8f;
+    [SerializeField, Min(0f)] private float sprintSpeed = 9.2f;
+    [SerializeField, Min(0f)] private float crouchSpeed = 2.6f;
+    [SerializeField, Min(0f)] private float groundAcceleration = 42f;
+    [SerializeField, Min(0f)] private float groundDeceleration = 48f;
+    [SerializeField, Range(0f, 1f)] private float airControl = 0.45f;
+    [SerializeField, Range(0f, 1f)] private float strafeSpeedMultiplier = 0.95f;
+    [SerializeField, Range(0f, 1f)] private float backwardSpeedMultiplier = 0.82f;
 
     [Header("Stamina")]
     [SerializeField, Min(1f)] private float maximumStamina = 100f;
-    [SerializeField, Min(0f)] private float sprintStaminaDrain = 18f;
-    [SerializeField, Min(0f)] private float staminaRecovery = 22f;
+    [SerializeField, Min(0f)] private float sprintStaminaDrain = 14f;
+    [SerializeField, Min(0f)] private float staminaRecovery = 30f;
     [SerializeField, Range(0f, 1f)] private float exhaustionRecoveryThreshold = 0.2f;
 
     [Header("Jumping")]
@@ -29,13 +29,14 @@ public class PlayerController : MonoBehaviourPun
 
     [Header("Stance")]
     [SerializeField, Min(0.1f)] private float crouchHeight = 1.15f;
-    [SerializeField, Min(0f)] private float stanceTransitionSpeed = 7f;
+    [SerializeField, Min(0f)] private float stanceTransitionSpeed = 11f;
     [SerializeField] private Camera playerCamera;
     [SerializeField] private WeaponAimController aimController;
     [Header("Slide")]
     [SerializeField, Min(0f)] private float slideMinimumSpeed = 4f;
-    [SerializeField, Min(.1f)] private float slideDuration = .85f;
-    [SerializeField, Min(0f)] private float slideFriction = 4.5f;
+    [SerializeField, Min(.1f)] private float slideDuration = .95f;
+    [SerializeField, Min(0f)] private float slideSpeedBoost = 0.8f;
+    [SerializeField, Min(0f)] private float slideFriction = 7.5f;
     [SerializeField, Min(.5f)] private float slideHeight = .85f;
     [SerializeField, Min(0f)] private float slideStaminaCost = 12f;
     [SerializeField, Min(0f)] private float slideCooldown = .8f;
@@ -152,6 +153,7 @@ public class PlayerController : MonoBehaviourPun
             horizontalVelocity.magnitude < slideMinimumSpeed || stamina < slideStaminaCost) return false;
         IsSliding = true;
         slideRemaining = slideDuration;
+        horizontalVelocity += horizontalVelocity.normalized * slideSpeedBoost;
         stamina = Mathf.Max(0, stamina - slideStaminaCost);
         return true;
     }

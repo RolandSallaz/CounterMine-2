@@ -44,3 +44,9 @@ Display Name. ID должен совпадать с ID оружия. Все кл
 Живое прослушивание и сетевой тест двумя клиентами в эту проверку не входят.
 
 Звуки попаданий отключены по запросу; их клипы удалены из Assets. Искры и следы пуль сохранены.
+
+Фоновая музыка: `Assets/Resources/Audio/Music/action_loop.wav` — "Action Music
+Loop" by AppPro, CC0 via OpenGameArt
+(https://opengameart.org/content/action-music-loop). Стерео WAV 34 c,
+бесшовный цикл: `GameAudio.PlayMusic` на выделенном 2D-канале с `loop`,
+автостарт после загрузки сцены, громкость 0.35.

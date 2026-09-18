@@ -1332,10 +1332,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8450e8c1f7f42d6815d9e0e7d23b8a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomName: CounterMine-Test
+  roomPrefix: CounterMine
   maxPlayers: 16
+  maxRoomsToTry: 50
   playerPrefabResourceName: Player
   fallbackSpawnPosition: {x: 0, y: 2, z: 0}
+  autoJoinOnStart: 1
 --- !u!1 &910000001
 GameObject:
   m_ObjectHideFlags: 0

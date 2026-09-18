@@ -551,3 +551,9 @@
 "Assets/scripts/GameAudio.cs"
 "Assets/scripts/PlayerAudio.cs"
 "Assets/scripts/WeaponAudioProfile.cs"
+"Assets/scripts/RadarSkill.cs"
+
+
+"Assets/scripts/SkillSlotUI.cs"
+
+"Assets/scripts/GrenadeThrowIK.cs"
