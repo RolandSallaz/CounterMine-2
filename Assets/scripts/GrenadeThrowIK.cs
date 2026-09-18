@@ -49,6 +49,7 @@ public sealed class GrenadeThrowIK : MonoBehaviourPun
 
     public bool TryThrow()
     {
+        if (TeamSafeZone.BlocksWeapons(GetComponent<PlayerHealth>())) return false;
         if ((PhotonNetwork.InRoom && !photonView.IsMine) || playing || !CanAnimate) return false;
         var stock = GetComponent<GrenadeThrower>();
         if (stock != null && !stock.HasGrenades) return false;

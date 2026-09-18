@@ -84,6 +84,7 @@ public sealed class GrenadeThrower : MonoBehaviourPun
         ClearHand();
         // The animation also plays on remote viewers; only the owner launches.
         if (!IsOwner) return;
+        if (TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(handPos)) return;
         if (health != null && health.IsDead) return;
         if (grenades <= 0) return;
         double now = Now;
@@ -110,6 +111,7 @@ public sealed class GrenadeThrower : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient || info.Sender == null ||
             info.Sender.ActorNumber != photonView.OwnerActorNr) return;
+        if (health == null || health.IsDead || TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(start)) return;
         double now = PhotonNetwork.Time;
         if (!BulletHitUtility.IsFinite(start) || !BulletHitUtility.IsFinite(velocity)) return;
         if (velocity.sqrMagnitude > 25f * 25f) return;

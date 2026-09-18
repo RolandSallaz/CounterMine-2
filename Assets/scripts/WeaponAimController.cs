@@ -101,7 +101,8 @@ public sealed class WeaponAimController : MonoBehaviour
             (weaponAnimation == null || !weaponAnimation.IsPlayingAction) ? sprintFovBoost : 0f;
         sprintFov = Mathf.Lerp(sprintFov, targetSprintFov, 1f - Mathf.Exp(-10f * deltaTime));
         if (playerCamera != null)
-            playerCamera.fieldOfView = Mathf.Lerp(restFieldOfView + sprintFov, hasAlignment ? alignmentFov : restFieldOfView, AimAmount);
+            playerCamera.fieldOfView = Mathf.Lerp(restFieldOfView + sprintFov, hasAlignment ? alignmentFov : restFieldOfView, AimAmount)
+                + (cameraLook != null ? cameraLook.ExplosionFovOffset : 0f);
     }
     private bool TryCalculateAlignment(WeaponSight sight, out Vector3 position, out Quaternion rotation)
     {

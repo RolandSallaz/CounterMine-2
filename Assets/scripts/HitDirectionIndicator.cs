@@ -11,6 +11,8 @@ public sealed class HitDirectionIndicator : MonoBehaviour
         public RectTransform root;
         public CanvasGroup group;
         public float age = float.PositiveInfinity;
+        public Vector3 worldDirection;
+        public Transform view;
     }
 
     [SerializeField, Min(1)] private int segmentCount = 5;
@@ -71,13 +73,13 @@ public sealed class HitDirectionIndicator : MonoBehaviour
             arrow.anchorMin = arrow.anchorMax = new Vector2(.5f, 1f);
             arrow.pivot = new Vector2(.5f, .5f);
             arrow.anchoredPosition = new Vector2(0f, -26f);
-            arrow.sizeDelta = new Vector2(44f, 36f);
+            arrow.sizeDelta = new Vector2(84f, 30f);
             var graphic = arrowGo.GetComponent<HitDirectionArrow>();
             graphic.color = new Color(1f, .22f, .18f);
             graphic.raycastTarget = false;
             var outline = arrowGo.AddComponent<Outline>();
             outline.effectColor = new Color(0f, 0f, 0f, .9f);
-            outline.effectDistance = new Vector2(2f, -2f);
+            outline.effectDistance = new Vector2(1f, -1f);
             rootGo.SetActive(false);
             segments.Add(new Segment { root = root, group = group });
         }
@@ -91,9 +93,35 @@ public sealed class HitDirectionIndicator : MonoBehaviour
         foreach (var segment in segments)
             if (segment.age > oldest.age) oldest = segment;
         oldest.age = 0f;
+        oldest.view = null;
         oldest.root.gameObject.SetActive(true);
         oldest.root.localRotation = Quaternion.Euler(0f, 0f, -angleDegrees);
         oldest.group.alpha = 1f;
+    }
+
+    public void Show(Vector3 source, Transform player, Transform view)
+    {
+        Vector3 direction = source - player.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < .000001f || segments.Count == 0) return;
+        Segment oldest = segments[0];
+        foreach (var segment in segments)
+            if (segment.age > oldest.age) oldest = segment;
+        Show(0f);
+        oldest.worldDirection = direction.normalized;
+        oldest.view = view;
+        UpdateDirection(oldest);
+    }
+
+    private static void UpdateDirection(Segment segment)
+    {
+        if (segment.view == null) return;
+        // Camera right remains horizontal even when looking straight up/down.
+        Vector3 forward = Vector3.Cross(segment.view.right, Vector3.up);
+        forward.y = 0f;
+        if (forward.sqrMagnitude < .000001f) return;
+        float angle = Vector3.SignedAngle(forward, segment.worldDirection, Vector3.up);
+        segment.root.localRotation = Quaternion.Euler(0f, 0f, -angle);
     }
 
     public void Clear()
@@ -105,99 +133,17 @@ public sealed class HitDirectionIndicator : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         float duration = Mathf.Max(.01f, lifetime);
         foreach (var segment in segments)
         {
             if (segment.age == float.PositiveInfinity || segment.root == null || !segment.root.gameObject.activeSelf) continue;
+            UpdateDirection(segment);
             segment.age += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(segment.age / duration);
             segment.group.alpha = t < .35f ? 1f : 1f - (t - .35f) / .65f;
             if (t >= 1f) segment.root.gameObject.SetActive(false);
         }
-    }
-}
-
-/// <summary>Solid upward triangle used as the hit direction arrow. Vector-drawn so it
-/// never depends on a font glyph.</summary>
-public sealed class HitDirectionArrow : MaskableGraphic
-{
-    protected override void OnPopulateMesh(VertexHelper mesh)
-    {
-        mesh.Clear();
-        Rect rect = rectTransform.rect;
-        float half = Mathf.Min(rect.width, rect.height) * .5f;
-        if (half <= 0f) return;
-        mesh.AddVert(new Vector2(0f, half), color, Vector2.zero);
-        mesh.AddVert(new Vector2(-half * .85f, -half * .7f), color, Vector2.zero);
-        mesh.AddVert(new Vector2(half * .85f, -half * .7f), color, Vector2.zero);
-        mesh.AddTriangle(0, 1, 2);
-    }
-}
-
-/// <summary>Persistent threat arrow around the crosshair: tracks one danger point
-/// (nearest live grenade) until hidden. Built in code.</summary>
-public sealed class ThreatArrow : MonoBehaviour
-{
-    private RectTransform root;
-    private CanvasGroup group;
-
-    private void Awake()
-    {
-        if (root != null) return;
-        // Prefab-authored instance: collect own components.
-        root = (RectTransform)transform;
-        group = GetComponent<CanvasGroup>();
-    }
-    public static ThreatArrow Create(Transform parent, Color color)
-    {
-        var go = new GameObject("Threat Arrow", typeof(RectTransform));
-        go.transform.SetParent(parent, false);
-        var root = (RectTransform)go.transform;
-        root.anchorMin = root.anchorMax = new Vector2(.5f, .5f);
-        root.pivot = new Vector2(.5f, .5f);
-        root.anchoredPosition = Vector2.zero;
-        root.sizeDelta = new Vector2(240f, 240f);
-        var group = go.AddComponent<CanvasGroup>();
-        group.alpha = 0f;
-        group.blocksRaycasts = false;
-        var arrowGo = new GameObject("Arrow", typeof(RectTransform), typeof(HitDirectionArrow));
-        arrowGo.transform.SetParent(go.transform, false);
-        var arrow = (RectTransform)arrowGo.transform;
-        arrow.anchorMin = arrow.anchorMax = new Vector2(.5f, 1f);
-        arrow.pivot = new Vector2(.5f, .5f);
-        arrow.anchoredPosition = new Vector2(0f, -26f);
-        arrow.sizeDelta = new Vector2(44f, 36f);
-        var graphic = arrowGo.GetComponent<HitDirectionArrow>();
-        graphic.color = color;
-        graphic.raycastTarget = false;
-        var outline = arrowGo.AddComponent<Outline>();
-        outline.effectColor = new Color(0f, 0f, 0f, .9f);
-        outline.effectDistance = new Vector2(2f, -2f);
-        go.SetActive(false);
-        var threat = go.AddComponent<ThreatArrow>();
-        threat.root = root;
-        threat.group = group;
-        return threat;
-    }
-
-    /// <summary>Points at the threat. Angle 0 = ahead, positive = right.</summary>
-    public void PointAt(float angleDegrees)
-    {
-        if (root == null)
-        {
-            // Prefab instance starts disabled: activating runs Awake, which collects components.
-            gameObject.SetActive(true);
-            if (root == null) return;
-        }
-        root.gameObject.SetActive(true);
-        root.localRotation = Quaternion.Euler(0f, 0f, -angleDegrees);
-        if (group != null) group.alpha = 1f;
-    }
-
-    public void Hide()
-    {
-        if (root != null) root.gameObject.SetActive(false);
     }
 }

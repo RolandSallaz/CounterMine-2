@@ -4,8 +4,10 @@ using UnityEngine;
 public static class BulletHitUtility
 {
     private static readonly RaycastHit[] CoverHits = new RaycastHit[64];
-    public static Hit CastCover(Vector3 origin, Vector3 direction, float range, Transform shooter, LayerMask mask, bool includeCharacters = false)
+    public static Hit CastCover(Vector3 origin, Vector3 direction, float range, Transform shooter, LayerMask mask, bool includeCharacters = false, int sourceTeam = 0)
     {
+        var shooterHealth = shooter != null ? shooter.GetComponentInParent<PlayerHealth>() : null;
+        if (shooterHealth != null) sourceTeam = BotController.TeamOf(shooterHealth);
         direction.Normalize();
         var result = new Hit { point = origin + direction * range, normal = -direction };
         int count = Physics.RaycastNonAlloc(origin, direction, CoverHits, range, mask, QueryTriggerInteraction.Ignore);
@@ -20,6 +22,8 @@ public static class BulletHitUtility
         for (int i = 0; i < count; i++)
         {
             var hit = hits[i];
+            var zone = hit.collider.GetComponent<TeamSafeZone>();
+            if (zone != null && (!zone.isActiveAndEnabled || zone.Team == sourceTeam)) continue;
             if (hit.distance >= nearest || (shooter != null && hit.transform.IsChildOf(shooter)) || (!includeCharacters && hit.collider.GetComponentInParent<PlayerHealth>() != null)) continue;
             nearest = hit.distance;
             result = new Hit { point = hit.point, normal = hit.normal, didHit = true };
@@ -49,6 +53,8 @@ public static class BulletHitUtility
         {
             if (player == null || player.transform == shooter || player.IsDead || !player.isActiveAndEnabled) continue;
             if ((mask.value & (1 << player.gameObject.layer)) == 0) continue;
+            var source = shooter != null ? shooter.GetComponentInParent<PlayerHealth>() : null;
+            if (TeamSafeZone.Protects(player, source != null ? BotController.TeamOf(source) : 0)) continue;
             var boxes = player.Hitboxes;
             if (boxes != null && boxes.Ready)
             {

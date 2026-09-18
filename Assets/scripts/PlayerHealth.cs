@@ -58,6 +58,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     }
     /// <summary>Latest fresh damage snapshot on this instance (for local hit feedback).</summary>
     public DamageInfo LastDamage { get; private set; }
+    public event Action<DamageInfo> Damaged;
     public static readonly HashSet<PlayerHealth> ActivePlayers = new HashSet<PlayerHealth>();
     [SerializeField, Min(1)] private int maximumHealth = 100;
     [SerializeField] private PlayerDeathController deathController;
@@ -98,7 +99,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     }
     public override void OnEnable() { base.OnEnable(); ActivePlayers.Add(this); SpawnedAt = Time.unscaledTime; }
     public override void OnDisable() { ActivePlayers.Remove(this); base.OnDisable(); }
-    private void Start() { registeredViewId = photonView.ViewID; lastDamageTime = NetworkTime; ReadSnapshot(); Record(NetworkTime); }
+    private void Start() { registeredViewId = photonView.ViewID; lastDamageTime = NetworkTime; ReadSnapshot(); snapshotSeen = true; Record(NetworkTime); }
     private void LateUpdate() => Record(NetworkTime);
 
     private void Update()
@@ -164,6 +165,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point, Player killer = null, int killerBotViewId = 0, string weaponId = "")
     {
         if ((PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || IsDead || amount <= 0) return;
+        if (TeamSafeZone.Protects(this, TeamSafeZone.AttackerTeam(killer, killerBotViewId))) return;
         int nextHealth = Mathf.Max(0, CurrentHealth - amount);
         int nextRevision = revision + 1;
         int killerActorNr = killer != null ? killer.ActorNumber : -1;
@@ -203,7 +205,11 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         snapshotSeen = true;
         CurrentHealth = Mathf.Clamp(hp, 0, maximumHealth);
         int taken = previousHealth - CurrentHealth;
-        if (taken > 0 && fresh) LastDamage = new DamageInfo(this, taken, force, point, killerActorNr, killerBotViewId);
+        if (taken > 0 && fresh)
+        {
+            LastDamage = new DamageInfo(this, taken, force, point, killerActorNr, killerBotViewId);
+            try { Damaged?.Invoke(LastDamage); } catch (Exception e) { Debug.LogException(e); }
+        }
         if (CurrentHealth == 0 && wasAlive)
         {
             try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId, weaponId)); } catch (Exception e) { Debug.LogException(e); }

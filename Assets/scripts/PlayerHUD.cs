@@ -46,8 +46,8 @@ public sealed class PlayerHUD : MonoBehaviour
     private PlayerRagdollController ragdoll;
     private WeaponAmmo ammo;
     private GrenadeThrower grenades;
-    private int lastHealth = -1;
-    private float damageFlash, refreshAt;
+    private float refreshAt;
+    private HealthScreenEffect healthScreenEffect;
     private Rect previousSafeArea;
     private Camera playerCam;
     private Canvas hudCanvas;
@@ -56,12 +56,17 @@ public sealed class PlayerHUD : MonoBehaviour
     private static readonly Vector2[] Directions = { Vector2.left, Vector2.right, Vector2.up, Vector2.down };
     public void Bind(PlayerHealth player)
     {
+        if (health != null) health.Damaged -= ShowHitDirection;
         health=player;animationSource=player.GetComponentInChildren<WeaponIdleSynchronizer>(true);
+        if (isActiveAndEnabled) health.Damaged += ShowHitDirection;
         aim=player.GetComponentInChildren<WeaponAimController>(true);recoil=player.GetComponentInChildren<WeaponRecoilController>(true);
         movement=player.GetComponent<PlayerController>();ragdoll=player.GetComponent<PlayerRagdollController>();
         ammo=player.GetComponent<WeaponAmmo>();
         grenades=player.GetComponent<GrenadeThrower>();
         playerCam=player.GetComponentInChildren<Camera>(true);hudCanvas=GetComponent<Canvas>();
+        if (healthScreenEffect == null && hudCanvas != null) healthScreenEffect = HealthScreenEffect.Create(hudCanvas.transform);
+        if (healthScreenEffect != null) healthScreenEffect.Clear();
+        if (damageOverlay != null) damageOverlay.gameObject.SetActive(false);
         if (hitDirection == null && hudCanvas != null) hitDirection = HitDirectionIndicator.Create(hudCanvas.transform);
         if (threatArrow == null && hudCanvas != null) threatArrow = ThreatArrow.Create(hudCanvas.transform, new Color(1f, .6f, .1f));
         if(crosshairArms!=null&&crosshairArms.Length>0)
@@ -85,10 +90,15 @@ public sealed class PlayerHUD : MonoBehaviour
     private void OnEnable()
     {
         PlayerHealth.OnKilled += HandleKillfeedKill;
+        if (health != null) health.Damaged += ShowHitDirection;
     }
     private void OnDisable()
     {
         PlayerHealth.OnKilled -= HandleKillfeedKill;
+        if (health != null) health.Damaged -= ShowHitDirection;
+        if (hitDirection != null) hitDirection.Clear();
+        if (threatArrow != null) threatArrow.Hide();
+        if (healthScreenEffect != null) healthScreenEffect.Clear();
         foreach (var entry in killfeedEntries) if (entry != null) Destroy(entry);
         killfeedEntries.Clear();
     }
@@ -106,9 +116,12 @@ public sealed class PlayerHUD : MonoBehaviour
     /// <summary>Hit direction wheel: a red arrow around the crosshair points at the attacker. Purely local.</summary>
     private void ShowHitDirection(PlayerHealth.DamageInfo info)
     {
-        if (health == null || info.victim == null || info.victim != health || hitDirection == null) return;
+        if (health == null || info.victim == null || info.victim != health) return;
+        if (PhotonNetwork.InRoom && !health.photonView.IsMine) return;
+        if (healthScreenEffect != null) healthScreenEffect.Wound((float)info.amount / Mathf.Max(1, health.MaximumHealth));
+        if (hitDirection == null) return;
         if (!TryAttackerPosition(info, out Vector3 attackerPos)) return;
-        if (TryScreenAngle(attackerPos, out float angle)) hitDirection.Show(angle);
+        hitDirection.Show(attackerPos, health.transform, playerCam != null ? playerCam.transform : health.transform);
     }
 
     /// <summary>Screen angle to a world point. 0 = ahead, positive = right.</summary>
@@ -119,7 +132,7 @@ public sealed class PlayerHUD : MonoBehaviour
         Vector3 toTarget = worldPos - health.transform.position; toTarget.y = 0f;
         if (toTarget.sqrMagnitude < .01f) return false;
         Transform view = playerCam != null ? playerCam.transform : health.transform;
-        Vector3 forward = view.forward; forward.y = 0f;
+        Vector3 forward = Vector3.Cross(view.right, Vector3.up); forward.y = 0f;
         if (forward.sqrMagnitude < .000001f) { forward = health.transform.forward; forward.y = 0f; }
         if (forward.sqrMagnitude < .000001f) return false;
         angle = Vector3.SignedAngle(forward.normalized, toTarget.normalized, Vector3.up);
@@ -151,6 +164,13 @@ public sealed class PlayerHUD : MonoBehaviour
     private bool TryAttackerPosition(PlayerHealth.DamageInfo info, out Vector3 attackerPos)
     {
         attackerPos = Vector3.zero;
+        // The impulse describes the actual incoming hit, including a grenade blast.
+        Vector3 incoming = -info.force; incoming.y = 0f;
+        if (incoming.sqrMagnitude > .000001f)
+        {
+            attackerPos = health.transform.position + incoming.normalized * 10f;
+            return true;
+        }
         if (info.killerBotViewId > 0)
         {
             var botView = PhotonView.Find(info.killerBotViewId);
@@ -167,9 +187,6 @@ public sealed class PlayerHUD : MonoBehaviour
                 return true;
             }
         }
-        // Fallback: bullet force points from the shooter to the victim.
-        Vector3 back = -info.force; back.y = 0f;
-        if (back.sqrMagnitude > .000001f) { attackerPos = health.transform.position + back.normalized * 10f; return true; }
         return false;
     }
 
@@ -281,10 +298,9 @@ public sealed class PlayerHUD : MonoBehaviour
     }
     private void Update()
     {
-        if(health==null)return;
+        if(health==null){if(healthScreenEffect!=null)healthScreenEffect.Clear();return;}
         if(PhotonNetwork.InRoom&&!health.photonView.IsMine){gameObject.SetActive(false);return;}
-        if(lastHealth>=0&&health.CurrentHealth<lastHealth){damageFlash=.65f;ShowHitDirection(health.LastDamage);}
-        lastHealth=health.CurrentHealth;damageFlash=Mathf.MoveTowards(damageFlash,0,Time.unscaledDeltaTime*1.4f);damageOverlay.alpha=damageFlash;
+        if (healthScreenEffect != null) healthScreenEffect.Tick((float)health.CurrentHealth / Mathf.Max(1, health.MaximumHealth), health.IsDead, Time.unscaledDeltaTime);
         if(Time.unscaledTime>=refreshAt){refreshAt=Time.unscaledTime+.1f;Refresh();}
         RefreshStamina();
         RefreshRadar();

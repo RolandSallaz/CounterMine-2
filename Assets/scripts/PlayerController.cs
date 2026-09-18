@@ -172,7 +172,12 @@ public class PlayerController : MonoBehaviourPun
         Vector3 bottom = transform.position + transform.up * (controller.height - radius);
         Vector3 top = transform.position + transform.up * (standingHeight - radius);
         int count = Physics.OverlapCapsuleNonAlloc(bottom, top, radius, headroom, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        for (int i = 0; i < count; i++) if (!headroom[i].transform.IsChildOf(transform)) return false;
+        for (int i = 0; i < count; i++)
+        {
+            var zone = headroom[i].GetComponent<TeamSafeZone>();
+            if (zone != null && zone.Team == BotController.TeamOf(GetComponent<PlayerHealth>())) continue;
+            if (!headroom[i].transform.IsChildOf(transform)) return false;
+        }
         return count < headroom.Length;
     }
 

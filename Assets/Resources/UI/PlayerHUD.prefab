@@ -3479,7 +3479,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_SizeDelta: {x: 84, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7160000000000000000
 CanvasRenderer:
@@ -3498,7 +3498,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7140000000000000000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
   m_Material: {fileID: 0}
@@ -3609,7 +3609,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_SizeDelta: {x: 84, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7160000000000000001
 CanvasRenderer:
@@ -3628,7 +3628,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7140000000000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
   m_Material: {fileID: 0}
@@ -3739,7 +3739,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_SizeDelta: {x: 84, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7160000000000000002
 CanvasRenderer:
@@ -3758,7 +3758,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7140000000000000002}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
   m_Material: {fileID: 0}
@@ -3869,7 +3869,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_SizeDelta: {x: 84, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7160000000000000003
 CanvasRenderer:
@@ -3888,7 +3888,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7140000000000000003}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
   m_Material: {fileID: 0}
@@ -3999,7 +3999,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_SizeDelta: {x: 84, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7160000000000000004
 CanvasRenderer:
@@ -4018,7 +4018,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7140000000000000004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
   m_Material: {fileID: 0}
@@ -4159,7 +4159,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 240, y: 240}
+  m_SizeDelta: {x: 336, y: 336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &7400000000000000003
 CanvasGroup:
@@ -4182,7 +4182,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7400000000000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a58b4eaf8a8474d949e3651a3492358, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ThreatArrow
 --- !u!1 &7450000000000000001
@@ -4220,8 +4220,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -26}
-  m_SizeDelta: {x: 44, y: 36}
+  m_AnchoredPosition: {x: 0, y: -10}
+  m_SizeDelta: {x: 28, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7450000000000000003
 CanvasRenderer:
@@ -4240,9 +4240,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7450000000000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a62695f52181094d801931340ae8de2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f7a26203be7422cb4cf33a28ba7a6fb, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::HitDirectionArrow
+  style: 1
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.6, b: 0.1, a: 1}
   m_RaycastTarget: 0
