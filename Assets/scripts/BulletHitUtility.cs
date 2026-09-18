@@ -49,12 +49,13 @@ public static class BulletHitUtility
         direction.Normalize();
         var result = CastCover(origin, direction, range, shooter, mask);
         float nearest = result.didHit ? Vector3.Distance(origin, result.point) : range;
+        var source = shooter != null ? shooter.GetComponentInParent<PlayerHealth>() : null;
+        int sourceTeam = source != null ? BotController.TeamOf(source) : 0;
         foreach (var player in PlayerHealth.ActivePlayers)
         {
             if (player == null || player.transform == shooter || player.IsDead || !player.isActiveAndEnabled) continue;
             if ((mask.value & (1 << player.gameObject.layer)) == 0) continue;
-            var source = shooter != null ? shooter.GetComponentInParent<PlayerHealth>() : null;
-            if (TeamSafeZone.Protects(player, source != null ? BotController.TeamOf(source) : 0)) continue;
+            if (TeamSafeZone.Protects(player, sourceTeam)) continue;
             var boxes = player.Hitboxes;
             if (boxes != null && boxes.Ready)
             {

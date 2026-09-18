@@ -111,6 +111,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
         if (!photonView.IsMine || (PhotonNetwork.InRoom && photonView.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber) ||
             playerCamera == null || muzzle == null || (health != null && health.IsDead) || lastLocalShotFrame == Time.frameCount) return false;
+        if (TeamSafeZone.ContainsAny(playerCamera.transform.position) || TeamSafeZone.ContainsAny(muzzle.position)) return false;
         lastLocalShotFrame = Time.frameCount;
         int sequence = ++nextSequence;
         double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;

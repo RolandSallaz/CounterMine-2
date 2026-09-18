@@ -122,7 +122,7 @@ public sealed class BotController : MonoBehaviourPun
                 targetVisible = BulletHitUtility.Cast(eye, direction, 40f, transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == target;
             }
             bool visible = targetVisible;
-            if (flat.magnitude > (visible ? 9f : 2f))
+            if (flat.magnitude > (visible ? 9f : 2f) || TeamSafeZone.BlocksWeapons(health))
             {
                 moveDirection = flat.normalized;
                 // Distant chase: sprint to close the gap, slow down for strafe and fire range.
@@ -234,6 +234,7 @@ public sealed class BotController : MonoBehaviourPun
             Vector3 probe = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * distance;
             if (!Physics.Raycast(probe + Vector3.up * 5f, Vector3.down, out var ground, 20f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) || ground.normal.y < .7f) continue;
             Vector3 candidate = ground.point + Vector3.up * .08f;
+            if (TeamSafeZone.IsEnemyArea(candidate, Team)) continue;
             if (Physics.CheckCapsule(candidate + Vector3.up * .3f, candidate + Vector3.up * 1.5f, .26f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
             // Skip points behind walls: the bot should be able to walk there in a straight line.
             Vector3 toCandidate = candidate - transform.position; toCandidate.y = 0;

@@ -458,7 +458,7 @@ public sealed class PlayerHUD : MonoBehaviour
             else{grenadeLabel.text="G x"+grenades.Grenades;grenadeLabel.color=grenades.Grenades<=0?danger:Color.white;}
         }
         bool dead=health.IsDead;bool rag=ragdoll!=null&&ragdoll.IsRagdoll;bool action=animationSource!=null&&animationSource.IsPlayingAction;
-        weaponState.text=dead?"OFFLINE":rag?"RAGDOLL":action?"BUSY":"READY";
+        weaponState.text=dead?"OFFLINE":TeamSafeZone.BlocksWeapons(health)?"SAFE ZONE":rag?"RAGDOLL":action?"BUSY":"READY";
         actionLabel.text=animationSource!=null&&animationSource.ActionId=="reload"?"RELOADING":"EQUIPPING";
         deathLabel.gameObject.SetActive(dead);deathLabel.text="ELIMINATED";
         connection.text=PhotonNetwork.InRoom?"LIVE  /  "+PhotonNetwork.GetPing()+" MS":"LOCAL";

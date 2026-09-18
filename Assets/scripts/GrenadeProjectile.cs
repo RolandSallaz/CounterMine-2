@@ -20,6 +20,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
     private Vector3 position, velocity;
     private double throwTime;
     private Player killer;
+    private int sourceTeam;
     private int seed;
     private bool authority;
     private GameObject visual;
@@ -28,7 +29,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
 
     private void OnDestroy() => Active.Remove(this);
 
-    public static void Launch(Vector3 start, Vector3 velocity, double throwTime, Player killer, int seed)
+    public static void Launch(Vector3 start, Vector3 velocity, double throwTime, Player killer, int seed, int team = 0)
     {
         var go = new GameObject("Grenade");
         go.transform.position = start;
@@ -37,6 +38,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
         projectile.velocity = velocity;
         projectile.throwTime = throwTime;
         projectile.killer = killer;
+        projectile.sourceTeam = killer != null ? TeamSafeZone.AttackerTeam(killer) : team;
         projectile.seed = seed;
         projectile.authority = !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
         Active.Add(projectile);
@@ -89,25 +91,25 @@ public sealed class GrenadeProjectile : MonoBehaviour
         else transform.position = position;
     }
 
-    private static bool CastWorld(Vector3 origin, Vector3 direction, float distance,
+    private bool CastWorld(Vector3 origin, Vector3 direction, float distance,
         out Vector3 point, out Vector3 normal)
     {
         // The shared query handles saturated hit buffers without dropping nearby walls.
-        var hit = BulletHitUtility.CastCover(origin, direction, distance, null, ~0);
+        var hit = BulletHitUtility.CastCover(origin, direction, distance, null, ~0, sourceTeam: sourceTeam);
         point = hit.point;
         normal = hit.normal;
         return hit.didHit;
     }
 
-    public static bool IsBlastBlocked(Vector3 origin, Vector3 target)
+    public static bool IsBlastBlocked(Vector3 origin, Vector3 target, int sourceTeam = 0)
     {
         Vector3 delta = target - origin;
         float distance = delta.magnitude;
         if (distance <= .001f) return false;
         Vector3 direction = delta / distance;
         // Reverse cast catches one-sided meshes and explosions originating inside solid cover.
-        return BulletHitUtility.CastCover(origin, direction, distance, null, ~0).didHit ||
-            BulletHitUtility.CastCover(target, -direction, distance, null, ~0).didHit;
+        return BulletHitUtility.CastCover(origin, direction, distance, null, ~0, sourceTeam: sourceTeam).didHit ||
+            BulletHitUtility.CastCover(target, -direction, distance, null, ~0, sourceTeam: sourceTeam).didHit;
     }
 
     private void Explode()
@@ -139,7 +141,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
                 !BotController.IsBot(victim) && victim.photonView.OwnerActorNr == killer.ActorNumber;
             // Own grenade always hurts its thrower; other teammates are still spared.
             if (!isThrower && throwerTeam != 0 && victimTeam != 0 && throwerTeam == victimTeam) continue;
-            if (IsBlastBlocked(blastOrigin, chest)) continue;
+            if (TeamSafeZone.Protects(victim, sourceTeam) || IsBlastBlocked(blastOrigin, chest, sourceTeam)) continue;
             float fullRadius = BlastRadius * FullDamageFraction;
             float fall = distance <= fullRadius ? 1f
                 : 1f - (distance - fullRadius) / (BlastRadius - fullRadius);

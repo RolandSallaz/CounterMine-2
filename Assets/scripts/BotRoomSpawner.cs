@@ -49,6 +49,7 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
                 Vector3 probe = origin + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * (5f + attempt * .4f);
                 if (!Physics.Raycast(probe + Vector3.up * 5f, Vector3.down, out var ground, 20f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) || ground.normal.y < .7f) continue;
                 Vector3 position = ground.point + Vector3.up * .08f;
+                if (TeamSafeZone.IsEnemyArea(position, team)) continue;
                 if (Physics.CheckCapsule(position + Vector3.up * .3f, position + Vector3.up * 1.5f, .26f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
                 PhotonNetwork.InstantiateRoomObject("Bot", position, Quaternion.Euler(0, slot * 60, 0), 0, new object[] { slot, team });
                 break;

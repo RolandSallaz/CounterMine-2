@@ -101,7 +101,7 @@ public sealed class GrenadeThrower : MonoBehaviourPun
             int seed = Random.Range(0, int.MaxValue);
             GrenadeProjectile.Launch(start, velocity, now, photonView.Owner, seed);
             if (PhotonNetwork.InRoom)
-                photonView.RPC(nameof(BroadcastGrenade), RpcTarget.Others, start, velocity, now, seed);
+                photonView.RPC(nameof(BroadcastGrenade), RpcTarget.Others, start, velocity, now, seed, TeamSafeZone.AttackerTeam(photonView.Owner));
             return;
         }
         photonView.RPC(nameof(RequestGrenade), RpcTarget.MasterClient, start, velocity);
@@ -118,13 +118,13 @@ public sealed class GrenadeThrower : MonoBehaviourPun
         if (Vector3.Distance(start, transform.position) > 4f) return;
         int seed = Random.Range(0, int.MaxValue);
         GrenadeProjectile.Launch(start, velocity, now, photonView.Owner, seed);
-        photonView.RPC(nameof(BroadcastGrenade), RpcTarget.Others, start, velocity, now, seed);
+        photonView.RPC(nameof(BroadcastGrenade), RpcTarget.Others, start, velocity, now, seed, TeamSafeZone.AttackerTeam(photonView.Owner));
     }
     [PunRPC]
-    private void BroadcastGrenade(Vector3 start, Vector3 velocity, double throwTime, int seed, PhotonMessageInfo info)
+    private void BroadcastGrenade(Vector3 start, Vector3 velocity, double throwTime, int seed, int sourceTeam, PhotonMessageInfo info)
     {
         if (info.Sender == null || !info.Sender.IsMasterClient) return;
         if (!BulletHitUtility.IsFinite(start) || !BulletHitUtility.IsFinite(velocity)) return;
-        GrenadeProjectile.Launch(start, velocity, throwTime, null, seed);
+        GrenadeProjectile.Launch(start, velocity, throwTime, null, seed, sourceTeam);
     }
 }

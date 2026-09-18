@@ -23,6 +23,8 @@ public sealed class TeamSafeZone : MonoBehaviour
     {
         box = GetComponent<BoxCollider>();
         box.isTrigger = false;
+        // Ignore generic ground/placement probes; weapon queries explicitly include all layers.
+        gameObject.layer = 2;
         var material = Resources.Load<Material>("VFX/SafeZoneBarrier");
         if (material == null) return;
         visual = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -66,13 +68,18 @@ public sealed class TeamSafeZone : MonoBehaviour
             }
             if (controller == null || !controller.enabled) continue;
             bool friendly = BotController.TeamOf(player) == team;
-            if (Physics.GetIgnoreCollision(box, controller) != friendly)
-                Physics.IgnoreCollision(box, controller, friendly);
+            SetPassage(controller, friendly);
         }
         stale.Clear();
         foreach (var pair in players)
             if (pair.Key == null || !PlayerHealth.ActivePlayers.Contains(pair.Key)) stale.Add(pair.Key);
         foreach (var player in stale) players.Remove(player);
+    }
+
+    private void SetPassage(CharacterController controller, bool friendly)
+    {
+        if (Physics.GetIgnoreCollision(box, controller) != friendly)
+            Physics.IgnoreCollision(box, controller, friendly);
     }
 
     private void OnDisable()
@@ -94,6 +101,13 @@ public sealed class TeamSafeZone : MonoBehaviour
     public static bool ContainsAny(Vector3 point)
     {
         foreach (var zone in Active) if (zone != null && zone.Contains(point)) return true;
+        return false;
+    }
+
+    public static bool IsEnemyArea(Vector3 point, int visitorTeam)
+    {
+        foreach (var zone in Active)
+            if (zone != null && zone.team != visitorTeam && zone.Contains(point)) return true;
         return false;
     }
 
