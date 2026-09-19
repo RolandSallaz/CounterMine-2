@@ -53,7 +53,7 @@ public sealed class SkillSlotUI : MonoBehaviour
     private static Text Label(Transform parent, string name, Vector2 position, Vector2 size, int fontSize)
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(Text)); go.transform.SetParent(parent, false);
-        var text = go.GetComponent<Text>(); text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var text = go.GetComponent<Text>(); text.font = GameUIStyle.Font;
         text.fontSize = fontSize; text.alignment = TextAnchor.MiddleCenter; text.raycastTarget = false;
         text.rectTransform.anchoredPosition = position; text.rectTransform.sizeDelta = size;
         return text;

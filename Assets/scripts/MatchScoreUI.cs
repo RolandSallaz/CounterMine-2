@@ -33,8 +33,10 @@ public sealed class MatchScoreUI : MonoBehaviour
     private void Awake()
     {
         KillRewards.EnsureSubscribed();
-        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        panel = Rect("Scoreboard", transform, new Vector2(.13f, .16f), new Vector2(.87f, .85f));
+        font = GameUIStyle.Font;
+        var hud = GetComponent<PlayerHUD>();
+        Transform content = hud != null ? hud.ContentRoot : transform;
+        panel = Rect("Scoreboard", content, new Vector2(.13f, .16f), new Vector2(.87f, .85f));
         var bg = panel.gameObject.AddComponent<Image>();
         bg.color = new Color(.018f, .027f, .039f, .96f); bg.raycastTarget = false;
         var border = panel.gameObject.AddComponent<Outline>();
@@ -55,7 +57,7 @@ public sealed class MatchScoreUI : MonoBehaviour
         footer.rectTransform.anchorMax = new Vector2(.98f, 0);
         footer.rectTransform.anchoredPosition = new Vector2(0, 28);
         panel.gameObject.SetActive(false);
-        toastRoot = Rect("Reward Notifications", transform, new Vector2(.5f, .14f), new Vector2(.5f, .14f));
+        toastRoot = Rect("Reward Notifications", content, new Vector2(.5f, .14f), new Vector2(.5f, .14f));
         toastRoot.sizeDelta = new Vector2(340, 0);
     }
     private static RectTransform Rect(string name, Transform parent, Vector2 min, Vector2 max)

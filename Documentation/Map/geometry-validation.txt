@@ -1,0 +1,2 @@
+PASS: analytical oriented-box checks: 2373 upper-route samples; two 60 m sightlines; both cargo aisles with 0.5 m width; both 6 m to 3.5 m roof exits.
+Not a live Unity physics or player movement test.

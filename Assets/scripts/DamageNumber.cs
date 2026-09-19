@@ -26,8 +26,7 @@ public sealed class DamageNumber : MonoBehaviour
         if (viewCamera == null || !viewCamera.isActiveAndEnabled) viewCamera = FindViewCamera();
         if (cachedFont == null)
         {
-            cachedFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (cachedFont == null) cachedFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            cachedFont = GameUIStyle.Font;
             if (cachedFont == null) return;
         }
         DamageNumber number = null;

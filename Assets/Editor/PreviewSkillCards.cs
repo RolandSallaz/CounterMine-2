@@ -6,14 +6,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[InitializeOnLoad]
 public static class PreviewSkillCards
 {
-    static PreviewSkillCards() => EditorApplication.delayCall += Auto;
-    private static void Auto()
-    {
-        if (!EditorApplication.isPlayingOrWillChangePlaymode && !File.Exists("Documentation/Character/skill_cards_preview.png")) Run();
-    }
     [MenuItem("Tools/CounterMine/Preview Skill Cards")]
     public static void Run()
     {
@@ -28,7 +22,7 @@ public static class PreviewSkillCards
             // Preview uses explicit state without connecting to a room or modifying player progress.
             for (int i = 0; i < 3; i++)
             {
-                var card = SkillSlotUI.Create(hud.transform, i);
+                var card = SkillSlotUI.Create(hud.GetComponent<PlayerHUD>().ContentRoot, i);
                 card.SetState(i == 0, i == 0 ? 2 : 0, 0, false);
                 typeof(SkillSlotUI).GetField("displayed", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(card, i == 0 ? .4f : 0);
                 typeof(SkillSlotUI).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(card, null);

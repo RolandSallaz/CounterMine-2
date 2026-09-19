@@ -1,0 +1,2450 @@
+[
+  {
+    "name": "Bridge deck",
+    "pos": [
+      -8.6,
+      5.825,
+      0
+    ],
+    "size": [
+      9.2,
+      0.35,
+      3.8
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge deck",
+    "pos": [
+      8.6,
+      5.825,
+      0
+    ],
+    "size": [
+      9.2,
+      0.35,
+      3.8
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Central overlook",
+    "pos": [
+      0,
+      5.825,
+      0
+    ],
+    "size": [
+      8,
+      0.35,
+      8
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha approach ramp",
+    "pos": [
+      -26,
+      2.846057722337004,
+      0
+    ],
+    "size": [
+      26.863328128252668,
+      0.3,
+      2.35
+    ],
+    "material": "Deck",
+    "angle": 12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Alpha ramp edge",
+    "pos": [
+      -26,
+      3.05,
+      -1.26
+    ],
+    "size": [
+      26.68332812825267,
+      0.15,
+      0.13
+    ],
+    "material": "Alpha",
+    "angle": 12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Alpha ramp edge",
+    "pos": [
+      -26,
+      3.05,
+      1.26
+    ],
+    "size": [
+      26.68332812825267,
+      0.15,
+      0.13
+    ],
+    "material": "Alpha",
+    "angle": 12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Alpha ramp threshold",
+    "pos": [
+      -39.25,
+      0.012,
+      0
+    ],
+    "size": [
+      0.65,
+      0.024,
+      2.5
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha bridge cover",
+    "pos": [
+      -6.2,
+      6.58,
+      -1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover accent",
+    "pos": [
+      -6.2,
+      7.09,
+      -1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha bridge cover",
+    "pos": [
+      -6.2,
+      6.58,
+      1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover accent",
+    "pos": [
+      -6.2,
+      7.09,
+      1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha bridge cover",
+    "pos": [
+      -10.4,
+      6.58,
+      -1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover accent",
+    "pos": [
+      -10.4,
+      7.09,
+      -1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha bridge cover",
+    "pos": [
+      -10.4,
+      6.58,
+      1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover accent",
+    "pos": [
+      -10.4,
+      7.09,
+      1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      -5,
+      2.8,
+      -2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      -5,
+      0.18,
+      -2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      -5,
+      2.8,
+      2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      -5,
+      0.18,
+      2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      -11.6,
+      2.8,
+      -2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      -11.6,
+      0.18,
+      -2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      -11.6,
+      2.8,
+      2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      -11.6,
+      0.18,
+      2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha ground barricade",
+    "pos": [
+      -10,
+      0.68,
+      -8.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha barricade stripe",
+    "pos": [
+      -10,
+      1.2,
+      -8.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha ground barricade",
+    "pos": [
+      -17,
+      0.68,
+      9.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha barricade stripe",
+    "pos": [
+      -17,
+      1.2,
+      9.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha ground barricade",
+    "pos": [
+      -28,
+      0.68,
+      -10.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha barricade stripe",
+    "pos": [
+      -28,
+      1.2,
+      -10.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha deck stripe",
+    "pos": [
+      -5,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha deck stripe",
+    "pos": [
+      -8,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha deck stripe",
+    "pos": [
+      -11,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Hub corner cover",
+    "pos": [
+      -3.55,
+      6.58,
+      3.05
+    ],
+    "size": [
+      0.36,
+      1.16,
+      1.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Hub corner cap",
+    "pos": [
+      -3.55,
+      7.18,
+      3.05
+    ],
+    "size": [
+      0.4,
+      0.08,
+      1.9
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo approach ramp",
+    "pos": [
+      26,
+      2.846057722337004,
+      0
+    ],
+    "size": [
+      26.863328128252668,
+      0.3,
+      2.35
+    ],
+    "material": "Deck",
+    "angle": -12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Bravo ramp edge",
+    "pos": [
+      26,
+      3.05,
+      -1.26
+    ],
+    "size": [
+      26.68332812825267,
+      0.15,
+      0.13
+    ],
+    "material": "Bravo",
+    "angle": -12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Bravo ramp edge",
+    "pos": [
+      26,
+      3.05,
+      1.26
+    ],
+    "size": [
+      26.68332812825267,
+      0.15,
+      0.13
+    ],
+    "material": "Bravo",
+    "angle": -12.994616791916505,
+    "solid": true
+  },
+  {
+    "name": "Bravo ramp threshold",
+    "pos": [
+      39.25,
+      0.012,
+      0
+    ],
+    "size": [
+      0.65,
+      0.024,
+      2.5
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo bridge cover",
+    "pos": [
+      6.2,
+      6.58,
+      -1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover accent",
+    "pos": [
+      6.2,
+      7.09,
+      -1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo bridge cover",
+    "pos": [
+      6.2,
+      6.58,
+      1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover accent",
+    "pos": [
+      6.2,
+      7.09,
+      1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo bridge cover",
+    "pos": [
+      10.4,
+      6.58,
+      -1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover accent",
+    "pos": [
+      10.4,
+      7.09,
+      -1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo bridge cover",
+    "pos": [
+      10.4,
+      6.58,
+      1.83
+    ],
+    "size": [
+      2.5,
+      1.16,
+      0.24
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover accent",
+    "pos": [
+      10.4,
+      7.09,
+      1.83
+    ],
+    "size": [
+      2.3,
+      0.09,
+      0.26
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      5,
+      2.8,
+      -2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      5,
+      0.18,
+      -2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      5,
+      2.8,
+      2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      5,
+      0.18,
+      2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      11.6,
+      2.8,
+      -2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      11.6,
+      0.18,
+      -2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bridge support",
+    "pos": [
+      11.6,
+      2.8,
+      2.05
+    ],
+    "size": [
+      0.38,
+      5.6,
+      0.38
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Support footing",
+    "pos": [
+      11.6,
+      0.18,
+      2.05
+    ],
+    "size": [
+      0.8,
+      0.36,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo ground barricade",
+    "pos": [
+      10,
+      0.68,
+      8.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo barricade stripe",
+    "pos": [
+      10,
+      1.2,
+      8.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo ground barricade",
+    "pos": [
+      17,
+      0.68,
+      -9.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo barricade stripe",
+    "pos": [
+      17,
+      1.2,
+      -9.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo ground barricade",
+    "pos": [
+      28,
+      0.68,
+      10.5
+    ],
+    "size": [
+      3.4,
+      1.36,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo barricade stripe",
+    "pos": [
+      28,
+      1.2,
+      10.5
+    ],
+    "size": [
+      3.42,
+      0.15,
+      0.67
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo deck stripe",
+    "pos": [
+      5,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo deck stripe",
+    "pos": [
+      8,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo deck stripe",
+    "pos": [
+      11,
+      6.01,
+      0
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.15
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Hub corner cover",
+    "pos": [
+      3.55,
+      6.58,
+      -3.05
+    ],
+    "size": [
+      0.36,
+      1.16,
+      1.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Hub corner cap",
+    "pos": [
+      3.55,
+      7.18,
+      -3.05
+    ],
+    "size": [
+      0.4,
+      0.08,
+      1.9
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Roof access -1",
+    "pos": [
+      -2,
+      4.608490283019151,
+      -5
+    ],
+    "size": [
+      4.836990566028302,
+      0.24,
+      1.8
+    ],
+    "material": "Deck",
+    "angle": -32.005383208083494,
+    "solid": true
+  },
+  {
+    "name": "Roof exit landing",
+    "pos": [
+      -4.45,
+      5.825,
+      -4.6
+    ],
+    "size": [
+      0.9,
+      0.35,
+      2.6
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof exit outer rail",
+    "pos": [
+      -4.85,
+      6.5,
+      -4.6
+    ],
+    "size": [
+      0.1,
+      1,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof landing support",
+    "pos": [
+      -4.45,
+      2.825,
+      -5.6
+    ],
+    "size": [
+      0.25,
+      5.65,
+      0.25
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof perimeter cover",
+    "pos": [
+      1.8,
+      4.08,
+      -5.95
+    ],
+    "size": [
+      1.1,
+      1.16,
+      0.28
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Hub route marking",
+    "pos": [
+      -2.8,
+      6.01,
+      -3.3
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.18
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Roof access 1",
+    "pos": [
+      2,
+      4.608490283019151,
+      5
+    ],
+    "size": [
+      4.836990566028302,
+      0.24,
+      1.8
+    ],
+    "material": "Deck",
+    "angle": 32.005383208083494,
+    "solid": true
+  },
+  {
+    "name": "Roof exit landing",
+    "pos": [
+      4.45,
+      5.825,
+      4.6
+    ],
+    "size": [
+      0.9,
+      0.35,
+      2.6
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof exit outer rail",
+    "pos": [
+      4.85,
+      6.5,
+      4.6
+    ],
+    "size": [
+      0.1,
+      1,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof landing support",
+    "pos": [
+      4.45,
+      2.825,
+      5.6
+    ],
+    "size": [
+      0.25,
+      5.65,
+      0.25
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Roof perimeter cover",
+    "pos": [
+      -1.8,
+      4.08,
+      5.95
+    ],
+    "size": [
+      1.1,
+      1.16,
+      0.28
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Hub route marking",
+    "pos": [
+      2.8,
+      6.01,
+      3.3
+    ],
+    "size": [
+      0.8,
+      0.02,
+      0.18
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha cargo container",
+    "pos": [
+      -10,
+      1.4,
+      7.5
+    ],
+    "size": [
+      6,
+      2.8,
+      2.4
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container roof lip",
+    "pos": [
+      -10,
+      2.84,
+      7.5
+    ],
+    "size": [
+      6.12,
+      0.08,
+      2.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -7.9,
+      1.4,
+      8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -10,
+      1.4,
+      8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -12.1,
+      1.4,
+      8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ID stripe",
+    "pos": [
+      -10,
+      2.016,
+      6.285
+    ],
+    "size": [
+      4.5,
+      0.2,
+      0.035
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha cargo container",
+    "pos": [
+      -16,
+      1.5,
+      4.8
+    ],
+    "size": [
+      2.6,
+      3.0,
+      5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container roof lip",
+    "pos": [
+      -16,
+      3.04,
+      4.8
+    ],
+    "size": [
+      2.72,
+      0.08,
+      5.12
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -15.09,
+      1.5,
+      7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -16.0,
+      1.5,
+      7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      -16.91,
+      1.5,
+      7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ID stripe",
+    "pos": [
+      -16,
+      2.16,
+      2.2849999999999997
+    ],
+    "size": [
+      1.9500000000000002,
+      0.2,
+      0.035
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply crate",
+    "pos": [
+      -8,
+      0.575,
+      3
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -8.55,
+      0.575,
+      3
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -7.45,
+      0.575,
+      3
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      -8,
+      1.1749999999999998,
+      3
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply crate",
+    "pos": [
+      -12,
+      0.875,
+      3
+    ],
+    "size": [
+      1.5,
+      1.75,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -12.55,
+      0.875,
+      3
+    ],
+    "size": [
+      0.1,
+      1.77,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -11.45,
+      0.875,
+      3
+    ],
+    "size": [
+      0.1,
+      1.77,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      -12,
+      1.775,
+      3
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply crate",
+    "pos": [
+      -15,
+      0.575,
+      9
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -15.55,
+      0.575,
+      9
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -14.45,
+      0.575,
+      9
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      -15,
+      1.1749999999999998,
+      9
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply crate",
+    "pos": [
+      -27,
+      0.8,
+      7
+    ],
+    "size": [
+      1.5,
+      1.6,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -27.55,
+      0.8,
+      7
+    ],
+    "size": [
+      0.1,
+      1.62,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -26.45,
+      0.8,
+      7
+    ],
+    "size": [
+      0.1,
+      1.62,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      -27,
+      1.625,
+      7
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply crate",
+    "pos": [
+      -29,
+      0.575,
+      -6
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -29.55,
+      0.575,
+      -6
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      -28.45,
+      0.575,
+      -6
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      -29,
+      1.1749999999999998,
+      -6
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha flank screen",
+    "pos": [
+      -7,
+      1.2,
+      -9.5
+    ],
+    "size": [
+      0.35,
+      2.4,
+      3.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha flank low return",
+    "pos": [
+      -5.7,
+      0.65,
+      -8
+    ],
+    "size": [
+      2.6,
+      1.3,
+      0.35
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha underpass barricade",
+    "pos": [
+      -7,
+      0.65,
+      -2.8
+    ],
+    "size": [
+      2.4,
+      1.3,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Underpass route stripe",
+    "pos": [
+      -7,
+      0.015,
+      0
+    ],
+    "size": [
+      0.8,
+      0.03,
+      0.18
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo cargo container",
+    "pos": [
+      10,
+      1.4,
+      -7.5
+    ],
+    "size": [
+      6,
+      2.8,
+      2.4
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container roof lip",
+    "pos": [
+      10,
+      2.84,
+      -7.5
+    ],
+    "size": [
+      6.12,
+      0.08,
+      2.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      7.9,
+      1.4,
+      -8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      10,
+      1.4,
+      -8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      12.1,
+      1.4,
+      -8.725
+    ],
+    "size": [
+      0.07,
+      2.8,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ID stripe",
+    "pos": [
+      10,
+      2.016,
+      -6.285
+    ],
+    "size": [
+      4.5,
+      0.2,
+      0.035
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo cargo container",
+    "pos": [
+      16,
+      1.5,
+      -4.8
+    ],
+    "size": [
+      2.6,
+      3.0,
+      5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container roof lip",
+    "pos": [
+      16,
+      3.04,
+      -4.8
+    ],
+    "size": [
+      2.72,
+      0.08,
+      5.12
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      15.09,
+      1.5,
+      -7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      16.0,
+      1.5,
+      -7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container reinforcement",
+    "pos": [
+      16.91,
+      1.5,
+      -7.325
+    ],
+    "size": [
+      0.07,
+      3.0,
+      0.06
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ID stripe",
+    "pos": [
+      16,
+      2.16,
+      -2.2849999999999997
+    ],
+    "size": [
+      1.9500000000000002,
+      0.2,
+      0.035
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply crate",
+    "pos": [
+      8,
+      0.575,
+      -3
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      7.45,
+      0.575,
+      -3
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      8.55,
+      0.575,
+      -3
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      8,
+      1.1749999999999998,
+      -3
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply crate",
+    "pos": [
+      12,
+      0.875,
+      -3
+    ],
+    "size": [
+      1.5,
+      1.75,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      11.45,
+      0.875,
+      -3
+    ],
+    "size": [
+      0.1,
+      1.77,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      12.55,
+      0.875,
+      -3
+    ],
+    "size": [
+      0.1,
+      1.77,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      12,
+      1.775,
+      -3
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply crate",
+    "pos": [
+      15,
+      0.575,
+      -9
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      14.45,
+      0.575,
+      -9
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      15.55,
+      0.575,
+      -9
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      15,
+      1.1749999999999998,
+      -9
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply crate",
+    "pos": [
+      27,
+      0.8,
+      -7
+    ],
+    "size": [
+      1.5,
+      1.6,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      26.45,
+      0.8,
+      -7
+    ],
+    "size": [
+      0.1,
+      1.62,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      27.55,
+      0.8,
+      -7
+    ],
+    "size": [
+      0.1,
+      1.62,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      27,
+      1.625,
+      -7
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply crate",
+    "pos": [
+      29,
+      0.575,
+      6
+    ],
+    "size": [
+      1.5,
+      1.15,
+      1.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      28.45,
+      0.575,
+      6
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate band",
+    "pos": [
+      29.55,
+      0.575,
+      6
+    ],
+    "size": [
+      0.1,
+      1.17,
+      1.52
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crate cap",
+    "pos": [
+      29,
+      1.1749999999999998,
+      6
+    ],
+    "size": [
+      1.54,
+      0.05,
+      1.54
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo flank screen",
+    "pos": [
+      7,
+      1.2,
+      9.5
+    ],
+    "size": [
+      0.35,
+      2.4,
+      3.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo flank low return",
+    "pos": [
+      5.7,
+      0.65,
+      8
+    ],
+    "size": [
+      2.6,
+      1.3,
+      0.35
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo underpass barricade",
+    "pos": [
+      7,
+      0.65,
+      2.8
+    ],
+    "size": [
+      2.4,
+      1.3,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Underpass route stripe",
+    "pos": [
+      7,
+      0.015,
+      0
+    ],
+    "size": [
+      0.8,
+      0.03,
+      0.18
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Deck underside rib",
+    "pos": [
+      -10,
+      5.57,
+      0
+    ],
+    "size": [
+      0.16,
+      0.16,
+      3.8
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Deck underside rib",
+    "pos": [
+      -6,
+      5.57,
+      0
+    ],
+    "size": [
+      0.16,
+      0.16,
+      3.8
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Deck underside rib",
+    "pos": [
+      6,
+      5.57,
+      0
+    ],
+    "size": [
+      0.16,
+      0.16,
+      3.8
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Deck underside rib",
+    "pos": [
+      10,
+      5.57,
+      0
+    ],
+    "size": [
+      0.16,
+      0.16,
+      3.8
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  }
+]

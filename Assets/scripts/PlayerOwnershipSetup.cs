@@ -14,8 +14,17 @@ public class PlayerOwnershipSetup : MonoBehaviourPun
         if (!BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine))
         {
             RadarSkill.Bind(GetComponent<PlayerHealth>(), playerCamera);
-            var prefab = Resources.Load<GameObject>("UI/PlayerHUD");
-            if (prefab != null) Instantiate(prefab, transform, false).GetComponent<PlayerHUD>().Bind(GetComponent<PlayerHealth>());
+            var hud = GetComponentInChildren<PlayerHUD>(true);
+            if (hud == null)
+            {
+                var prefab = Resources.Load<GameObject>("UI/PlayerHUD");
+                if (prefab != null) hud = Instantiate(prefab, transform, false).GetComponent<PlayerHUD>();
+            }
+            if (hud != null)
+            {
+                hud.gameObject.SetActive(true);
+                hud.Bind(GetComponent<PlayerHealth>());
+            }
         }
     }
 

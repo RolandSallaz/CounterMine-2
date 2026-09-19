@@ -54,6 +54,22 @@ public sealed class PlayerHUD : MonoBehaviour
     private Vector2[] baseArmSizes;
     private float lastStaminaValue = -1f;
     private static readonly Vector2[] Directions = { Vector2.left, Vector2.right, Vector2.up, Vector2.down };
+    public Transform ContentRoot => safeArea != null ? safeArea : transform;
+
+    private void Awake()
+    {
+        hudCanvas = GetComponent<Canvas>();
+        UpdateSafeArea();
+    }
+
+    private void UpdateSafeArea()
+    {
+        if (safeArea == null || Screen.width <= 0 || Screen.height <= 0) return;
+        previousSafeArea = Screen.safeArea;
+        safeArea.anchorMin = new Vector2(previousSafeArea.xMin / Screen.width, previousSafeArea.yMin / Screen.height);
+        safeArea.anchorMax = new Vector2(previousSafeArea.xMax / Screen.width, previousSafeArea.yMax / Screen.height);
+        safeArea.offsetMin = safeArea.offsetMax = Vector2.zero;
+    }
     public void Bind(PlayerHealth player)
     {
         if (health != null) health.Damaged -= ShowHitDirection;
@@ -72,7 +88,7 @@ public sealed class PlayerHUD : MonoBehaviour
         if (threatArrow == null && hudCanvas != null) threatArrow = ThreatArrow.Create(hudCanvas.transform, new Color(1f, .6f, .1f));
         if(crosshairArms!=null&&crosshairArms.Length>0)
         {
-            baseArmSizes=new Vector2[crosshairArms.Length];
+            if (baseArmSizes == null) baseArmSizes=new Vector2[crosshairArms.Length];
             for(int i=0;i<crosshairArms.Length;i++)
             {
                 if(crosshairArms[i]==null)continue;
@@ -196,10 +212,9 @@ public sealed class PlayerHUD : MonoBehaviour
         if (killfeedRoot != null) return true;
         if (hudCanvas == null) hudCanvas = GetComponent<Canvas>();
         if (hudCanvas == null) return false;
-        killfeedFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        hudCanvas.pixelPerfect = true;
+        killfeedFont = GameUIStyle.Font;
         var rootGo = new GameObject("Killfeed");
-        rootGo.transform.SetParent(hudCanvas.transform, false);
+        rootGo.transform.SetParent(ContentRoot, false);
         killfeedRoot = rootGo.AddComponent<RectTransform>();
         killfeedRoot.anchorMin = new Vector2(1f, 1f);
         killfeedRoot.anchorMax = new Vector2(1f, 1f);
@@ -247,7 +262,7 @@ public sealed class PlayerHUD : MonoBehaviour
         else
         {
             AddKillfeedLabel(entry.transform, killerName, killerColor, TextAnchor.MiddleRight);
-            AddKillfeedLabel(entry.transform, "\u2192 " + weapon + " \u2192", Color.white, TextAnchor.MiddleCenter);
+            AddKillfeedLabel(entry.transform, "> " + weapon + " >", Color.white, TextAnchor.MiddleCenter);
             AddKillfeedLabel(entry.transform, victimName, victimColor, TextAnchor.MiddleRight);
         }
         killfeedEntries.Add(entry);
@@ -318,7 +333,7 @@ public sealed class PlayerHUD : MonoBehaviour
         if (dead && hitDirection != null) hitDirection.Clear();
         UpdateThreatArrow();
         UpdateRespawn(dead);
-        if(Screen.safeArea!=previousSafeArea&&Screen.width>0&&Screen.height>0){previousSafeArea=Screen.safeArea;safeArea.anchorMin=new Vector2(previousSafeArea.xMin/Screen.width,previousSafeArea.yMin/Screen.height);safeArea.anchorMax=new Vector2(previousSafeArea.xMax/Screen.width,previousSafeArea.yMax/Screen.height);}
+        if(Screen.safeArea!=previousSafeArea) UpdateSafeArea();
     }
     private void RefreshRadar()
     {
@@ -363,10 +378,10 @@ public sealed class PlayerHUD : MonoBehaviour
         if (hudCanvas.GetComponent<GraphicRaycaster>() == null) hudCanvas.gameObject.AddComponent<GraphicRaycaster>();
         if (Object.FindFirstObjectByType<EventSystem>() == null)
             new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
-        Font font = killfeedFont ?? (weaponName != null ? weaponName.font : null) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        Font font = GameUIStyle.Font;
 
         respawnPanel = new GameObject("Respawn Panel");
-        respawnPanel.transform.SetParent(hudCanvas.transform, false);
+        respawnPanel.transform.SetParent(ContentRoot, false);
         var panelRect = respawnPanel.AddComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(.5f, .5f);
         panelRect.anchorMax = new Vector2(.5f, .5f);

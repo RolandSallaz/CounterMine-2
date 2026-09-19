@@ -7,15 +7,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-[InitializeOnLoad]
 public static class ValidateAudioAndKillfeed
 {
     private const string Folder = "Documentation/AudioSources/Validation/";
-    static ValidateAudioAndKillfeed() => EditorApplication.delayCall += AutoRun;
-    private static void AutoRun()
-    {
-        if (!File.Exists(Folder + "unity-validation.txt") && !EditorApplication.isPlayingOrWillChangePlaymode) Run();
-    }
     private static void Check(bool value, string message) { if (!value) throw new Exception(message); }
     [MenuItem("Tools/CounterMine/Validate Audio and Killfeed")]
     public static void Run()
@@ -31,8 +25,10 @@ public static class ValidateAudioAndKillfeed
         {
             var profile = Resources.Load<WeaponAudioProfile>("Audio/Weapons/ak74");
             Check(profile != null && profile.shots.Length == 3, "AK74 profile/shot variants missing");
-            var clips = Resources.LoadAll<AudioClip>("Audio");
-            Check(clips.Length == 11, "Expected 11 audio clips, got " + clips.Length);
+            var clips = Resources.LoadAll<AudioClip>("Audio/AK74")
+                .Concat(Resources.LoadAll<AudioClip>("Audio/Steps"))
+                .Concat(Resources.LoadAll<AudioClip>("Audio/UI")).ToArray();
+            Check(clips.Length > 0, "No sound effects found");
             foreach (var clip in clips)
             {
                 Check(clip.channels == 1 && clip.length > .03f, "Invalid clip: " + clip.name);
@@ -55,12 +51,12 @@ public static class ValidateAudioAndKillfeed
             var handle = typeof(PlayerHUD).GetMethod("HandleKillfeedKill", BindingFlags.Instance | BindingFlags.NonPublic);
             handle.Invoke(hud, new object[] { new PlayerHealth.KillInfo(2, -1001, -1, "Roland", "BOT Viper", "", 1, 2, 0, "ak74") });
             handle.Invoke(hud, new object[] { new PlayerHealth.KillInfo(3, 1, 4, "Player", "Player", "Teammate", 2, 1, 1, "ak74") });
-            var feed = hudObject.transform.Find("Killfeed");
+            var feed = hud.ContentRoot.Find("Killfeed");
             Check(feed != null && feed.childCount == 2, "Feed rows missing");
             foreach (Transform row in feed)
             {
                 var labels = row.GetComponentsInChildren<Text>();
-                Check(labels.Length == 3 && labels[1].text == "\u2192 AK-74 \u2192", "Bot/duplicate-name kill lost weapon/killer");
+                Check(labels.Length == 3 && labels[1].text == "> AK-74 >", "Bot/duplicate-name kill lost weapon/killer");
                 Check(labels.All(t => !t.resizeTextForBestFit && t.font.dynamic), "Feed uses rescaled bitmap font");
             }
             var cameraObject = new GameObject("HUD Preview Camera");

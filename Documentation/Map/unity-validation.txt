@@ -1,0 +1,5 @@
+PASS: Unity imports arena meshes/materials and 71 colliders.
+PASS: 791 physics samples across both ramps/deck; seams below 0.3 m.
+PASS: full-scene route, both roof exits, player-width cargo aisles and 60 m flank sightlines.
+PASS: embedded HUD font, reference scaler, repeated Bind and single scoreboard.
+This is an Editor validation, not a player build or a live bot match.
