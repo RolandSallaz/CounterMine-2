@@ -1,0 +1,113 @@
+CounterMine audio credits
+
+All currently shipped clips use CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+
+Gunshots: Ben Jaszczak et al., The Free Firearm Sound Library
+https://opengameart.org/content/the-free-firearm-sound-library
+Source: AK-47/C_28P.wav. Three shots trimmed, mixed to mono, resampled, normalized and faded. Used as temporary AK-74 sound; not an authentic AK-74 recording.
+
+Reload: SpringySpringo, Gun Reload Sounds
+https://opengameart.org/content/gun-reload-sounds
+Mono conversion, resampling, normalization, fades.
+
+Equip/dry click: LFA, Equipment Clicks III
+https://opengameart.org/content/equipment-clicks-iii
+Trimmed, normalized and faded.
+
+Steps: Kenney Impact Sounds
+https://kenney.nl/assets/impact-sounds
+UI: Kenney Interface Sounds
+https://kenney.nl/assets/interface-sounds
+Converted to mono WAV, normalized and faded.
+
+Original Kenney license notices:
+	
+
+
+
+	Impact Sounds (1.0)
+
+
+
+	Created/distributed by Kenney (www.kenney.nl)
+
+	Creation date: 19-12-2019
+
+
+
+			------------------------------
+
+
+
+	License: (Creative Commons Zero, CC0)
+
+	http://creativecommons.org/publicdomain/zero/1.0/
+
+
+
+	This content is free to use in personal, educational and commercial projects.
+
+
+	Support us by crediting Kenney or www.kenney.nl (this is not mandatory)
+
+
+
+			------------------------------
+
+
+
+	Donate:   http://support.kenney.nl
+
+	Request:  http://request.kenney.nl
+
+	Patreon:  http://patreon.com/kenney/
+
+
+
+	Follow on Twitter for updates:
+
+	http://twitter.com/KenneyNL
+	
+
+
+
+	Interface Sounds (1.0)
+
+
+
+	Created/distributed by Kenney (www.kenney.nl)
+
+	Creation date: 11-02-2020
+
+
+
+			------------------------------
+
+
+
+	License: (Creative Commons Zero, CC0)
+
+	http://creativecommons.org/publicdomain/zero/1.0/
+
+
+
+	This content is free to use in personal, educational and commercial projects.
+
+
+	Support us by crediting Kenney or www.kenney.nl (this is not mandatory)
+
+
+
+			------------------------------
+
+
+
+	Donate:   http://support.kenney.nl
+
+	Patreon:  http://patreon.com/kenney/
+
+
+
+	Follow on Twitter for updates:
+
+	http://twitter.com/KenneyNL
