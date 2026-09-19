@@ -8,6 +8,12 @@ using UnityEngine;
 [RequireComponent(typeof(PhotonView), typeof(CharacterController))]
 public sealed class PlayerHealth : MonoBehaviourPunCallbacks
 {
+    public readonly struct AssistInfo
+    {
+        public readonly int actorNr, team;
+        public readonly string name;
+        public AssistInfo(int actorNr, string name, int team) { this.actorNr = actorNr; this.name = name; this.team = team; }
+    }
     public readonly struct KillInfo
     {
         public readonly int victimActorNr;
@@ -20,8 +26,9 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         public readonly int victimTeam;
         public readonly int killerTeam;
         public readonly int assisterTeam;
+        public readonly AssistInfo[] assists;
 
-        public KillInfo(int victimActorNr, int killerActorNr, int assisterActorNr, string victimName, string killerName, string assisterName, int victimTeam, int killerTeam, int assisterTeam, string weaponId = "")
+        public KillInfo(int victimActorNr, int killerActorNr, int assisterActorNr, string victimName, string killerName, string assisterName, int victimTeam, int killerTeam, int assisterTeam, string weaponId = "", AssistInfo[] assists = null)
         {
             this.weaponId = weaponId;
             this.victimActorNr = victimActorNr;
@@ -33,6 +40,8 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
             this.victimTeam = victimTeam;
             this.killerTeam = killerTeam;
             this.assisterTeam = assisterTeam;
+            this.assists = assists ?? (assisterActorNr != 0 && assisterActorNr != -1
+                ? new[] { new AssistInfo(assisterActorNr, assisterName, assisterTeam) } : Array.Empty<AssistInfo>());
         }
     }
 
@@ -68,8 +77,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
     [SerializeField, Min(.05f)] private float regenPushInterval = .15f;
     [Header("Assists")]
     [SerializeField, Min(1f)] private float assistWindowSeconds = 10f;
-    private readonly Dictionary<int, double> recentAttackers = new Dictionary<int, double>();
-    private readonly List<int> staleAttackers = new List<int>();
+    private readonly AssistTracker recentAttackers = new AssistTracker();
     private double lastDamageTime;
     private double lastHealPushTime;
     private float healPool;
@@ -171,30 +179,17 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         int killerActorNr = killer != null ? killer.ActorNumber : -1;
         lastDamageTime = NetworkTime;
         healPool = 0f;
-        if (killerActorNr > 0) recentAttackers[killerActorNr] = NetworkTime;
-        int assisterActorNr = nextHealth == 0 ? ComputeAssister(killerActorNr) : -1;
+        int attackerId = killerBotViewId > 0 ? -killerBotViewId : killerActorNr;
+        int victimId = BotController.IsBot(this) ? -photonView.ViewID : photonView.OwnerActorNr;
+        recentAttackers.Record(attackerId, victimId, TeamSafeZone.AttackerTeam(killer, killerBotViewId), BotController.TeamOf(this), NetworkTime);
+        int[] assisters = nextHealth == 0 ? recentAttackers.Collect(attackerId, victimId, NetworkTime, assistWindowSeconds) : Array.Empty<int>();
+        int assisterActorNr = assisters.Length > 0 ? assisters[0] : -1;
         if (nextHealth == 0) recentAttackers.Clear();
-        ApplySnapshot(nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId);
+        ApplySnapshot(nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId, assisters);
         if (PhotonNetwork.InRoom)
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId ?? "" } } });
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, nextHealth, force, point, killerActorNr, assisterActorNr, killerBotViewId, weaponId ?? "", assisters } } });
     }
-    /// <summary>Latest damager besides the killer inside the assist window (master-side only).</summary>
-    private int ComputeAssister(int killerActorNr)
-    {
-        double now = NetworkTime;
-        staleAttackers.Clear();
-        int best = -1;
-        double bestTime = double.NegativeInfinity;
-        foreach (var pair in recentAttackers)
-        {
-            if (now - pair.Value > assistWindowSeconds) { staleAttackers.Add(pair.Key); continue; }
-            if (pair.Key == killerActorNr) continue;
-            if (pair.Value > bestTime) { bestTime = pair.Value; best = pair.Key; }
-        }
-        foreach (int stale in staleAttackers) recentAttackers.Remove(stale);
-        return best;
-    }
-    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point, int killerActorNr = -1, int assisterActorNr = -1, int killerBotViewId = 0, string weaponId = "")
+    private void ApplySnapshot(int nextRevision, int hp, Vector3 force, Vector3 point, int killerActorNr = -1, int assisterActorNr = -1, int killerBotViewId = 0, string weaponId = "", int[] assisters = null)
     {
         if (nextRevision <= revision) return;
         bool wasAlive = CurrentHealth > 0;
@@ -204,6 +199,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         revision = nextRevision;
         snapshotSeen = true;
         CurrentHealth = Mathf.Clamp(hp, 0, maximumHealth);
+        if (CurrentHealth >= maximumHealth) recentAttackers.Clear();
         int taken = previousHealth - CurrentHealth;
         if (taken > 0 && fresh)
         {
@@ -212,7 +208,9 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         }
         if (CurrentHealth == 0 && wasAlive)
         {
-            try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId, weaponId)); } catch (Exception e) { Debug.LogException(e); }
+            // Initial state for late joiners must not replay rewards or old kill notifications.
+            if (fresh)
+                try { OnKilled?.Invoke(BuildKillInfo(killerActorNr, assisterActorNr, killerBotViewId, weaponId, assisters)); } catch (Exception e) { Debug.LogException(e); }
             deathController?.ApplyNetworkDeath(force, point);
         }
     }
@@ -224,7 +222,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
             state[0] is int version6 && state[1] is int hp6 && state[2] is Vector3 force6 && state[3] is Vector3 point6 &&
             state[4] is int killer6 && state[5] is int assister6)
         {
-            ApplySnapshot(version6, hp6, force6, point6, killer6, assister6, state.Length >= 7 && state[6] is int botView ? botView : 0, state.Length >= 8 ? state[7] as string ?? "" : "");
+            ApplySnapshot(version6, hp6, force6, point6, killer6, assister6, state.Length >= 7 && state[6] is int botView ? botView : 0, state.Length >= 8 ? state[7] as string ?? "" : "", state.Length >= 9 ? state[8] as int[] : null);
             return;
         }
         if (state.Length == 5 &&
@@ -250,7 +248,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         ReadSnapshot();
     }
 
-    private KillInfo BuildKillInfo(int killerActorNr, int assisterActorNr, int killerBotViewId = 0, string weaponId = "")
+    private KillInfo BuildKillInfo(int killerActorNr, int assisterActorNr, int killerBotViewId = 0, string weaponId = "", int[] assisters = null)
     {
         int victimActorNr = photonView != null ? photonView.OwnerActorNr : -1;
         Player victimPlayer = photonView != null ? photonView.Owner : null;
@@ -268,8 +266,24 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         var killerBot = killerBotViewId > 0 ? PhotonView.Find(killerBotViewId)?.GetComponent<BotController>() : null;
         if (killerBot != null) { killerName = killerBot.DisplayName; killerActorNr = -killerBotViewId; }
         string assisterName = assisterActorNr > 0 ? DisplayName(assisterPlayer, assisterActorNr) : "";
+        var contributors = new List<AssistInfo>();
+        foreach (int actor in assisters ?? (assisterActorNr != -1 && assisterActorNr != 0 ? new[] { assisterActorNr } : Array.Empty<int>()))
+        {
+            if (actor < -1)
+            {
+                var bot = PhotonView.Find(-actor)?.GetComponent<BotController>();
+                if (bot != null) contributors.Add(new AssistInfo(actor, bot.DisplayName, bot.Team));
+            }
+            else if (actor > 0)
+            {
+                var player = PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.GetPlayer(actor) : null;
+                if (player != null) contributors.Add(new AssistInfo(actor, DisplayName(player, actor), TeamOf(player)));
+            }
+        }
+        if (contributors.Count > 0) { assisterActorNr = contributors[0].actorNr; assisterName = contributors[0].name; }
         return new KillInfo(victimActorNr, killerActorNr, assisterActorNr, victimName, killerName, assisterName,
-            victimBot != null ? victimBot.Team : TeamOf(victimPlayer), killerBot != null ? killerBot.Team : TeamOf(killerPlayer), TeamOf(assisterPlayer), weaponId);
+            victimBot != null ? victimBot.Team : TeamOf(victimPlayer), killerBot != null ? killerBot.Team : TeamOf(killerPlayer),
+            contributors.Count > 0 ? contributors[0].team : TeamOf(assisterPlayer), weaponId, contributors.ToArray());
     }
 
     private static string DisplayName(Player player, int actorNr)

@@ -1,0 +1,18 @@
+{
+  "track": "Force Field",
+  "author": "Of Far Different Nature",
+  "license": "CC BY 4.0",
+  "source_page": "https://opengameart.org/node/116122",
+  "duration_seconds": 101.24997732426304,
+  "sample_rate": 44100,
+  "channels": 2,
+  "original_seam_jump": 0.22588595189154148,
+  "output_seam_jump": 0.0,
+  "output_rms": 0.11999999498018683,
+  "output_peak": 0.3189697265625,
+  "edge_blend_ms": 8,
+  "gain": 0.3020614608958945,
+  "source_sha256": "8599585e569b74fc4d1a8cb105dd1b3ad69401277d6687a34214bd69b7fd49d7",
+  "output_sha256": "e9c5e7787f192fc86ab3494ebed13407f526e976bd3436a37adc44740179c2f1",
+  "validation": "PCM sample, boundary, duration, channel and peak checks only; not an audible Unity playback test."
+}

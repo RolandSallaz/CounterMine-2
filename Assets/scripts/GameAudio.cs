@@ -1,14 +1,20 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 /// <summary>Bounded spatial voices; clips are loaded once, never instantiated per shot.</summary>
 public sealed class GameAudio : MonoBehaviour
 {
+    public const string BackgroundMusicCredit = "LOOP BOX #2 - Of Far Different Nature\nCC BY 4.0 | fardifferent.carrd.co";
     private static GameAudio instance;
     private readonly AudioSource[] voices = new AudioSource[32];
     private readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
     private static readonly Dictionary<string, WeaponAudioProfile> profiles = new Dictionary<string, WeaponAudioProfile>();
     private AudioSource music;
+    private AudioSource nextMusic;
+    private Coroutine playlist;
+    private readonly System.Random musicRandom = new System.Random();
     private int cursor;
     private readonly Dictionary<AudioSource, int> leases = new Dictionary<AudioSource, int>();
     private int nextLease;
@@ -91,6 +97,12 @@ public sealed class GameAudio : MonoBehaviour
     public static void PlayMusic(string id, float volume = .35f)
     {
         var audio = Instance;
+        if (audio.playlist != null)
+        {
+            audio.StopCoroutine(audio.playlist);
+            audio.playlist = null;
+            audio.ReleaseMusic(audio.nextMusic);
+        }
         if (audio.music == null)
         {
             var go = new GameObject("Music");
@@ -114,5 +126,95 @@ public sealed class GameAudio : MonoBehaviour
         audio.music.Play();
     }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void StartBackgroundMusic() => PlayMusic("Music/action_loop", .1f);
+    private static void StartBackgroundMusic()
+    {
+        var audio = Instance;
+        if (audio.playlist == null) audio.playlist = audio.StartCoroutine(audio.RunPlaylist());
+    }
+
+    private void ReleaseMusic(AudioSource source)
+    {
+        if (source == null) return;
+        var clip = source.clip;
+        source.Stop();
+        source.clip = null;
+        if (clip != null) Resources.UnloadAsset(clip);
+    }
+
+    private AudioSource CreateMusicChannel(string name)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(transform, false);
+        var source = go.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.loop = true;
+        source.spatialBlend = 0f;
+        source.volume = 0f;
+        return source;
+    }
+
+    private IEnumerator RunPlaylist()
+    {
+        var manifest = Resources.Load<TextAsset>("Audio/MusicPlaylist");
+        if (manifest == null) yield break;
+        var tracks = new List<string>();
+        foreach (var line in manifest.text.Split('\n'))
+        {
+            string path = line.Trim();
+            if (path.Length > 0 && !tracks.Contains(path)) tracks.Add(path);
+        }
+        if (tracks.Count == 0) yield break;
+        if (music == null) music = CreateMusicChannel("Music A");
+        if (nextMusic == null) nextMusic = CreateMusicChannel("Music B");
+        string previous = null;
+        while (true)
+        {
+            for (int i = tracks.Count - 1; i > 0; i--)
+            {
+                int j = musicRandom.Next(i + 1);
+                string swap = tracks[i]; tracks[i] = tracks[j]; tracks[j] = swap;
+            }
+            if (tracks.Count > 1 && tracks[0] == previous)
+            {
+                string swap = tracks[0]; tracks[0] = tracks[1]; tracks[1] = swap;
+            }
+            foreach (string entry in tracks)
+            {
+                string[] parts = entry.Split('|');
+                string path = parts[0];
+                float gain = 1f;
+                if (parts.Length > 1 && float.TryParse(parts[1], NumberStyles.Float,
+                    CultureInfo.InvariantCulture, out float parsedGain)) gain = Mathf.Clamp01(parsedGain);
+                var request = Resources.LoadAsync<AudioClip>("Audio/" + path);
+                yield return request;
+                var clip = request.asset as AudioClip;
+                if (clip == null) continue;
+                clip.LoadAudioData();
+                while (clip.loadState == AudioDataLoadState.Loading) yield return null;
+                if (clip.loadState != AudioDataLoadState.Loaded)
+                {
+                    Resources.UnloadAsset(clip);
+                    continue;
+                }
+                nextMusic.clip = clip;
+                nextMusic.volume = 0f;
+                nextMusic.Play();
+                float elapsed = 0f;
+                float outgoingVolume = music.volume;
+                while (elapsed < 4f)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                    float blend = Mathf.Clamp01(elapsed / 4f);
+                    music.volume = outgoingVolume * (1f - blend);
+                    nextMusic.volume = .1f * gain * blend;
+                    yield return null;
+                }
+                ReleaseMusic(music);
+                var swap = music; music = nextMusic; nextMusic = swap;
+                previous = entry;
+                yield return new WaitForSecondsRealtime(musicRandom.Next(90, 151));
+            }
+            yield return new WaitForSecondsRealtime(1f);
+        }
+    }
 }

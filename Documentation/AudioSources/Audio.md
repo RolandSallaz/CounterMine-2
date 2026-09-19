@@ -45,8 +45,13 @@ Display Name. ID должен совпадать с ID оружия. Все кл
 
 Звуки попаданий отключены по запросу; их клипы удалены из Assets. Искры и следы пуль сохранены.
 
-Фоновая музыка: `Assets/Resources/Audio/Music/action_loop.wav` — "Action Music
-Loop" by AppPro, CC0 via OpenGameArt
-(https://opengameart.org/content/action-music-loop). Стерео WAV 34 c,
-бесшовный цикл: `GameAudio.PlayMusic` на выделенном 2D-канале с `loop`,
-автостарт после загрузки сцены, громкость 0.35.
+Фоновая музыка: `Assets/Resources/Audio/Music/action_loop.wav` — **Force Field**
+by Of Far Different Nature из LOOP BOX #2, CC BY 4.0.
+Источник: https://opengameart.org/node/116122, автор: https://fardifferent.carrd.co/.
+Стерео WAV, 44 100 Гц, 101,25 секунды. Стык сглажен на 8 мс с каждой стороны
+без изменения длины петли; уровень RMS приведён к 0,12, без клиппинга.
+`GameAudio.PlayMusic` запускает петлю на отдельном 2D-канале, громкость 0.1.
+Автор указан в таблице по Tab; полные сведения об источнике, лицензии и обработке
+в `Assets/Resources/Audio/MusicCredits.txt` и `Music/CREDITS.txt`.
+Оригинал OGG и отчёт проверки PCM находятся в папке `Music`.
+Прослушивание стыка в Unity пока не проверено.

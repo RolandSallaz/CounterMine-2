@@ -64,6 +64,7 @@ public sealed class PlayerHUD : MonoBehaviour
         ammo=player.GetComponent<WeaponAmmo>();
         grenades=player.GetComponent<GrenadeThrower>();
         playerCam=player.GetComponentInChildren<Camera>(true);hudCanvas=GetComponent<Canvas>();
+        if (GetComponent<MatchScoreUI>() == null) gameObject.AddComponent<MatchScoreUI>();
         if (healthScreenEffect == null && hudCanvas != null) healthScreenEffect = HealthScreenEffect.Create(hudCanvas.transform);
         if (healthScreenEffect != null) healthScreenEffect.Clear();
         if (damageOverlay != null) damageOverlay.gameObject.SetActive(false);
