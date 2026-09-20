@@ -22,6 +22,18 @@ public sealed class WeaponAmmo : MonoBehaviour
     private bool animDriven;
     private float reloadEndsAt;
     private float nextDrySound;
+    private string equippedWeapon;
+    private readonly System.Collections.Generic.Dictionary<string,int> magazines = new System.Collections.Generic.Dictionary<string,int>();
+    public void SelectWeapon(string id, int capacity)
+    {
+        if (equippedWeapon == id) return;
+        if (!string.IsNullOrEmpty(equippedWeapon)) magazines[equippedWeapon] = MagAmmo;
+        equippedWeapon = id;
+        magazineSize = Mathf.Max(1,capacity);
+        MagAmmo = magazines.TryGetValue(id,out int saved) ? Mathf.Clamp(saved,0,magazineSize) : magazineSize;
+        // Switching interrupts a reload; it must not refill either magazine.
+        IsReloading = false; animDriven = false;
+    }
     private bool IsOwner => !PhotonNetwork.InRoom || (photonView != null && photonView.IsMine);
 
     private void Awake()
@@ -65,7 +77,7 @@ public sealed class WeaponAmmo : MonoBehaviour
     private void Update()
     {
         if (!IsOwner || weaponAnimation == null) return;
-        // Pick up reloads started elsewhere (e.g. debug R key in the presentation layer).
+        // Pick up reloads started through the shared weapon action API.
         if (!IsReloading && weaponAnimation.ActionId == "reload" && MagAmmo < magazineSize)
         {
             IsReloading = true; animDriven = true;

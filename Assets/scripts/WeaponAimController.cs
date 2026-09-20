@@ -72,6 +72,14 @@ public sealed class WeaponAimController : MonoBehaviour
     private void ApplyPose(float deltaTime)
     {
         if (!initialized || deltaTime <= 0f) return;
+        // Reload/equip may start after our Update. Clear ADS before rendering that frame.
+        if (weaponAnimation != null && weaponAnimation.IsPlayingAction)
+        {
+            IsAiming = false;
+            progress = AimAmount = 0f;
+            transform.localPosition = restPosition;
+            transform.localRotation = restRotation;
+        }
         var sight = weapon != null && weapon.isActiveAndEnabled ? weapon.ActiveSight : null;
         if (sight != null && TryCalculateAlignment(sight, out var position, out var rotation))
         {

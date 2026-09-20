@@ -35,13 +35,17 @@ public class PlayerHeadBob : MonoBehaviourPun
 
         Vector3 horizontalVelocity = characterController.velocity;
         horizontalVelocity.y = 0f;
+        float aimAmount = aim != null ? aim.AimAmount : 0f;
         float frequency = playerController.IsSprinting ? sprintFrequency * .8f : walkFrequency;
+        // Hip-fire walking was still driven by the faster camera bob, independently
+        // of WeaponSway. Keep the existing ADS cadence and blend into slower walking.
+        if (!playerController.IsSprinting) frequency *= Mathf.Lerp(.5f, 1f, aimAmount);
         // Camera children include the weapon and FPS arms, so this supplies one
         // shared, subtle bob without pulling the hands away from their grips.
         float amplitude = (playerController.IsSprinting ? sprintAmplitude : walkAmplitude) * .28f;
         amplitude *= Mathf.InverseLerp(.05f, 1f, horizontalVelocity.magnitude);
         if (!playerController.IsGrounded || playerController.IsSliding || (weaponAnimation != null && weaponAnimation.IsPlayingAction)) amplitude = 0;
-        amplitude *= Mathf.Lerp(1f, .15f, aim != null ? aim.AimAmount : 0f);
+        amplitude *= Mathf.Lerp(1f, .15f, aimAmount);
         if (playerController.IsCrouching)
         {
             amplitude *= 0.45f;

@@ -10,7 +10,6 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 [DisallowMultipleComponent]
 public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunObservable
 {
-    [SerializeField] private bool debugReloadOnR = true;
     private WeaponIdleSynchronizer animationSource;
     private PlayerRagdollController ragdoll;
     private Transform[] pivots;
@@ -39,10 +38,14 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
 
     private void Update()
     {
-        if (IsBot || !debugReloadOnR || !(Application.isEditor || Debug.isDebugBuild) ||
+        if (IsBot ||
             (PhotonNetwork.InRoom && !photonView.IsMine) || !Application.isFocused ||
-            Cursor.lockState != CursorLockMode.Locked || animationSource == null || !animationSource.CanFire) return;
-        if (Keyboard.current?.rKey.wasPressedThisFrame == true) PlayAction("reload");
+            Cursor.lockState != CursorLockMode.Locked || animationSource == null ||
+            (ragdoll != null && ragdoll.IsRagdoll)) return;
+        var health = GetComponent<PlayerHealth>();
+        if (health != null && health.IsDead) return;
+        if (Keyboard.current?.digit1Key.wasPressedThisFrame == true && animationSource.WeaponId != "ak74") EquipWeapon("ak74");
+        if (Keyboard.current?.digit2Key.wasPressedThisFrame == true && animationSource.WeaponId != "ucp") EquipWeapon("ucp");
     }
 
     private void Start()

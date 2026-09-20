@@ -16,6 +16,8 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
     private void Update()
     {
         if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
+        var navigation = BotNavigation.Ensure();
+        if (!navigation.Ready) return;
         if (Time.time >= sweepAt) { sweepAt = Time.time + .25f; SweepCorpses(); }
         if (Time.time < checkAt) return;
         checkAt = Time.time + 3f;
@@ -43,6 +45,9 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
             if (team == 2) team2++; else team1++;
             Vector3 origin = fallback;
             foreach (var point in points) if (point.Team == team) { origin = point.transform.position; break; }
+            // Scene spawn markers are above the floor (currently 2 m). Project the
+            // marker before the tighter path connectivity query, otherwise every slot fails.
+            if (!navigation.TryGetSpawnAnchor(origin,team,out var spawnAnchor)) continue;
             for (int attempt = 0; attempt < 24; attempt++)
             {
                 float angle = (slot * 60f + attempt * 37f) * Mathf.Deg2Rad;
@@ -50,6 +55,11 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
                 if (!Physics.Raycast(probe + Vector3.up * 5f, Vector3.down, out var ground, 20f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) || ground.normal.y < .7f) continue;
                 Vector3 position = ground.point + Vector3.up * .08f;
                 if (TeamSafeZone.IsEnemyArea(position, team)) continue;
+                if (!navigation.Sample(position, team, .6f, out var walkable) || Mathf.Abs(walkable.y-position.y)>.4f) continue;
+                // A sampled polygon may be an isolated strip behind the arena boundary.
+                // Spawn only on the same connected surface as this team's base.
+                if (!navigation.CanReach(spawnAnchor,walkable,team)) continue;
+                position = walkable + Vector3.up*.08f;
                 if (Physics.CheckCapsule(position + Vector3.up * .3f, position + Vector3.up * 1.5f, .26f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
                 PhotonNetwork.InstantiateRoomObject("Bot", position, Quaternion.Euler(0, slot * 60, 0), 0, new object[] { slot, team });
                 break;

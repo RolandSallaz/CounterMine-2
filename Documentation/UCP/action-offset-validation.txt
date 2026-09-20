@@ -1,0 +1,1 @@
+PASS: AK74/UCP equip and reload suppress sway, walking bob, sprint carry, residual recoil and ADS; idle sway resumes smoothly without stored look input. Walking bob appears with movement and fades at rest. UCP sprint points upward. Real prefab editor checks; live input/network match not run.

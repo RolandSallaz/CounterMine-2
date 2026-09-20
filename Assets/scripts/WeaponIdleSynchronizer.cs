@@ -24,6 +24,11 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public AnimancerComponent animator;
         public WeaponAimRig aimRig;
         public Transform muzzle, leftGrip, rightGrip;
+        public int magazineSize = 30;
+        public float roundsPerMinute = 600;
+        public bool automatic = true;
+        public int damage = 34;
+        [Min(.1f)] public float recoilKick = 1f;
         public AnimationClip characterIdle, weaponIdle, characterEquip, weaponEquip;
         public ActionEntry[] actions = Array.Empty<ActionEntry>();
     }
@@ -99,6 +104,9 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         var root = GetComponentInParent<PhotonView>();
         if (entry.aimRig != null) root.GetComponentInChildren<WeaponAimController>(true)?.Equip(entry.aimRig);
         if (entry.muzzle != null) root.GetComponent<NetworkWeapon>()?.SetMuzzle(entry.muzzle);
+        root.GetComponent<NetworkWeapon>()?.SetDamage(entry.damage);
+        root.GetComponent<WeaponAmmo>()?.SelectWeapon(entry.id, entry.magazineSize);
+        root.GetComponentInChildren<WeaponRecoilController>(true)?.ConfigureFire(entry.roundsPerMinute, entry.automatic, entry.recoilKick);
         if (entry.leftGrip != null && entry.rightGrip != null)
             foreach (var ik in root.GetComponentsInChildren<WeaponHandIK>(true)) ik.SetGrips(entry.leftGrip, entry.rightGrip);
         return true;

@@ -1,0 +1,10 @@
+UCP_Idle_Character duration=0,01666667 bindings=560
+UCP_Idle_Weapon duration=0,01666667 bindings=170
+UCP_Equip_Character duration=1,166667 bindings=560
+UCP_Equip_Weapon duration=1,166667 bindings=170
+UCP_Reload_Character duration=2,266667 bindings=560
+UCP_Reload_Weapon duration=2,266667 bindings=170
+Material Material.004 / Universal Render Pipeline/Lit,Material.008 / Universal Render Pipeline/Lit,Material.003 / Universal Render Pipeline/Lit,Material.006 / Universal Render Pipeline/Lit,Material.007 / Universal Render Pipeline/Lit,Material.005 / Universal Render Pipeline/Lit,Material.001 / Universal Render Pipeline/Lit,Material / Universal Render Pipeline/Lit,Material.002 / Universal Render Pipeline/Lit
+INSTALLED Assets/Resources/Player.prefab
+Material Material.004 / Universal Render Pipeline/Lit,Material.008 / Universal Render Pipeline/Lit,Material.003 / Universal Render Pipeline/Lit,Material.006 / Universal Render Pipeline/Lit,Material.007 / Universal Render Pipeline/Lit,Material.005 / Universal Render Pipeline/Lit,Material.001 / Universal Render Pipeline/Lit,Material / Universal Render Pipeline/Lit,Material.002 / Universal Render Pipeline/Lit
+INSTALLED Assets/Resources/Bot.prefab

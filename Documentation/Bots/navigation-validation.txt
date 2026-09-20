@@ -1,0 +1,5 @@
+PASS: 16 Unity NavMesh checks, 146 geometry sources.
+Both actual elevated scene spawn markers project onto navigation; all six slots have connected candidates for each team (12 slot checks).
+Both team spawns reach bridge, both roofs, cargo courts and flanks; enemy safe zones excluded.
+Real Bot prefab loads, initializes native path in Awake, calculates patrol route and recreates path after simulated script reload.
+Editor validation; full physics spawn clearance and live Photon match not run.

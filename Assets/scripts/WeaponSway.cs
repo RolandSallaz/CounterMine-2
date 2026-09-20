@@ -11,6 +11,11 @@ public sealed class WeaponSway : MonoBehaviour
     [SerializeField, Min(0f)] private float maximumPositionOffset = 0.02f;
     [SerializeField] private Vector3 maximumRotation = new Vector3(2f, 3f, 1.5f);
     [SerializeField, Min(0.1f)] private float smoothness = 18f;
+    [Header("Walking")]
+    [SerializeField] private Vector3 walkPosition = new Vector3(.007f, .01f, .004f);
+    [SerializeField] private Vector3 walkRotation = new Vector3(.7f, .45f, .8f);
+    [SerializeField, Min(.1f)] private float walkStrideLength = 4.3f;
+    [SerializeField, Min(.1f)] private float aimedWalkStrideLength = 34.4f;
 
     private Vector3 restPosition;
     private Quaternion restRotation;
@@ -22,6 +27,7 @@ public sealed class WeaponSway : MonoBehaviour
     private WeaponIdleSynchronizer animationSource;
     private PhotonView owner;
     private float sprintPhase;
+    private float walkPhase, walkAmount;
     public float SprintAmount { get; private set; }
     public Vector3 NeutralLocalPosition => hasRestPose ? restPosition : transform.localPosition;
     public Quaternion NeutralLocalRotation => hasRestPose ? restRotation : transform.localRotation;
@@ -47,7 +53,30 @@ public sealed class WeaponSway : MonoBehaviour
         Vector2 velocity = cameraLook != null && cameraLook.isActiveAndEnabled && Application.isFocused
             ? cameraLook.LookDeltaThisFrame / dt : Vector2.zero;
         Step(velocity, dt);
+        if (movement != null && movement.isActiveAndEnabled)
+            StepWalk(movement.HorizontalSpeed, movement.IsGrounded, movement.IsCrouching,
+                movement.IsSprinting, movement.IsSliding, dt);
         ApplySprint(dt);
+    }
+
+    private void StepWalk(float speed, bool grounded, bool crouching, bool running, bool sliding, float dt)
+    {
+        if ((animationSource != null && !animationSource.IsIdlePlaying) ||
+            (ragdoll != null && ragdoll.IsRagdoll) || (death != null && death.IsDead))
+        { walkAmount = 0; return; }
+        float target = grounded && !running && !sliding ? Mathf.Clamp01(speed / 4.8f) : 0;
+        walkAmount = Mathf.Lerp(walkAmount, target, 1f - Mathf.Exp(-12f * dt));
+        float aim = aimController != null ? aimController.AimAmount : 0;
+        float stride = Mathf.Lerp(walkStrideLength, aimedWalkStrideLength, aim);
+        if (grounded && speed > .05f)
+            walkPhase = Mathf.Repeat(walkPhase + speed * dt / Mathf.Max(.1f, stride), 1f);
+        float phase = walkPhase * Mathf.PI * 2f;
+        float amount = walkAmount * (crouching ? .5f : 1f) * Mathf.Lerp(1f, .12f, aim);
+        // The grip targets follow this pivot; hand IK runs after it for both arms.
+        transform.localPosition += Vector3.Scale(walkPosition,
+            new Vector3(Mathf.Sin(phase), Mathf.Cos(phase * 2), Mathf.Sin(phase * 2))) * amount;
+        transform.localRotation *= Quaternion.Euler(Vector3.Scale(walkRotation,
+            new Vector3(Mathf.Cos(phase * 2), Mathf.Sin(phase), -Mathf.Sin(phase))) * amount);
     }
 
     private void ApplySprint(float dt)
@@ -87,6 +116,15 @@ public sealed class WeaponSway : MonoBehaviour
 
     private void Step(Vector2 turnVelocity, float deltaTime)
     {
+        // Authored actions animate hands and weapon in the same space without hand IK.
+        // Even a fading procedural offset would pull the weapon away from the hands.
+        if (animationSource != null && animationSource.IsPlayingAction)
+        {
+            sway = Vector2.zero;
+            transform.localPosition = restPosition;
+            transform.localRotation = restRotation;
+            return;
+        }
         Vector2 target = Vector2.ClampMagnitude(turnVelocity / Mathf.Max(1f, fullSwayTurnSpeed), 1f);
         sway = Vector2.Lerp(sway, target, 1f - Mathf.Exp(-smoothness * deltaTime));
         float amount = aimController != null && aimController.isActiveAndEnabled ? aimController.SwayMultiplier : 1f;
@@ -100,6 +138,7 @@ public sealed class WeaponSway : MonoBehaviour
         sway = Vector2.zero;
         SprintAmount = 0;
         sprintPhase = 0;
+        walkAmount = walkPhase = 0;
         transform.localPosition = restPosition;
         transform.localRotation = restRotation;
     }

@@ -170,8 +170,10 @@ public class PlayerCameraLook : MonoBehaviourPun
         {
             Vector3 velocity = Vector3.ProjectOnPlane(capsule.velocity, Vector3.up);
             float speed = velocity.magnitude;
+            float aim = aimController != null ? aimController.AimAmount : 0f;
+            float cadence = movement.IsSprinting ? 1f : Mathf.Lerp(.5f, 1f, aim);
             // Advance with distance, so a blocked character does not sway in place.
-            stridePhase = Mathf.Repeat(stridePhase + speed * Time.deltaTime * (2f * Mathf.PI / 3.2f), 2f * Mathf.PI);
+            stridePhase = Mathf.Repeat(stridePhase + speed * Time.deltaTime * (2f * Mathf.PI / 3.2f) * cadence, 2f * Mathf.PI);
             float lateral = Vector3.Dot(velocity, transform.right);
             float sway = Mathf.Sin(stridePhase) * (movement.IsSprinting ? sprintRoll : walkRoll);
             target = -Mathf.Clamp(lateral / 3.2f, -1f, 1f) * strafeRoll + sway * Mathf.Clamp01(speed / 3.2f);

@@ -14,8 +14,8 @@ public sealed class TeamSafeZone : MonoBehaviour
     private static readonly HashSet<TeamSafeZone> Active = new HashSet<TeamSafeZone>();
     private BoxCollider box;
     private GameObject visual;
-    private readonly Dictionary<PlayerHealth, CharacterController> players = new Dictionary<PlayerHealth, CharacterController>();
-    private readonly List<PlayerHealth> stale = new List<PlayerHealth>();
+    private Dictionary<PlayerHealth, CharacterController> players = new Dictionary<PlayerHealth, CharacterController>();
+    private List<PlayerHealth> stale = new List<PlayerHealth>();
     public int Team => team;
     public BoxCollider Volume => box != null ? box : GetComponent<BoxCollider>();
 

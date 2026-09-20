@@ -1,5 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>Room-owned combat actor. Only the master runs decisions and movement.</summary>
 [DefaultExecutionOrder(-90)]
@@ -18,43 +19,36 @@ public sealed class BotController : MonoBehaviourPun
     private PlayerHealth health, target;
     private NetworkWeapon weapon;
     private Camera aimCamera;
-    private float thinkAt, fireAt, vertical;
-    private Vector3 moveDirection;
-    private static readonly float[] AvoidAngles = { 25f, -25f, 50f, -50f, 85f, -85f, 130f };
-    private float visibilityAt, patrolRetryAt, objectiveRetryAt;
-    private bool targetVisible;
-    [Header("Patrol (no target)")]
-    [SerializeField, Min(0f)] private float patrolSpeed = 1.7f;
-    [SerializeField, Min(0f)] private float combatSpeed = 2.3f;
-    [SerializeField, Min(1f)] private float patrolMinDistance = 6f;
-    [SerializeField, Min(1f)] private float patrolMaxDistance = 20f;
-    [Header("Objective: push the enemy base, then roam")]
-    [SerializeField, Min(1f)] private float baseHoldRadius = 5f;
-    [SerializeField, Min(1f)] private float roamMinDistance = 10f;
-    [SerializeField, Min(1f)] private float roamMaxDistance = 30f;
-    [Header("Wall avoidance")]
-    [SerializeField, Min(.5f)] private float avoidDistance = 2.4f;
-    [Header("Sprint")]
+    private WeaponAmmo ammo;
+    private BotNavigation navigation;
+    private NavMeshPath path;
+    private Vector3[] corners = System.Array.Empty<Vector3>();
+    private int corner, patrolIndex, burst;
+    private Vector3 destination, lastSeen, stuckReference;
+    private float thinkAt, planAt, fireAt, seenAt = -100, vertical, stuckAt, coverUntil;
+    private bool visible, hadAuthority;
+    private Vector3 mapCenter;
+    [Header("Navigation")]
+    [SerializeField, Min(0f)] private float patrolSpeed = 3.6f;
+    [SerializeField, Min(0f)] private float combatSpeed = 2.7f;
     [SerializeField, Min(0f)] private float sprintSpeed = 7.15f;
-    [SerializeField, Min(1f)] private float sprintDistance = 12f;
-    [Header("Spread (degrees)")]
+    [Header("Combat")]
+    [SerializeField, Min(1f)] private float fireRange = 40f;
     [SerializeField, Min(0f)] private float botBaseSpread = 2f;
     [SerializeField, Min(0f)] private float botSpreadPerMeter = .05f;
-    [SerializeField, Min(1f)] private float botSprintSpreadMultiplier = 2f;
-    [Header("Engagement")]
-    [SerializeField, Min(1f)] private float fireRange = 28f;
-    private Vector3 patrolPoint;
-    private bool hasPatrolPoint;
-    private float idleUntil;
-    private float stuckCheckAt;
-    private Vector3 stuckReference;
-    private Vector3 objectivePoint;
-    private bool hasObjective;
-    private bool reachedBase;
-    private int stuckCount;
-
+    [SerializeField, Min(1f)] private float memorySeconds = 6f;
+    // Distributed destinations: both flanks, cargo courts, bridge and roof exits.
+    private static readonly Vector3[] Patrol = {
+        new Vector3(-30,0,-11.8f), new Vector3(0,6,0), new Vector3(28,0,11.8f),
+        new Vector3(13.9f,0,-4), new Vector3(0,3.5f,5), new Vector3(-28,0,11.8f),
+        new Vector3(8,6,0), new Vector3(30,0,-11.8f), new Vector3(-13.9f,0,4),
+        new Vector3(0,3.5f,-5), new Vector3(-8,6,0), new Vector3(5,0,11.8f)
+    };
+    private bool Authority => !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
     private void Awake()
     {
+        // NavMeshPath allocates native state and cannot be created in a field initializer.
+        path = new NavMeshPath();
         capsule = GetComponent<CharacterController>(); health = GetComponent<PlayerHealth>();
         weapon = GetComponent<NetworkWeapon>(); aimCamera = GetComponentInChildren<Camera>(true);
         // These behaviours read the human's keyboard/mouse or manipulate its view.
@@ -69,190 +63,207 @@ public sealed class BotController : MonoBehaviourPun
     {
         name = DisplayName;
         foreach (var colors in GetComponentsInChildren<CharacterTeamColors>(true)) colors.ApplyTeam(Team);
-        fireAt = Time.time + 1.5f + Slot * .15f;
-        FindObjective();
-    }
-    /// <summary>Nearest enemy team spawn: the push objective. Spawn points are static, so one lookup is enough.</summary>
-    private void FindObjective()
-    {
-        if (Time.time < objectiveRetryAt) return;
-        objectiveRetryAt = Time.time + 2f;
-        hasObjective = false;
-        float best = float.PositiveInfinity;
-        foreach (var point in FindObjectsByType<TeamSpawnPoint>(FindObjectsSortMode.None))
-        {
-            if (point == null || point.Team == Team) continue;
-            float distance = (point.transform.position - transform.position).sqrMagnitude;
-            if (distance < best) { best = distance; objectivePoint = point.transform.position; hasObjective = true; }
-        }
+        ammo = GetComponent<WeaponAmmo>();
+        var spawns = FindObjectsByType<TeamSpawnPoint>(FindObjectsSortMode.None);
+        foreach (var spawn in spawns) mapCenter += spawn.transform.position;
+        if (spawns.Length > 0) mapCenter /= spawns.Length;
+        mapCenter.y = 0;
+        patrolIndex = (Slot * 5 + (Team == 2 ? 6 : 0)) % Patrol.Length;
+        stuckReference = transform.position; stuckAt = Time.time + 2;
     }
     private void Update()
     {
-        if ((PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || health.IsDead || !capsule.enabled) return;
-        if (Time.time >= thinkAt)
+        if (!Authority) { hadAuthority = false; return; }
+        if (health == null || health.IsDead || !capsule.enabled) return;
+        if (!hadAuthority)
         {
-            thinkAt = Time.time + .25f;
-            var previousTarget = target;
-            target = null; float best = 40f * 40f;
-            foreach (var candidate in PlayerHealth.ActivePlayers)
-            {
-                if (candidate == null || candidate == health || candidate.IsDead || TeamOf(candidate) == Team) continue;
-                float distance = (candidate.transform.position - transform.position).sqrMagnitude;
-                if (distance < best) { best = distance; target = candidate; }
-            }
-            if (target != previousTarget) { visibilityAt = 0; targetVisible = false; }
+            hadAuthority = true;
+            ClearPath(); target = null; visible = false; seenAt = -100;
+            thinkAt = Time.time + Slot*.04f; planAt = 0; fireAt = Time.time + .5f;
         }
-        moveDirection = Vector3.zero;
-        float speed = combatSpeed;
-        bool sprinting = false;
-        if (target != null && !target.IsDead)
+        navigation = BotNavigation.Ensure();
+        if (navigation.Ready)
         {
-            stuckCount = 0;
-            hasPatrolPoint = false;
-            Vector3 aim = target.transform.position + Vector3.up * 1.1f;
-            Vector3 flat = aim - transform.position; flat.y = 0;
-            if (flat.sqrMagnitude > .01f)
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(flat), 180f * Time.deltaTime);
-            Vector3 eye = aimCamera.transform.position;
-            Vector3 direction = (aim - eye).normalized;
-            aimCamera.transform.rotation = Quaternion.LookRotation(direction);
-            if (Time.time >= visibilityAt)
-            {
-                visibilityAt = Time.time + .15f;
-                targetVisible = BulletHitUtility.Cast(eye, direction, 40f, transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == target;
-            }
-            bool visible = targetVisible;
-            if (flat.magnitude > (visible ? 9f : 2f) || TeamSafeZone.BlocksWeapons(health))
-            {
-                moveDirection = flat.normalized;
-                // Distant chase: sprint to close the gap, slow down for strafe and fire range.
-                sprinting = flat.magnitude > sprintDistance;
-            }
-            else if (visible)
-            {
-                // Strafe while firing, drifting closer beyond point-blank so the bot never stands still.
-                Vector3 strafe = transform.right * Mathf.Sin(Time.time * .65f + Slot * 2);
-                Vector3 approach = flat.magnitude > 4f ? flat.normalized * .4f : Vector3.zero;
-                moveDirection = (strafe + approach).normalized;
-            }
-            if (visible && flat.magnitude <= fireRange && Time.time >= fireAt && Vector3.Dot(transform.forward, flat.normalized) > .96f)
-            {
-                fireAt = Time.time + Random.Range(.25f, .5f);
-                // Cone spread in degrees: base + distance growth, doubled on the run.
-                float spread = (botBaseSpread + botSpreadPerMeter * flat.magnitude) * (sprinting ? botSprintSpreadMultiplier : 1f);
-                weapon.FireBotShot(eye, direction, spread);
-            }
+            if (Time.time >= thinkAt) { thinkAt = Time.time + .3f; Sense(); }
+            if (Time.time >= planAt) { planAt = Time.time + .9f + Slot*.03f; Plan(); }
+            MoveAlongPath(Time.deltaTime);
+            AimAndFire();
         }
-        else
+        else ApplyGravity(Vector3.zero,Time.deltaTime);
+    }
+    private bool CanSee(PlayerHealth candidate)
+    {
+        if (candidate == null || candidate.IsDead || TeamOf(candidate) == Team || TeamSafeZone.Protects(candidate, Team)) return false;
+        Vector3 offset = candidate.transform.position + Vector3.up*1.1f - aimCamera.transform.position;
+        if (offset.sqrMagnitude > 48*48) return false;
+        // Close enemies can be noticed from any direction; farther ones must be in view.
+        if (offset.sqrMagnitude > 6*6 && Vector3.Dot(transform.forward, offset.normalized) < -.1f) return false;
+        return BulletHitUtility.Cast(aimCamera.transform.position, offset.normalized, offset.magnitude+.5f,
+            transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == candidate;
+    }
+    private void Sense()
+    {
+        PlayerHealth bestTarget = null;
+        float best = float.PositiveInfinity;
+        foreach (var candidate in PlayerHealth.ActivePlayers)
         {
-            // Phase 1: push the enemy base. Phase 2 (reached once): roam the map freely.
-            // A random detour is only used to unstick from geometry.
-            if (!hasObjective) FindObjective();
-            if (hasObjective && !reachedBase && FlatDistance(transform.position, objectivePoint) <= baseHoldRadius)
-                reachedBase = true;
-            Vector3 flatPatrol = hasPatrolPoint ? patrolPoint - transform.position : Vector3.zero;
-            flatPatrol.y = 0;
-            if (!hasPatrolPoint || flatPatrol.magnitude < 1.2f)
+            if (candidate == health || !CanSee(candidate)) continue;
+            float score = (candidate.transform.position-transform.position).sqrMagnitude;
+            if (candidate == target) score *= .65f;
+            if (score < best) { best = score; bestTarget = candidate; }
+        }
+        visible = bestTarget != null;
+        if (visible)
+        {
+            if (target != bestTarget) { fireAt = Time.time + Random.Range(.25f,.5f); burst = 0; planAt = 0; }
+            target = bestTarget; lastSeen = target.transform.position; seenAt = Time.time;
+        }
+        else if (Time.time-seenAt > memorySeconds || target == null || target.IsDead)
+        {
+            target = null;
+        }
+    }
+    private bool SetDestination(Vector3 point)
+    {
+        if (!navigation.Sample(transform.position,Team,1.2f,out var start)) return false;
+        if (!navigation.Sample(point,Team,1.2f,out var end)) return false;
+        // Script reload during Play Mode can clear this non-serialized native wrapper.
+        path ??= new NavMeshPath();
+        if (!NavMesh.CalculatePath(start,end,navigation.Filter(Team),path) || path.status != NavMeshPathStatus.PathComplete)
+        {
+            return false;
+        }
+        var next = path.corners;
+        if (next.Length < 2) return false;
+        corners = next; corner = 1; destination = end;
+        return true;
+    }
+    private void ClearPath() { corners = System.Array.Empty<Vector3>(); corner = 0; }
+    private bool HasPath => corner < corners.Length;
+    private void Plan()
+    {
+        bool threatened = target != null && Time.time-seenAt < memorySeconds;
+        bool recover = ammo != null && ammo.IsReloading || health.CurrentHealth < health.MaximumHealth*.35f;
+        if (threatened)
+        {
+            if (recover && Time.time >= coverUntil && FindCover()) { coverUntil = Time.time + 2; return; }
+            if (recover && Time.time < coverUntil) return;
+            if (!visible)
             {
-                if (hasPatrolPoint) { idleUntil = Time.time + Random.Range(.4f, 1.2f); stuckCount = 0; }
-                hasPatrolPoint = false;
-                if (hasObjective && !reachedBase && stuckCount < 2)
+                // Only the last observed position is pursued, never a hidden live transform.
+                if (Vector3.Distance(transform.position,lastSeen)<1.8f) { target=null; seenAt=-100; ClearPath(); }
+                else if (SetDestination(lastSeen)) return;
+            }
+            else
+            {
+                Vector3 away = transform.position-lastSeen; away.y=0;
+                float distance = away.magnitude;
+                if (TeamSafeZone.BlocksWeapons(health) || distance > fireRange*.85f)
                 {
-                    patrolPoint = objectivePoint;
-                    hasPatrolPoint = true;
+                    if (SetDestination(lastSeen + away.normalized*12)) return;
                 }
                 else
                 {
-                    Vector3 anchor = transform.position;
-                    float minDistance, maxDistance;
-                    if (!hasObjective || reachedBase) { minDistance = roamMinDistance; maxDistance = roamMaxDistance; }
-                    else { minDistance = patrolMinDistance; maxDistance = patrolMaxDistance; }
-                    hasPatrolPoint = TryPickPatrolPoint(anchor, minDistance, maxDistance, out patrolPoint);
-                }
-                stuckReference = transform.position;
-                stuckCheckAt = Time.time + 1.5f;
-            }
-            else if (Time.time >= idleUntil)
-            {
-                moveDirection = flatPatrol.normalized;
-                speed = patrolSpeed;
-                // Long push to the enemy base: sprint, stroll near hold points.
-                sprinting = flatPatrol.magnitude > sprintDistance;
-                if (flatPatrol.sqrMagnitude > .01f)
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(flatPatrol), 180f * Time.deltaTime);
-                if (Time.time >= stuckCheckAt)
-                {
-                    // Barely moved while trying to walk: drop the point, a new one gets picked above.
-                    // Two stucks in a row force a wide roam point to escape dead ends.
-                    if ((transform.position - stuckReference).sqrMagnitude < .09f) { hasPatrolPoint = false; stuckCount++; }
-                    stuckReference = transform.position;
-                    stuckCheckAt = Time.time + 1.5f;
+                    // Enemy co-located with the bot: direction is undefined, hold position and keep firing.
+                    if (distance < .05f) { ClearPath(); return; }
+                    Vector3 side = Vector3.Cross(Vector3.up,away.normalized) * ((Slot%2==0)?1:-1);
+                    Vector3 retreat = distance<6 ? away.normalized*3 : Vector3.zero;
+                    if (SetDestination(transform.position+side*Random.Range(2f,4f)+retreat) ||
+                        SetDestination(transform.position-side*3+retreat)) return;
+                    ClearPath(); return;
                 }
             }
         }
-        if (sprinting) speed = sprintSpeed;
-        if (moveDirection.sqrMagnitude > .01f)
+        if (HasPath) return;
+        if (ammo != null && ammo.MagAmmo < ammo.MagazineSize/2) ammo.TryStartReload();
+        // Each bot cycles all sectors with a different offset, rather than camping the enemy base.
+        for (int attempt=0;attempt<Patrol.Length;attempt++)
         {
-            // Whisker avoidance: straight ahead first, then fan out. Beats wall sliding in corners.
-            moveDirection = Steer(moveDirection);
-            if (moveDirection.sqrMagnitude > .01f)
-            {
-                Vector3 origin = transform.position + Vector3.up * .6f;
-                if (!Physics.Raycast(origin + moveDirection.normalized * .8f, Vector3.down, 1.5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) moveDirection = Vector3.zero;
-            }
+            Vector3 point = mapCenter + Patrol[patrolIndex];
+            patrolIndex = (patrolIndex+1)%Patrol.Length;
+            if (Vector3.Distance(point,transform.position)>3 && SetDestination(point)) return;
         }
-        vertical = capsule.isGrounded ? -2f : Mathf.Max(-25f, vertical - 24f * Time.deltaTime);
-        capsule.Move((moveDirection * speed + Vector3.up * vertical) * Time.deltaTime);
     }
-
-    /// <summary>Steer around walls: forward probe, then whiskers at increasing angles. Returns zero when boxed in.</summary>
-    private Vector3 Steer(Vector3 desired)
+    private bool FindCover()
     {
-        Vector3 direction = desired.normalized;
-        Vector3 origin = transform.position + Vector3.up * .6f;
-        if (!BulletHitUtility.CastCover(origin, direction, avoidDistance, transform, ~0, true).didHit) return direction;
-        float side = Slot % 2 == 0 ? 1f : -1f;
-        foreach (float angle in AvoidAngles)
+        for (int i=0;i<10;i++)
         {
-            Vector3 candidate = Quaternion.Euler(0f, angle * side, 0f) * direction;
-            if (!BulletHitUtility.CastCover(origin, candidate, avoidDistance, transform, ~0, true).didHit) return candidate;
-        }
-        return Vector3.zero;
-    }
-
-    /// <summary>Random reachable ground point around a center, same sampling as the room spawner.</summary>
-    private bool TryPickPatrolPoint(Vector3 center, float minDistance, float maxDistance, out Vector3 point)
-    {
-        point = transform.position;
-        if (Time.time < patrolRetryAt) return false;
-        patrolRetryAt = Time.time + .5f;
-        maxDistance = Mathf.Max(minDistance, maxDistance);
-        for (int attempt = 0; attempt < 12; attempt++)
-        {
-            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            float distance = Random.Range(minDistance, maxDistance);
-            Vector3 probe = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * distance;
-            if (!Physics.Raycast(probe + Vector3.up * 5f, Vector3.down, out var ground, 20f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) || ground.normal.y < .7f) continue;
-            Vector3 candidate = ground.point + Vector3.up * .08f;
-            if (TeamSafeZone.IsEnemyArea(candidate, Team)) continue;
-            if (Physics.CheckCapsule(candidate + Vector3.up * .3f, candidate + Vector3.up * 1.5f, .26f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
-            // Skip points behind walls: the bot should be able to walk there in a straight line.
-            Vector3 toCandidate = candidate - transform.position; toCandidate.y = 0;
-            if (toCandidate.magnitude > 2f)
-            {
-                Vector3 origin = transform.position + Vector3.up * .6f;
-                var wall = BulletHitUtility.CastCover(origin, toCandidate.normalized, toCandidate.magnitude, transform, ~0, true);
-                if (wall.didHit) continue;
-            }
-            point = candidate;
-            return true;
+            float angle = (i*36+Slot*47)*Mathf.Deg2Rad;
+            Vector3 point = transform.position + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*Random.Range(3f,7f);
+            if (!navigation.Sample(point,Team,1.2f,out point)) continue;
+            Vector3 direction = lastSeen + Vector3.up*1.1f - (point+Vector3.up*1.2f);
+            if (!BulletHitUtility.CastCover(point+Vector3.up*1.2f,direction.normalized,direction.magnitude,
+                transform,~0,true).didHit) continue;
+            if (SetDestination(point)) return true;
         }
         return false;
     }
-
-    private static float FlatDistance(Vector3 a, Vector3 b)
+    private void MoveAlongPath(float deltaTime)
     {
-        a.y = 0; b.y = 0;
-        return (a - b).magnitude;
+        while (HasPath)
+        {
+            Vector3 delta = corners[corner]-transform.position;
+            if (new Vector2(delta.x,delta.z).magnitude>.12f || Mathf.Abs(delta.y)>.6f) break;
+            corner++;
+        }
+        Vector3 move = Vector3.zero;
+        if (HasPath)
+        {
+            Vector3 delta = corners[corner]-transform.position; delta.y=0;
+            move=delta.normalized;
+            // Light separation keeps teammates from pushing into the same corner.
+            Vector3 separation=Vector3.zero;
+            foreach (var other in PlayerHealth.ActivePlayers)
+            {
+                if (other==null || other==health || other.IsDead) continue;
+                Vector3 away=transform.position-other.transform.position;
+                if (Mathf.Abs(away.y)>.8f) continue;
+                away.y=0;float distance=away.magnitude;
+                if (distance>.01f && distance<.8f) separation += away/distance*(.8f-distance);
+            }
+            var desired=(move+separation).normalized;
+            if (navigation.Sample(transform.position,Team,.8f,out var floor))
+            {
+                if (!NavMesh.Raycast(floor,floor+desired*.65f,out _,navigation.Filter(Team))) move=desired;
+                else if (NavMesh.Raycast(floor,floor+move*Mathf.Min(.2f,delta.magnitude*.5f),out _,navigation.Filter(Team))) move=Vector3.zero;
+            }
+            else { ClearPath(); move=Vector3.zero; }
+            float speed = visible ? combatSpeed : Vector3.Distance(transform.position,destination)>5 ? sprintSpeed : patrolSpeed;
+            if (!visible && move.sqrMagnitude>.01f) transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(move),240*deltaTime);
+            move *= Mathf.Min(speed,delta.magnitude/Mathf.Max(.001f,deltaTime));
+        }
+        else planAt=Mathf.Min(planAt,Time.time+.15f);
+        ApplyGravity(move,deltaTime);
+        if (Time.time>=stuckAt)
+        {
+            if (HasPath && (transform.position-stuckReference).sqrMagnitude<.12f)
+            {
+                ClearPath(); coverUntil=0; target=null; visible=false; seenAt=-100;
+                patrolIndex=(patrolIndex+3)%Patrol.Length;planAt=0;
+            }
+            stuckReference=transform.position;stuckAt=Time.time+2;
+        }
+    }
+    private void ApplyGravity(Vector3 velocity,float deltaTime)
+    {
+        vertical=capsule.isGrounded?-2:Mathf.Max(-25,vertical-24*deltaTime);
+        capsule.Move((velocity+Vector3.up*vertical)*deltaTime);
+    }
+    private void AimAndFire()
+    {
+        if (!visible || target==null) return;
+        Vector3 aim=lastSeen+Vector3.up*1.1f;
+        Vector3 flat=aim-transform.position;flat.y=0;
+        if (flat.sqrMagnitude>.01f) transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(flat),240*Time.deltaTime);
+        Vector3 eye=aimCamera.transform.position, direction=(aim-eye).normalized;
+        aimCamera.transform.rotation=Quaternion.LookRotation(direction);
+        if (Time.time<fireAt || flat.magnitude>fireRange || Vector3.Dot(transform.forward,flat.normalized)<.96f || !CanSee(target)) return;
+        if (weapon.FireBotShot(eye,direction,botBaseSpread+botSpreadPerMeter*flat.magnitude))
+        {
+            burst++;
+            if (burst>=3) { burst=0;fireAt=Time.time+Random.Range(.35f,.65f); }
+            else fireAt=Time.time+Random.Range(.12f,.2f);
+        }
+        else fireAt=Time.time+.15f;
     }
 }

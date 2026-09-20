@@ -50,6 +50,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         public float distance, age;
         public BulletTrail visual;
         public string weaponId;
+        public int damage;
     }
     private readonly Dictionary<int, Flight> flights = new Dictionary<int, Flight>();
     private readonly List<int> flightKeys = new List<int>();
@@ -57,6 +58,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private long ShotKey(int sequence) => ((long)photonView.ViewID << 32) | (uint)sequence;
 
     public void SetMuzzle(Transform nextMuzzle) => muzzle = nextMuzzle;
+    public void SetDamage(int amount) => damage = Mathf.Max(1,amount);
 
     public bool FireBotShot(Vector3 eye, Vector3 direction, float spreadDegrees)
     {
@@ -219,7 +221,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         }
         else if (!photonView.IsMine || !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient)
             tracer = SpawnVisual(start, velocity, sequence, age);
-        flights[sequence] = new Flight { position = start, velocity = velocity, time = time, visual = tracer, weaponId = weaponAnimation != null ? weaponAnimation.WeaponId : "ak74" };
+        flights[sequence] = new Flight { position = start, velocity = velocity, time = time, visual = tracer, damage = damage, weaponId = weaponAnimation != null ? weaponAnimation.WeaponId : "ak74" };
     }
     private BulletTrail SpawnVisual(Vector3 start, Vector3 velocity, int sequence, float age) =>
         BulletTrail.Spawn(start, velocity, gravity, range, tracerMaterial, tracerLength, tracerWidth, bulletSize, ShotKey(sequence), age);
@@ -268,7 +270,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
                 if (!hit.didHit && flight.distance < range && flight.age < 10f) continue;
                 if (hit.player != null && (friendlyFire || health == null || BotController.TeamOf(health) == 0 || BotController.TeamOf(health) != BotController.TeamOf(hit.player)))
                 {
-                    int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * hit.damageMultiplier));
+                    int finalDamage = Mathf.Max(1, Mathf.RoundToInt(flight.damage * hit.damageMultiplier));
                     hit.player.ApplyMasterDamage(finalDamage, flight.velocity.normalized * 4f, hit.point, photonView.Owner, BotController.IsBot(this) ? photonView.ViewID : 0, flight.weaponId);
                     ReportDamageNumber(photonView.Owner, hit.player, finalDamage, hit.point, hit.damageMultiplier > 1.01f);
                 }

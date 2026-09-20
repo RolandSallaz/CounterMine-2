@@ -24,6 +24,9 @@ public sealed class WeaponRecoilController : MonoBehaviour
     [SerializeField, Min(1f)] private float sustainedFireMultiplier = 1.6f;
     [SerializeField] private Vector2 cameraPitch = new Vector2(.35f, .6f);
     [SerializeField, Min(0f)] private float cameraYaw = .2f;
+    [Header("Per-weapon kick (pistol springs up more)")]
+    [SerializeField, Min(.1f)] private float pistolKickMultiplier = 2.2f;
+    private float currentKickMultiplier = 1f;
     [Header("Spread (degrees, drives bullets and crosshair)")]
     [SerializeField, Min(0f)] private float hipSpread = 1.2f;
     [SerializeField, Min(0f)] private float heatSpread = 3.5f;
@@ -43,6 +46,30 @@ public sealed class WeaponRecoilController : MonoBehaviour
     public float Heat { get; private set; }
     public int ShotsFired { get; private set; }
     public float RoundsPerMinute => roundsPerMinute;
+    public void ConfigureFire(float rpm, bool fullAuto, float kickMultiplier = 1f)
+    {
+        roundsPerMinute = Mathf.Max(1f, rpm);
+        automatic = fullAuto;
+        currentKickMultiplier = kickMultiplier <= 0f ? 1f : kickMultiplier;
+        // Old prefabs have recoilKick == 0: fall back to the pistol boost by weapon id.
+        if (currentKickMultiplier <= 1.01f && weaponAnimation != null && weaponAnimation.WeaponId == "ucp")
+            currentKickMultiplier = Mathf.Max(1f, pistolKickMultiplier);
+        Heat = 0;
+        nextShotTime = Time.timeAsDouble;
+        if (initialized && recoilAnimation != null && recoilProfile != null)
+        {
+            recoilAnimation.Stop();
+            recoilAnimation.Init(recoilProfile, roundsPerMinute);
+            recoilAnimation.fireMode = FireMode.Semi;
+        }
+    }
+
+    private float CurrentKick()
+    {
+        if (weaponAnimation != null && weaponAnimation.WeaponId == "ucp")
+            return Mathf.Max(currentKickMultiplier, pistolKickMultiplier);
+        return Mathf.Max(1f, currentKickMultiplier);
+    }
     /// <summary>Single source of truth: current bullet spread cone (degrees) and crosshair gap.</summary>
     public float CurrentSpreadDegrees => ComputeSpread();
 
@@ -117,11 +144,15 @@ public sealed class WeaponRecoilController : MonoBehaviour
         if (networkWeapon == null || !networkWeapon.FireLocalShot()) return;
         float aim = aimController != null ? aimController.AimAmount : 0f;
         float ergonomics = aimController != null ? aimController.ErgonomicsNormalized : .55f;
-        shotStrength = Mathf.Lerp(1f, sustainedFireMultiplier, Heat) * Mathf.Lerp(1.1f, .9f, ergonomics);
+        float kick = CurrentKick();
+        float baseStrength = Mathf.Lerp(1f, sustainedFireMultiplier, Heat) * Mathf.Lerp(1.1f, .9f, ergonomics);
+        // Visual spring (LateUpdate) scales fully with the per-weapon kick.
+        shotStrength = baseStrength * kick;
         // Blend ADS continuously outside the plugin's boolean aiming flag to avoid a midpoint snap.
         recoilAnimation.isAiming = false;
         recoilAnimation.Play();
-        float cameraStrength = shotStrength * Mathf.Lerp(1f, .65f, aim);
+        // Camera kick stays as before (no per-weapon scale) — only the visual spring uses kick.
+        float cameraStrength = baseStrength * Mathf.Lerp(1f, .65f, aim);
         cameraLook?.AddRecoil(new Vector2(Random.Range(-cameraYaw, cameraYaw), Random.Range(cameraPitch.x, cameraPitch.y)) * cameraStrength);
         animationController?.PlayWeaponFire();
         Heat = Mathf.Clamp01(Heat + heatPerShot);
@@ -131,6 +162,12 @@ public sealed class WeaponRecoilController : MonoBehaviour
     private void LateUpdate()
     {
         if (!initialized) return;
+        if (weaponAnimation != null && weaponAnimation.IsPlayingAction)
+        {
+            transform.localPosition = restPosition;
+            transform.localRotation = restRotation;
+            return;
+        }
         float aim = aimController != null ? aimController.AimAmount : 0f;
         Vector3 rotationScale = Vector3.Lerp(Vector3.one, recoilProfile.aimRot, aim);
         Vector3 positionScale = Vector3.Lerp(Vector3.one, recoilProfile.aimLoc, aim);

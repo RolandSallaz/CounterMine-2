@@ -365,9 +365,9 @@ public sealed class PlayerHUD : MonoBehaviour
             Cursor.visible = true;
         }
         if (respawnPanel != null) respawnPanel.SetActive(true);
-        float remaining = Mathf.Max(0f, respawnDelay - (Time.unscaledTime - deathAt));
-        if (respawnButton != null) respawnButton.interactable = remaining <= 0f;
-        if (respawnLabel != null) respawnLabel.text = remaining > 0f ? $"RESPAWN IN {Mathf.CeilToInt(remaining)}" : "RESPAWN";
+        // Respawn is always available: no countdown gate, button stays clickable.
+        if (respawnButton != null) respawnButton.interactable = true;
+        if (respawnLabel != null) respawnLabel.text = "RESPAWN";
     }
 
     private void EnsureRespawnPanel()
@@ -405,7 +405,7 @@ public sealed class PlayerHUD : MonoBehaviour
         var buttonImage = buttonGo.AddComponent<Image>();
         buttonImage.color = new Color(.16f, .32f, .42f, .95f);
         respawnButton = buttonGo.AddComponent<Button>();
-        respawnButton.interactable = false;
+        respawnButton.interactable = true;
         var buttonRect = buttonGo.GetComponent<RectTransform>();
         buttonRect.sizeDelta = new Vector2(260f, 56f);
         var layoutElement = buttonGo.AddComponent<LayoutElement>();
@@ -433,7 +433,8 @@ public sealed class PlayerHUD : MonoBehaviour
     private void OnRespawnClicked()
     {
         GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);
-        if (respawnButton != null) respawnButton.interactable = false;
+        // Keep the button active so repeated clicks (e.g. failed spawn) still work.
+        if (respawnButton != null) respawnButton.interactable = true;
         // Inside the click handler, so pointer-lock requests stay browser-legal.
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

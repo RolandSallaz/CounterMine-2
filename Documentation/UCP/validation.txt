@@ -1,0 +1,3 @@
+PASS Player: animation paths, idle grips, equip/fire gate, semi-auto stats, independent magazines, reload interruption/completion and network state application.
+PASS Bot: animation paths, idle grips, equip/fire gate, semi-auto stats, independent magazines, reload interruption/completion and network state application.
+Editor prefab/animation validation; live Photon match and packaged build not run.
