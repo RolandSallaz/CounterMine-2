@@ -1,0 +1,10 @@
+PASS Player ak74: native bone, world-space backward travel, return, reload cancellation.
+PASS Player ucp: native bone, world-space backward travel, return, reload cancellation.
+PASS Player ak74: native bone, world-space backward travel, return, reload cancellation.
+PASS Player ucp: native bone, world-space backward travel, return, reload cancellation.
+PASS Bot ak74: native bone, world-space backward travel, return, reload cancellation.
+PASS Bot ucp: native bone, world-space backward travel, return, reload cancellation.
+PASS Bot ak74: native bone, world-space backward travel, return, reload cancellation.
+PASS Bot ucp: native bone, world-space backward travel, return, reload cancellation.
+PASS: six navigation paths from both bases to A/B/C, floor isolation, ring shader warmup.
+Native prefab/navigation validation. Live multi-client Photon match not exercised.

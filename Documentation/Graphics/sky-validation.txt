@@ -1,0 +1,1 @@
+PASS: sky material reference, native shader warmup and URP camera render. Isolated test; game FPS not measured.

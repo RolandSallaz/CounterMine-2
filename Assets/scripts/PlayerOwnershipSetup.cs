@@ -24,6 +24,7 @@ public class PlayerOwnershipSetup : MonoBehaviourPun
             {
                 hud.gameObject.SetActive(true);
                 hud.Bind(GetComponent<PlayerHealth>());
+                if (hud.GetComponent<ConquestHUD>() == null) hud.gameObject.AddComponent<ConquestHUD>();
             }
         }
     }

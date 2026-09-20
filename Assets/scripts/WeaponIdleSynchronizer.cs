@@ -30,6 +30,8 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public int damage = 34;
         [Min(.1f)] public float recoilKick = 1f;
         public WeaponRecoilController.Tuning recoil;
+        [Min(0f)] public float boltTravel = .065f;
+        [Min(.02f)] public float boltCycleSeconds = .095f;
         public AnimationClip characterIdle, weaponIdle, characterEquip, weaponEquip;
         public ActionEntry[] actions = Array.Empty<ActionEntry>();
     }
@@ -78,6 +80,29 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     }
     private bool applyingNetwork;
     private WeaponEntry currentWeapon;
+    private Transform bolt;
+    private Vector3 boltRest;
+    private bool captureBoltRest;
+    private double boltShotAt = double.NegativeInfinity;
+    public void PlayShotBolt()
+    {
+        if (CanFire && bolt != null) boltShotAt = Now;
+    }
+    public static float BoltCycle(float age, float duration)
+    {
+        float phase = age / Mathf.Max(.02f, duration);
+        if (phase < 0 || phase >= 1) return 0;
+        if (phase < .22f) return Mathf.SmoothStep(0, 1, phase / .22f);
+        return 1 - Mathf.SmoothStep(0, 1, (phase - .22f) / .78f);
+    }
+    private void BindBolt(WeaponEntry entry)
+    {
+        if (bolt != null && !captureBoltRest) bolt.localPosition = boltRest;
+        bolt = null; boltShotAt = double.NegativeInfinity; captureBoltRest = true;
+        string boneName = entry.id == "ucp" ? "slide" : "bolt";
+        foreach (var bone in entry.animator.GetComponentsInChildren<Transform>(true))
+            if (bone.name == boneName) { bolt = bone; break; }
+    }
     public WeaponAudioProfile AudioProfile => currentWeapon != null && currentWeapon.audioProfile != null ? currentWeapon.audioProfile : GameAudio.Profile(WeaponId);
     public Transform RightGrip => currentWeapon != null ? currentWeapon.rightGrip : null;
     private bool IsRemote => PhotonNetwork.InRoom && !GetComponentInParent<PhotonView>().IsMine;
@@ -97,6 +122,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         var entry = Array.Find(weapons, w => w != null && w.id == id);
         if (entry == null || entry.animator == null || entry.characterIdle == null || entry.weaponIdle == null) return false;
         if (currentWeapon == entry) return true;
+        BindBolt(entry);
         if (weaponAnimancer != null && weaponAnimancer.IsPlayableInitialized) weaponAnimancer.Playable.PauseGraph();
         foreach (var w in weapons) if (w != null && w.animator != null) w.animator.gameObject.SetActive(w == entry);
         currentWeapon = entry; WeaponId = entry.id; weaponAnimancer = entry.animator;
@@ -221,6 +247,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
 
     private void PlayPair(AnimationClip armsClip, AnimationClip weaponClip, bool equip)
     {
+        boltShotAt = double.NegativeInfinity;
         idleBones = null;
         armsState = null;
         weaponState = null;
@@ -275,6 +302,15 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (!IsEquipping && activeArmsClip.length == 0f) RestoreIdlePose();
         armsAnimancer.Evaluate(0f);
         weaponAnimancer.Evaluate(0f);
+        if (!IsEquipping && bolt != null && currentWeapon != null)
+        {
+            if (captureBoltRest) { boltRest = bolt.localPosition; captureBoltRest = false; }
+            float amount = BoltCycle((float)(Now - boltShotAt), currentWeapon.boltCycleSeconds);
+            Vector3 backwards = currentWeapon.muzzle != null ? -currentWeapon.muzzle.forward : -WeaponRoot.forward;
+            // Travel is in world metres, independent of the FBX import/bone scale.
+            Vector3 travel = bolt.parent.InverseTransformVector(backwards * currentWeapon.boltTravel);
+            bolt.localPosition = boltRest + travel * amount;
+        }
         if (!IsEquipping && activeArmsClip.length == 0f && idleBones == null) CaptureIdlePose();
         LastEvaluatedFrame = Time.frameCount;
     }

@@ -62,7 +62,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
 
     public bool FireBotShot(Vector3 eye, Vector3 direction, float spreadDegrees)
     {
-        if (TeamSafeZone.BlocksWeapons(health)) return false;
+        if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health)) return false;
         if (!BotController.IsBot(this) || (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) ||
             muzzle == null || health == null || health.IsDead || weaponAnimation == null || !weaponAnimation.CanFire) return false;
         if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
@@ -107,7 +107,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
 
     public bool FireLocalShot()
     {
-        if (TeamSafeZone.BlocksWeapons(health)) return false;
+        if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health)) return false;
         if (weaponAnimation != null && !weaponAnimation.CanFire) return false;
         if ((movement != null && movement.IsSprinting) || (weaponSway != null && weaponSway.SprintAmount > .05f)) return false;
         if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
@@ -152,7 +152,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
 
     private bool AcceptShot(int sequence, double time, double now, Vector3 eye, Vector3 direction, Vector3 start)
     {
-        if (TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(eye) || TeamSafeZone.ContainsAny(start)) return false;
+        if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(eye) || TeamSafeZone.ContainsAny(start)) return false;
         if (sequence <= Mathf.Max(lastAcceptedSequence, lastConfirmedSequence) || sequence <= 0 ||
             double.IsNaN(time) || double.IsInfinity(time) || time < now - .75 || time > now + .1 ||
             !BulletHitUtility.IsFinite(eye) || !BulletHitUtility.IsFinite(direction) || !BulletHitUtility.IsFinite(start) ||
@@ -231,6 +231,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
         if (sequence > lastSoundSequence)
         {
             lastSoundSequence = sequence;
+            weaponAnimation?.PlayShotBolt();
             GameAudio.Shot(weaponAnimation != null ? weaponAnimation.AudioProfile : GameAudio.Profile("ak74"), start, sequence,
                 !BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine));
         }

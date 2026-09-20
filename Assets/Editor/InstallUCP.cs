@@ -131,6 +131,8 @@ public static class InstallUCP
             entry.FindPropertyRelative("roundsPerMinute").floatValue=400;
             entry.FindPropertyRelative("automatic").boolValue=false;
             entry.FindPropertyRelative("damage").intValue=20;
+            entry.FindPropertyRelative("boltTravel").floatValue=.035f;
+            entry.FindPropertyRelative("boltCycleSeconds").floatValue=.105f;
             var recoil = entry.FindPropertyRelative("recoil");
             recoil.FindPropertyRelative("rotateAroundGrip").boolValue = true;
             recoil.FindPropertyRelative("animation").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Kinemation.Recoilly.RecoilAnimData>(Folder + "UCP_Recoil.asset");

@@ -172,7 +172,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
 
     public void ApplyMasterDamage(int amount, Vector3 force, Vector3 point, Player killer = null, int killerBotViewId = 0, string weaponId = "")
     {
-        if ((PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || IsDead || amount <= 0) return;
+        if (!ConquestMatch.CombatAllowed || (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) || IsDead || amount <= 0) return;
         if (TeamSafeZone.Protects(this, TeamSafeZone.AttackerTeam(killer, killerBotViewId))) return;
         int nextHealth = Mathf.Max(0, CurrentHealth - amount);
         int nextRevision = revision + 1;

@@ -5,7 +5,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    private const string GameVersion = "CounterMine-0.1";
+    private const string GameVersion = "CounterMine-0.2-conquest";
     private const string TeamProperty = "team";
 
     [SerializeField] private string roomPrefix = "CounterMine";
@@ -25,6 +25,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (GetComponent<BotRoomSpawner>() == null) gameObject.AddComponent<BotRoomSpawner>();
         PhotonNetwork.AutomaticallySyncScene = true;
+        ConquestMatch.Ensure();
         KillRewards.EnsureSubscribed();
         YandexPlayerData.Load();
 #if UNITY_WEBGL && !UNITY_EDITOR

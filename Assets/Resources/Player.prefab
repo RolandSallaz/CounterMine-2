@@ -1831,6 +1831,8 @@ MonoBehaviour:
     roundsPerMinute: 600
     automatic: 1
     damage: 34
+    boltTravel: 0.065
+    boltCycleSeconds: 0.095
     recoilKick: 1
     characterIdle: {fileID: 7400000, guid: c7356d178c7a28e4cb429f7da7c78737, type: 2}
     weaponIdle: {fileID: 7400000, guid: 549b284092f33934dad610b09d75b5d4, type: 2}
@@ -1851,6 +1853,8 @@ MonoBehaviour:
     roundsPerMinute: 400
     automatic: 0
     damage: 20
+    boltTravel: 0.035
+    boltCycleSeconds: 0.105
     recoilKick: 1
     recoil:
       animation: {fileID: 11400000, guid: b5dce297f3224f7e97ff3ac638fe8c2a, type: 2}

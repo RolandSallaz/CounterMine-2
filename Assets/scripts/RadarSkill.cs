@@ -191,6 +191,7 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
         charge.Reset(); ClearTargets();
         if (forgetOwner) { owner = null; ownerCamera = null; }
     }
+    public void ResetRound() => ResetMatch(false);
     public override void OnLeftRoom() => ResetMatch();
     public override void OnJoinedRoom() => ResetMatch(false);
     public override void OnDisconnected(DisconnectCause cause) => ResetMatch();

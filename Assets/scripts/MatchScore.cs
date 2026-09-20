@@ -20,6 +20,7 @@ public sealed class MatchScore : MonoBehaviourPunCallbacks
             return new Entry { key = key, name = name, team = team, kills = kills, deaths = deaths, assists = assists, score = score };
         }
     }
+    private int roundSeen;
     private const string Prefix = "score/";
     private static MatchScore instance;
     private readonly Dictionary<string, Entry> authority = new Dictionary<string, Entry>();
@@ -39,6 +40,7 @@ public sealed class MatchScore : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         LoadAuthority();
+        roundSeen = ConquestRules.Read(PhotonNetwork.CurrentRoom?.CustomProperties[ConquestMatch.StateKey])?.Round ?? 0;
         KillRewards.ResetMatch();
         SyncLocal(false);
     }
@@ -58,7 +60,11 @@ public sealed class MatchScore : MonoBehaviourPunCallbacks
     }
     public override void OnRoomPropertiesUpdate(Hashtable changed)
     {
-        if (PhotonNetwork.InRoom && changed.ContainsKey(Prefix + "p" + PhotonNetwork.LocalPlayer.ActorNumber)) SyncLocal(true);
+        if (!PhotonNetwork.InRoom) return;
+        int round = ConquestRules.Read(PhotonNetwork.CurrentRoom.CustomProperties[ConquestMatch.StateKey])?.Round ?? 0;
+        bool newRound = round != roundSeen;
+        if (newRound) { roundSeen = round; KillRewards.ResetMatch(); LoadAuthority(); }
+        if (newRound || changed.ContainsKey(Prefix + "p" + PhotonNetwork.LocalPlayer.ActorNumber)) SyncLocal(!newRound);
     }
     private void SyncLocal(bool award)
     {
@@ -67,6 +73,20 @@ public sealed class MatchScore : MonoBehaviourPunCallbacks
         var entry = Entry.Read(key, PhotonNetwork.CurrentRoom.CustomProperties[Prefix + key]);
         if (entry != null) KillRewards.ApplyTotals(entry.kills, entry.deaths, entry.assists, entry.score, award);
     }
+    public static void ResetRound(Hashtable changes)
+    {
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
+        if (instance != null) instance.authority.Clear();
+        foreach (var pair in PhotonNetwork.CurrentRoom.CustomProperties)
+            if (pair.Key is string key && key.StartsWith(Prefix, StringComparison.Ordinal))
+            {
+                var entry = Entry.Read(key.Substring(Prefix.Length), pair.Value);
+                if (entry == null) continue;
+                entry.kills = entry.deaths = entry.assists = entry.score = 0;
+                changes[key] = entry.Pack();
+            }
+    }
+
     public static bool Rewardable(PlayerHealth.KillInfo info) =>
         info.killerActorNr != 0 && info.killerActorNr != -1 && info.killerActorNr != info.victimActorNr &&
         (info.killerTeam == 0 || info.victimTeam == 0 || info.killerTeam != info.victimTeam);
@@ -95,7 +115,7 @@ public sealed class MatchScore : MonoBehaviourPunCallbacks
     }
     private void HandleKill(PlayerHealth.KillInfo info)
     {
-        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
+        if (!ConquestMatch.CombatAllowed || !PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient) return;
         var updates = new Hashtable();
         var victim = Get(info.victimActorNr, info.victimName, info.victimTeam);
         if (victim != null) { victim.deaths++; updates[Prefix + victim.key] = victim.Pack(); }

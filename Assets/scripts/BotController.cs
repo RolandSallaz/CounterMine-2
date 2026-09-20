@@ -191,6 +191,11 @@ public sealed class BotController : MonoBehaviourPun
                 }
             }
         }
+        if (ConquestMatch.Instance != null && ConquestMatch.Instance.TryBotObjective(Team, Slot, transform.position, out var objective))
+        {
+            if ((transform.position-objective).sqrMagnitude < 2.25f) { ClearPath(); return; }
+            if (SetDestination(objective)) return;
+        }
         if (HasPath) return;
         if (ammo != null && ammo.MagAmmo < ammo.MagazineSize/2) ammo.TryStartReload();
         // Each bot cycles all sectors with a different offset, rather than camping the enemy base.
