@@ -1,6 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
@@ -24,11 +25,18 @@ public sealed class PlayerHUD : MonoBehaviour
     [SerializeField, Min(0f)] private float killfeedFade = .8f;
     [SerializeField, Min(8)] private int killfeedFontSize = 20;
     [Header("Respawn")]
-    [SerializeField, Min(0f)] private float respawnDelay = 3f;
+    [SerializeField, Min(0f)] private float respawnDelay = 0f;
+    [SerializeField] private KeyCode respawnHoldKey = KeyCode.F;
+    [SerializeField, Min(0.2f)] private float respawnHoldDuration = 1f;
+    [SerializeField] private Color respawnFillColor = new Color(.95f, .72f, .2f, .9f);
     private float deathAt = -1f;
+    private bool respawning;
+    private float respawnRequestedAt;
+    private float respawnHoldProgress;
     private GameObject respawnPanel;
     private Button respawnButton;
     private Text respawnLabel;
+    private Image respawnFill;
     private RectTransform killfeedRoot;
     private Font killfeedFont;
     [SerializeField] private HitDirectionIndicator hitDirection;
@@ -58,6 +66,9 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private void Awake()
     {
+        // Prefab root is stored with scale 0 — unhide immediately so the HUD
+        // (and respawn button) works even before Bind() in all builds.
+        if (transform.localScale.x == 0f) transform.localScale = Vector3.one;
         hudCanvas = GetComponent<Canvas>();
         UpdateSafeArea();
     }
@@ -73,6 +84,12 @@ public sealed class PlayerHUD : MonoBehaviour
     public void Bind(PlayerHealth player)
     {
         if (health != null) health.Damaged -= ShowHitDirection;
+        respawning = false;
+        respawnHoldProgress = 0f;
+        // FIX (build): HUD prefab root is stored with scale 0 — force scale 1 or the whole
+        // canvas (including the respawn button) stays invisible / unclickable.
+        transform.localScale = Vector3.one;
+        EnsureEventSystem();
         health=player;animationSource=player.GetComponentInChildren<WeaponIdleSynchronizer>(true);
         if (isActiveAndEnabled) health.Damaged += ShowHitDirection;
         aim=player.GetComponentInChildren<WeaponAimController>(true);recoil=player.GetComponentInChildren<WeaponRecoilController>(true);
@@ -354,34 +371,157 @@ public sealed class PlayerHUD : MonoBehaviour
         if (!dead)
         {
             deathAt = -1f;
+            respawning = false;
+            respawnHoldProgress = 0f;
+            if (respawnFill != null) respawnFill.fillAmount = 0f;
             if (respawnPanel != null) respawnPanel.SetActive(false);
             return;
         }
         if (deathAt < 0f)
         {
             deathAt = Time.unscaledTime;
+            respawning = false;
+            respawnHoldProgress = 0f;
             EnsureRespawnPanel();
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            try
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            catch { }
         }
-        if (respawnPanel != null) respawnPanel.SetActive(true);
-        // Respawn is always available: no countdown gate, button stays clickable.
-        if (respawnButton != null) respawnButton.interactable = true;
-        if (respawnLabel != null) respawnLabel.text = "RESPAWN";
+        if (respawnPanel != null)
+        {
+            if (!respawnPanel.activeSelf) respawnPanel.SetActive(true);
+            respawnPanel.transform.SetAsLastSibling();
+        }
+        // Parent CanvasGroup (Safe Area) is non-interactable — our panel lives outside it,
+        // but keep the button itself forced interactable.
+        if (respawnButton != null && !respawning) respawnButton.interactable = true;
+        // If a previous click didn't produce a new life within a few seconds, allow retrying.
+        if (respawning && Time.unscaledTime - respawnRequestedAt > 5f) respawning = false;
+
+        // Gate by respawnDelay (min time since death before input counts).
+        float sinceDeath = Time.unscaledTime - deathAt;
+        bool gated = sinceDeath < respawnDelay;
+
+        if (!respawning && !gated)
+        {
+            // Quick press: Space (legacy behavior).
+            if (WasRespawnQuickPressed())
+            {
+                OnRespawnClicked();
+            }
+            else
+            {
+                // Hold F (or hold key): fills the button, then respawns.
+                if (IsRespawnHoldHeld())
+                {
+                    respawnHoldProgress += Time.unscaledDeltaTime / Mathf.Max(.01f, respawnHoldDuration);
+                    if (respawnHoldProgress >= 1f)
+                    {
+                        respawnHoldProgress = 1f;
+                        if (respawnFill != null) respawnFill.fillAmount = 1f;
+                        OnRespawnClicked();
+                    }
+                }
+                else if (respawnHoldProgress > 0f)
+                {
+                    respawnHoldProgress = Mathf.Max(0f, respawnHoldProgress - Time.unscaledDeltaTime * 3f);
+                }
+            }
+        }
+        else if (gated)
+        {
+            respawnHoldProgress = 0f;
+        }
+
+        if (respawnFill != null) respawnFill.fillAmount = Mathf.Clamp01(respawnHoldProgress);
+        if (respawnLabel != null)
+        {
+            if (respawning) respawnLabel.text = "SPAWNING...";
+            else if (gated) respawnLabel.text = $"READY IN {Mathf.CeilToInt(respawnDelay - sinceDeath)}...";
+            else if (respawnHoldProgress > 0f) respawnLabel.text = $"HOLD [{respawnHoldKey}] {Mathf.RoundToInt(respawnHoldProgress * 100f)}%";
+            else respawnLabel.text = $"RESPAWN [SPACE] / HOLD [{respawnHoldKey}]";
+        }
+    }
+
+    private bool IsRespawnHoldHeld()
+    {
+        // New Input System path (project uses activeInputHandler = Input System).
+        try
+        {
+            var kb = Keyboard.current;
+            if (kb != null)
+            {
+                // Generic KeyCode -> Input System Key mapping (F, G, R, Space, etc.).
+                if (System.Enum.TryParse<Key>(respawnHoldKey.ToString(), out var inputKey))
+                {
+                    try { if (kb[inputKey].isPressed) return true; } catch { }
+                }
+                else if (respawnHoldKey == KeyCode.F && kb.fKey.isPressed) return true;
+            }
+        }
+        catch { }
+        // Legacy Input path — harmless if the old system is disabled (returns false).
+        try { if (Input.GetKey(respawnHoldKey)) return true; } catch { }
+        return false;
+    }
+
+    private bool WasRespawnQuickPressed()
+    {
+        try
+        {
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) return true;
+        }
+        catch { }
+        try { if (Input.GetKeyDown(KeyCode.Space)) return true; } catch { }
+        return false;
+    }
+
+    private void EnsureEventSystem()
+    {
+        if (hudCanvas == null) hudCanvas = GetComponent<Canvas>();
+        if (hudCanvas != null)
+        {
+            var raycaster = hudCanvas.GetComponent<GraphicRaycaster>();
+            if (raycaster == null) raycaster = hudCanvas.gameObject.AddComponent<GraphicRaycaster>();
+            raycaster.enabled = true;
+        }
+        // FIX (build): the scene may already contain an EventSystem with only the OLD
+        // StandaloneInputModule (or none). A Button needs an active EventSystem +
+        // InputSystemUIInputModule to receive clicks in the Input-System-only project.
+        var es = Object.FindFirstObjectByType<EventSystem>();
+        if (es == null)
+        {
+            es = new GameObject("EventSystem").AddComponent<EventSystem>();
+            es.gameObject.AddComponent<InputSystemUIInputModule>();
+        }
+        else if (es.GetComponent<InputSystemUIInputModule>() == null)
+        {
+            es.gameObject.AddComponent<InputSystemUIInputModule>();
+        }
+        if (!es.gameObject.activeSelf) es.gameObject.SetActive(true);
+        if (!es.enabled) es.enabled = true;
     }
 
     private void EnsureRespawnPanel()
     {
         if (respawnPanel != null) return;
+        EnsureEventSystem();
         if (hudCanvas == null) hudCanvas = GetComponent<Canvas>();
         if (hudCanvas == null) return;
-        if (hudCanvas.GetComponent<GraphicRaycaster>() == null) hudCanvas.gameObject.AddComponent<GraphicRaycaster>();
-        if (Object.FindFirstObjectByType<EventSystem>() == null)
-            new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
         Font font = GameUIStyle.Font;
 
+        // FIX (build): parent to the Canvas itself, NOT to ContentRoot/SafeArea.
+        // SafeArea has a CanvasGroup with interactable=false which silently disables
+        // every child Button (Button.IsInteractable checks parent groups).
         respawnPanel = new GameObject("Respawn Panel");
-        respawnPanel.transform.SetParent(ContentRoot, false);
+        respawnPanel.transform.SetParent(hudCanvas.transform, false);
+        var panelGroup = respawnPanel.AddComponent<CanvasGroup>();
+        panelGroup.interactable = true;
+        panelGroup.blocksRaycasts = true;
+        panelGroup.ignoreParentGroups = true;
         var panelRect = respawnPanel.AddComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(.5f, .5f);
         panelRect.anchorMax = new Vector2(.5f, .5f);
@@ -406,11 +546,32 @@ public sealed class PlayerHUD : MonoBehaviour
         buttonImage.color = new Color(.16f, .32f, .42f, .95f);
         respawnButton = buttonGo.AddComponent<Button>();
         respawnButton.interactable = true;
+        // Avoid Space triggering the focused button AND our Space handler (double respawn).
+        respawnButton.navigation = new Navigation { mode = Navigation.Mode.None };
         var buttonRect = buttonGo.GetComponent<RectTransform>();
         buttonRect.sizeDelta = new Vector2(260f, 56f);
         var layoutElement = buttonGo.AddComponent<LayoutElement>();
         layoutElement.minHeight = 56f;
         layoutElement.preferredHeight = 56f;
+
+        // Hold-progress fill: horizontal bar behind the label, driven by F-hold (0..1).
+        var fillGo = new GameObject("Respawn Fill");
+        fillGo.transform.SetParent(buttonGo.transform, false);
+        var fillRect = fillGo.AddComponent<RectTransform>();
+        fillRect.anchorMin = Vector2.zero;
+        fillRect.anchorMax = Vector2.one;
+        fillRect.pivot = new Vector2(0f, .5f);
+        fillRect.offsetMin = Vector2.zero;
+        fillRect.offsetMax = Vector2.zero;
+        respawnFill = fillGo.AddComponent<Image>();
+        respawnFill.color = respawnFillColor;
+        respawnFill.raycastTarget = false;
+        respawnFill.type = Image.Type.Filled;
+        respawnFill.fillMethod = Image.FillMethod.Horizontal;
+        respawnFill.fillOrigin = 0;
+        respawnFill.fillAmount = 0f;
+        // Keep fill behind the label.
+        fillGo.transform.SetAsFirstSibling();
 
         var labelGo = new GameObject("Label");
         labelGo.transform.SetParent(buttonGo.transform, false);
@@ -432,15 +593,43 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private void OnRespawnClicked()
     {
-        GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);
-        // Keep the button active so repeated clicks (e.g. failed spawn) still work.
-        if (respawnButton != null) respawnButton.interactable = true;
-        // Inside the click handler, so pointer-lock requests stay browser-legal.
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        var lobby = Object.FindFirstObjectByType<LobbyManager>();
-        if (lobby != null && health != null) lobby.RespawnPlayer(health.gameObject);
-        else Debug.LogWarning("[PlayerHUD] Respawn unavailable: lobby or player missing.", this);
+        // Guard against double clicks: each extra call would spawn an additional player.
+        if (respawning) return;
+        if (health == null || !health.IsDead) return;
+        respawning = true;
+        respawnRequestedAt = Time.unscaledTime;
+        if (respawnButton != null) respawnButton.interactable = false;
+        if (respawnLabel != null) respawnLabel.text = "SPAWNING...";
+        try { GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true); } catch { }
+        // Inside the click handler, so pointer-lock requests stay browser-legal (WebGL).
+        // Must not throw — otherwise the spawn below never runs (classic build-only bug).
+        try
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        catch { }
+        try
+        {
+            var lobby = Object.FindFirstObjectByType<LobbyManager>();
+            if (lobby != null && health != null) lobby.RespawnPlayer(health.gameObject);
+            else Debug.LogWarning("[PlayerHUD] Respawn unavailable: lobby or player missing.", this);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+        }
+        finally
+        {
+            // If the spawn failed, allow another attempt instead of staying stuck.
+            if (health != null && health.IsDead)
+            {
+                respawning = false;
+                respawnHoldProgress = 0f;
+                if (respawnFill != null) respawnFill.fillAmount = 0f;
+                if (respawnButton != null) respawnButton.interactable = true;
+            }
+        }
     }
 
     /// <summary>Crosshair half-gap in canvas units matching the spread cone angle on screen. Falls back to the old heat-based gap if no camera is cached.</summary>

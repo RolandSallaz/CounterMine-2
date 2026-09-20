@@ -29,6 +29,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public bool automatic = true;
         public int damage = 34;
         [Min(.1f)] public float recoilKick = 1f;
+        public WeaponRecoilController.Tuning recoil;
         public AnimationClip characterIdle, weaponIdle, characterEquip, weaponEquip;
         public ActionEntry[] actions = Array.Empty<ActionEntry>();
     }
@@ -106,7 +107,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (entry.muzzle != null) root.GetComponent<NetworkWeapon>()?.SetMuzzle(entry.muzzle);
         root.GetComponent<NetworkWeapon>()?.SetDamage(entry.damage);
         root.GetComponent<WeaponAmmo>()?.SelectWeapon(entry.id, entry.magazineSize);
-        root.GetComponentInChildren<WeaponRecoilController>(true)?.ConfigureFire(entry.roundsPerMinute, entry.automatic, entry.recoilKick);
+        root.GetComponentInChildren<WeaponRecoilController>(true)?.ConfigureFire(entry.roundsPerMinute, entry.automatic, entry.recoilKick, entry.recoil, entry.rightGrip);
         if (entry.leftGrip != null && entry.rightGrip != null)
             foreach (var ik in root.GetComponentsInChildren<WeaponHandIK>(true)) ik.SetGrips(entry.leftGrip, entry.rightGrip);
         return true;

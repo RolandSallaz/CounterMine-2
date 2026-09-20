@@ -1,0 +1,2 @@
+PASS: 30 complete paths from both team bases to all 5 central floors, four side roofs, both outer flanks and avenue routes. 490 navigation sources.
+Saved-scene Unity navigation and renders; live PvP match not run.

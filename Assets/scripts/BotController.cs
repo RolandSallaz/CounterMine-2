@@ -28,10 +28,19 @@ public sealed class BotController : MonoBehaviourPun
     private float thinkAt, planAt, fireAt, seenAt = -100, vertical, stuckAt, coverUntil;
     private bool visible, hadAuthority;
     private Vector3 mapCenter;
+    // Patrol points are authored for the ~43m base map; larger scenes scale them
+    // outward by spawn extent so bots cover the whole battlespace (old map: x1).
+    private float patrolScale = 1f;
+    private Vector3[] authoredPatrol;
+    private int PatrolCount => authoredPatrol != null ? authoredPatrol.Length : Patrol.Length;
     [Header("Navigation")]
     [SerializeField, Min(0f)] private float patrolSpeed = 3.6f;
     [SerializeField, Min(0f)] private float combatSpeed = 2.7f;
     [SerializeField, Min(0f)] private float sprintSpeed = 7.15f;
+    [Header("Separation (anti-clump)")]
+    [SerializeField, Min(.5f)] private float separationRadius = 1.1f;
+    [SerializeField, Range(0f, 2f)] private float separationSide = .9f;
+    [SerializeField, Min(.4f)] private float stuckSeconds = 1.2f;
     [Header("Combat")]
     [SerializeField, Min(1f)] private float fireRange = 40f;
     [SerializeField, Min(0f)] private float botBaseSpread = 2f;
@@ -44,6 +53,7 @@ public sealed class BotController : MonoBehaviourPun
         new Vector3(8,6,0), new Vector3(30,0,-11.8f), new Vector3(-13.9f,0,4),
         new Vector3(0,3.5f,-5), new Vector3(-8,6,0), new Vector3(5,0,11.8f)
     };
+    private static readonly float[] SidestepAngles = { 30f, -30f, 60f, -60f, 90f, -90f };
     private bool Authority => !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
     private void Awake()
     {
@@ -68,8 +78,15 @@ public sealed class BotController : MonoBehaviourPun
         foreach (var spawn in spawns) mapCenter += spawn.transform.position;
         if (spawns.Length > 0) mapCenter /= spawns.Length;
         mapCenter.y = 0;
-        patrolIndex = (Slot * 5 + (Team == 2 ? 6 : 0)) % Patrol.Length;
-        stuckReference = transform.position; stuckAt = Time.time + 2;
+        float extent = 43f;
+        foreach (var spawn in spawns)
+            extent = Mathf.Max(extent, Mathf.Abs(spawn.transform.position.x - mapCenter.x));
+        patrolScale = extent / 43f;
+        var route = FindAnyObjectByType<BotPatrolRoute>();
+        authoredPatrol = route != null ? route.WorldPoints : null;
+        if (authoredPatrol != null && authoredPatrol.Length == 0) authoredPatrol = null;
+        patrolIndex = (Slot * 5 + (Team == 2 ? 6 : 0)) % PatrolCount;
+        stuckReference = transform.position; stuckAt = Time.time + stuckSeconds;
     }
     private void Update()
     {
@@ -177,10 +194,12 @@ public sealed class BotController : MonoBehaviourPun
         if (HasPath) return;
         if (ammo != null && ammo.MagAmmo < ammo.MagazineSize/2) ammo.TryStartReload();
         // Each bot cycles all sectors with a different offset, rather than camping the enemy base.
-        for (int attempt=0;attempt<Patrol.Length;attempt++)
+        for (int attempt=0;attempt<PatrolCount;attempt++)
         {
-            Vector3 point = mapCenter + Patrol[patrolIndex];
-            patrolIndex = (patrolIndex+1)%Patrol.Length;
+            Vector3 sector = Patrol[patrolIndex % Patrol.Length];
+            Vector3 point = authoredPatrol != null ? authoredPatrol[patrolIndex] :
+                mapCenter + new Vector3(sector.x*patrolScale, sector.y, sector.z*patrolScale);
+            patrolIndex = (patrolIndex+1)%PatrolCount;
             if (Vector3.Distance(point,transform.position)>3 && SetDestination(point)) return;
         }
     }
@@ -211,7 +230,10 @@ public sealed class BotController : MonoBehaviourPun
         {
             Vector3 delta = corners[corner]-transform.position; delta.y=0;
             move=delta.normalized;
-            // Light separation keeps teammates from pushing into the same corner.
+            // Separation with a sideways term. Pure axial push cancels forward motion when
+            // two bots walk head-on (move + away ~= 0) and both stop forever. The sideways
+            // part mirrors automatically (their away vectors are opposite), so the pair
+            // passes each other instead of deadlocking.
             Vector3 separation=Vector3.zero;
             foreach (var other in PlayerHealth.ActivePlayers)
             {
@@ -219,13 +241,40 @@ public sealed class BotController : MonoBehaviourPun
                 Vector3 away=transform.position-other.transform.position;
                 if (Mathf.Abs(away.y)>.8f) continue;
                 away.y=0;float distance=away.magnitude;
-                if (distance>.01f && distance<.8f) separation += away/distance*(.8f-distance);
+                if (distance<.02f)
+                {
+                    // Practically co-located: sidestep right of travel, both diverge.
+                    Vector3 right=Vector3.Cross(Vector3.up,move);
+                    if (right.sqrMagnitude>.001f) separation+=right.normalized;
+                    continue;
+                }
+                if (distance<separationRadius)
+                {
+                    float weight=(separationRadius-distance)/separationRadius;
+                    Vector3 dir=away/distance;
+                    separation+=dir*weight;
+                    separation+=Vector3.Cross(Vector3.up,dir)*weight*separationSide;
+                }
             }
-            var desired=(move+separation).normalized;
+            Vector3 desired=move+separation;
+            if (desired.sqrMagnitude<.0001f) desired=move; // never collapse to zero: keep walking
+            desired.Normalize();
             if (navigation.Sample(transform.position,Team,.8f,out var floor))
             {
-                if (!NavMesh.Raycast(floor,floor+desired*.65f,out _,navigation.Filter(Team))) move=desired;
-                else if (NavMesh.Raycast(floor,floor+move*Mathf.Min(.2f,delta.magnitude*.5f),out _,navigation.Filter(Team))) move=Vector3.zero;
+                var filter=navigation.Filter(Team);
+                if (!NavMesh.Raycast(floor,floor+desired*.65f,out _,filter)) move=desired;
+                else if (!NavMesh.Raycast(floor,floor+move*Mathf.Min(.2f,delta.magnitude*.5f),out _,filter)) { }
+                else
+                {
+                    // Both straight options hug a navmesh edge: probe sidesteps before
+                    // giving up, otherwise the bot leans on the wall until stuck fires.
+                    move=Vector3.zero;
+                    foreach (float a in SidestepAngles)
+                    {
+                        Vector3 probe=Quaternion.Euler(0,a,0)*desired;
+                        if (!NavMesh.Raycast(floor,floor+probe*.65f,out _,filter)) { move=probe; break; }
+                    }
+                }
             }
             else { ClearPath(); move=Vector3.zero; }
             float speed = visible ? combatSpeed : Vector3.Distance(transform.position,destination)>5 ? sprintSpeed : patrolSpeed;
@@ -236,12 +285,18 @@ public sealed class BotController : MonoBehaviourPun
         ApplyGravity(move,deltaTime);
         if (Time.time>=stuckAt)
         {
-            if (HasPath && (transform.position-stuckReference).sqrMagnitude<.12f)
+            if (HasPath && (transform.position-stuckReference).sqrMagnitude<.09f)
             {
                 ClearPath(); coverUntil=0; target=null; visible=false; seenAt=-100;
-                patrolIndex=(patrolIndex+3)%Patrol.Length;planAt=0;
+                patrolIndex=(patrolIndex+3)%PatrolCount;planAt=0;
+                // Physical nudge breaks exact head-on symmetry so replaned paths diverge.
+                Vector3 nudge=Vector3.Cross(Vector3.up,transform.forward);
+                if (nudge.sqrMagnitude>.001f && capsule != null && capsule.enabled)
+                {
+                    nudge.y=0; capsule.Move(nudge.normalized*.35f);
+                }
             }
-            stuckReference=transform.position;stuckAt=Time.time+2;
+            stuckReference=transform.position;stuckAt=Time.time+stuckSeconds;
         }
     }
     private void ApplyGravity(Vector3 velocity,float deltaTime)

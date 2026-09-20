@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -32,12 +33,15 @@ public static class ValidateBotNavigation
             handle = NavMesh.AddNavMeshData(data);
             var goals = new[] {new Vector3(0,6,0),new Vector3(0,3.5f,5),new Vector3(0,3.5f,-5),
                 new Vector3(13.9f,0,-4),new Vector3(-13.9f,0,4),new Vector3(-30,0,-11.8f),new Vector3(30,0,11.8f)};
+            var route=scene.GetRootGameObjects().Where(r=>r.activeInHierarchy).SelectMany(r=>r.GetComponentsInChildren<BotPatrolRoute>()).FirstOrDefault();
+            if(route!=null)goals=route.WorldPoints;
+            var spawns=scene.GetRootGameObjects().Where(r=>r.activeInHierarchy).SelectMany(r=>r.GetComponentsInChildren<TeamSpawnPoint>()).ToArray();
             int checks = 0;
             foreach (int team in new[] {1,2})
             {
                 var filter=new NavMeshQueryFilter {agentTypeID=settings.agentTypeID,areaMask=NavMesh.AllAreas & ~(1<<(team==1?4:3))};
-                Vector3 origin=new Vector3(team==1?-43:43,0,0);
-                if (!NavMesh.SamplePosition(origin,out var start,1,filter)) throw new Exception("Own spawn absent from navigation: "+team);
+                Vector3 origin=spawns.First(s=>s.Team==team).transform.position;
+                if (!NavMesh.SamplePosition(origin,out var start,3,filter)) throw new Exception("Own spawn absent from navigation: "+team);
                 foreach (var goal in goals)
                 {
                     if (!NavMesh.SamplePosition(goal,out var end,.8f,filter)) throw new Exception("Missing goal: "+goal);
@@ -46,7 +50,8 @@ public static class ValidateBotNavigation
                         throw new Exception("Unreachable goal: team "+team+" -> "+goal+" status="+path.status);
                     checks++;
                 }
-                if (NavMesh.SamplePosition(-origin,out _,1,filter)) throw new Exception("Enemy sanctuary remains walkable: "+team);
+                var enemy=spawns.First(s=>s.Team!=team).transform.position;
+                if (NavMesh.SamplePosition(enemy,out _,3,filter)) throw new Exception("Enemy sanctuary remains walkable: "+team);
                 checks++;
             }
             ValidateController(settings.agentTypeID,scene);
@@ -107,19 +112,19 @@ public static class ValidateBotNavigation
             }
             foreach(int team in new[]{1,2})
             {
-                var basePoint=new Vector3(team==1?-43:43,0,0);
-                if(!navigation.CanReach(basePoint,new Vector3(0,6,0),team))throw new Exception("Spawn connectivity rejects bridge");
-                var outside=new Vector3(team==1?-48:48,0,0);
-                if(navigation.CanReach(basePoint,outside,team))throw new Exception("Spawn connectivity accepts isolated outside strip");
+                var spawns=scene.GetRootGameObjects().Where(r=>r.activeInHierarchy).SelectMany(r=>r.GetComponentsInChildren<TeamSpawnPoint>()).ToArray();
+                if(!navigation.TryGetSpawnAnchor(spawns.First(s=>s.Team==team).transform.position,team,out var basePoint))throw new Exception("Missing base anchor");
+                if(!navigation.CanReach(basePoint,new Vector3(6,20,0),team))throw new Exception("Spawn connectivity rejects tower");
+                if(navigation.Sample(spawns.First(s=>s.Team!=team).transform.position,team,3,out _))throw new Exception("Enemy sanctuary accessible");
             }
             typeof(BotController).GetField("navigation",flags).SetValue(controller,navigation);
             // An uninstantiated room bot defaults to team 2.
             if(!navigation.Sample(new Vector3(43,0,0),2,1,out var origin))throw new Exception("Missing bot spawn");
             bot.transform.position=origin;
             var setDestination=typeof(BotController).GetMethod("SetDestination",flags);
-            if(!(bool)setDestination.Invoke(controller,new object[]{new Vector3(0,6,0)}))throw new Exception("Bot controller cannot route to bridge");
+            if(!(bool)setDestination.Invoke(controller,new object[]{new Vector3(6,20,0)}))throw new Exception("Bot controller cannot route to tower");
             field.SetValue(controller,null);
-            if(!(bool)setDestination.Invoke(controller,new object[]{new Vector3(-13.9f,0,4)}))throw new Exception("Bot cannot recreate path after script reload");
+            if(!(bool)setDestination.Invoke(controller,new object[]{new Vector3(-24,0,0)}))throw new Exception("Bot cannot recreate path after script reload");
             typeof(PlayerRagdollController).GetMethod("Awake",flags).Invoke(bot.GetComponent<PlayerRagdollController>(),null);
             var capsule=bot.GetComponent<CharacterController>();
             var move=typeof(BotController).GetMethod("MoveAlongPath",flags);
@@ -128,7 +133,7 @@ public static class ValidateBotNavigation
                 capsule.enabled=false;bot.transform.position=origin+Vector3.up*.08f;capsule.enabled=true;
                 typeof(BotController).GetField("vertical",flags).SetValue(controller,0f);
                 typeof(BotController).GetField("visible",flags).SetValue(controller,mode=="combat");
-                var goal=mode=="sprint"?new Vector3(0,6,0):origin+Vector3.left*3;
+                var goal=mode=="sprint"?new Vector3(6,20,0):origin+Vector3.left*3;
                 if(!(bool)setDestination.Invoke(controller,new object[]{goal}))throw new Exception("Missing movement test route: "+mode);
                 var before=bot.transform.position;
                 for(int step=0;step<10;step++)move.Invoke(controller,new object[]{1f/60f});

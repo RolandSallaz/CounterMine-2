@@ -130,8 +130,14 @@ public static class InstallUCP
             entry.FindPropertyRelative("magazineSize").intValue=20;
             entry.FindPropertyRelative("roundsPerMinute").floatValue=400;
             entry.FindPropertyRelative("automatic").boolValue=false;
-            entry.FindPropertyRelative("damage").intValue=28;
-            var kickProp=entry.FindPropertyRelative("recoilKick"); if(kickProp!=null) kickProp.floatValue=2.2f;
+            entry.FindPropertyRelative("damage").intValue=20;
+            var recoil = entry.FindPropertyRelative("recoil");
+            recoil.FindPropertyRelative("rotateAroundGrip").boolValue = true;
+            recoil.FindPropertyRelative("animation").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Kinemation.Recoilly.RecoilAnimData>(Folder + "UCP_Recoil.asset");
+            recoil.FindPropertyRelative("cameraPitch").vector2Value = new Vector2(.2f, .3f);
+            foreach (var pair in new[] { ("cameraYaw", .12f), ("heatPerShot", .12f), ("heatRecovery", .8f), ("sustainedFireMultiplier", 1.25f), ("hipSpread", 1f), ("heatSpread", 2f), ("moveSpread", 2.5f), ("airSpread", 3f), ("crouchSpreadMultiplier", .7f) })
+                recoil.FindPropertyRelative(pair.Item1).floatValue = pair.Item2;
+            var kickProp=entry.FindPropertyRelative("recoilKick"); if(kickProp!=null) kickProp.floatValue=1f;
             entry.FindPropertyRelative("characterIdle").objectReferenceValue=Clip("Idle","Character");
             entry.FindPropertyRelative("weaponIdle").objectReferenceValue=Clip("Idle","Weapon");
             entry.FindPropertyRelative("characterEquip").objectReferenceValue=Clip("Equip","Character");

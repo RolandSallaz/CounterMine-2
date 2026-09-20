@@ -41,6 +41,7 @@ public sealed class BotNavigation : MonoBehaviour
         int spawns = 0;
         foreach (var root in scene.GetRootGameObjects())
         {
+            if (!root.activeInHierarchy) continue;
             foreach (var spawn in root.GetComponentsInChildren<TeamSpawnPoint>()) { center += spawn.transform.position; spawns++; }
             foreach (var collider in root.GetComponentsInChildren<Collider>())
             {
@@ -65,6 +66,7 @@ public sealed class BotNavigation : MonoBehaviour
         }
         // Area volumes allow own-team sanctuary routes while excluding the enemy's.
         foreach (var root in scene.GetRootGameObjects())
+            if (root.activeInHierarchy)
             foreach (var zone in root.GetComponentsInChildren<TeamSafeZone>())
             {
                 var box = zone.GetComponent<BoxCollider>();
@@ -79,7 +81,8 @@ public sealed class BotNavigation : MonoBehaviour
             }
         if (spawns > 0) center /= spawns;
         center.y = 5;
-        return new Bounds(center, new Vector3(108, 24, 50));
+        // XL-friendly: covers spawn lines at +/-120 with margin (was 108x24x50).
+        return new Bounds(center, new Vector3(320, 60, 170));
     }
     private IEnumerator Build()
     {

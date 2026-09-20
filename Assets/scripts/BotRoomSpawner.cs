@@ -61,7 +61,9 @@ public sealed class BotRoomSpawner : MonoBehaviourPunCallbacks
                 if (!navigation.CanReach(spawnAnchor,walkable,team)) continue;
                 position = walkable + Vector3.up*.08f;
                 if (Physics.CheckCapsule(position + Vector3.up * .3f, position + Vector3.up * 1.5f, .26f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
-                PhotonNetwork.InstantiateRoomObject("Bot", position, Quaternion.Euler(0, slot * 60, 0), 0, new object[] { slot, team });
+                var lobby = GetComponent<LobbyManager>();
+                Quaternion facing = lobby != null ? lobby.GetSpawnRotation(position) : Quaternion.identity;
+                PhotonNetwork.InstantiateRoomObject("Bot", position, facing, 0, new object[] { slot, team });
                 break;
             }
         }

@@ -28,6 +28,11 @@ public static class ValidateUCP
                     typeof(PlayerHealth).GetMethod("Awake",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(root.GetComponent<PlayerHealth>(),null);
                     typeof(WeaponAmmo).GetMethod("Awake",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(ammo,null);
                     Check(sync.EquipWeapon("ak74"),"AK selection failed");sync.RestartIdle();
+                    var recoilController=root.GetComponentInChildren<WeaponRecoilController>(true);
+                    var akRecoil=new SerializedObject(recoilController);
+                    var akProfile=akRecoil.FindProperty("recoilProfile").objectReferenceValue;
+                    var akCamera=akRecoil.FindProperty("cameraPitch").vector2Value;
+                    var akSpread=akRecoil.FindProperty("hipSpread").floatValue;
                     ammo.Consume();ammo.Consume();Check(ammo.MagAmmo==28,"AK magazine");
                     Check(sync.EquipWeapon("ucp"),"UCP selection failed");
                     Check(sync.IsPlayingAction&&!sync.CanFire,"Equip fire gate");sync.RestartIdle();
@@ -38,6 +43,12 @@ public static class ValidateUCP
                     var catalog=new SerializedObject(sync).FindProperty("weapons");
                     var ucp=catalog.GetArrayElementAtIndex(1);
                     Check(!ucp.FindPropertyRelative("automatic").boolValue,"UCP must be semi-auto");
+                    Check(ucp.FindPropertyRelative("damage").intValue==20,"UCP base damage must be 20");
+                    Check(new SerializedObject(root.GetComponent<NetworkWeapon>()).FindProperty("damage").intValue==20,"UCP damage not applied");
+                    var ucpProfile=AssetDatabase.LoadAssetAtPath<Kinemation.Recoilly.RecoilAnimData>("Assets/Anims/UCP/UCP_Recoil.asset");
+                    var currentRecoil=new SerializedObject(recoilController);
+                    Check(ucpProfile!=null&&ucpProfile!=akProfile&&currentRecoil.FindProperty("recoilProfile").objectReferenceValue==ucpProfile,"Independent UCP recoil not applied");
+                    Check(currentRecoil.FindProperty("cameraPitch").vector2Value==new Vector2(.2f,.3f),"UCP camera recoil not applied");
                     foreach(var action in new[]{"Idle","Equip","Reload"})
                     foreach(var part in new[]{"Character","Weapon"})
                     {
@@ -58,6 +69,9 @@ public static class ValidateUCP
                     ammo.Consume();Check(ammo.TryStartReload(),"UCP reload did not start");
                     Check(sync.ActionId=="reload"&&ammo.IsReloading,"Reload binding");
                     Check(sync.EquipWeapon("ak74"),"Return to AK failed");
+                    var restored=new SerializedObject(recoilController);
+                    Check(restored.FindProperty("recoilProfile").objectReferenceValue==akProfile&&restored.FindProperty("cameraPitch").vector2Value==akCamera&&Mathf.Approximately(restored.FindProperty("hipSpread").floatValue,akSpread),"AK recoil settings were not restored");
+                    Check(new SerializedObject(root.GetComponent<NetworkWeapon>()).FindProperty("damage").intValue==34,"AK damage was not restored");
                     Check(ammo.MagAmmo==28&&!ammo.IsReloading,"Switch incorrectly refills magazine");
                     Check(sync.EquipWeapon("ucp"),"Return to UCP failed");
                     Check(ammo.MagAmmo==19,"Interrupted reload incorrectly refills UCP");sync.RestartIdle();

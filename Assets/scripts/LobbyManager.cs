@@ -13,6 +13,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField, Min(1)] private int maxRoomsToTry = 50;
     [SerializeField] private string playerPrefabResourceName = "Player";
     [SerializeField] private Vector3 fallbackSpawnPosition = new Vector3(0f, 2f, 0f);
+    [SerializeField] private Vector3 mapCenter = Vector3.zero;
     [SerializeField] private bool autoJoinOnStart = true;
 
     private string status = "Choose a team.";
@@ -159,7 +160,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        PhotonNetwork.Instantiate(playerPrefabResourceName, GetSpawnPosition(selectedTeam), Quaternion.identity);
+        Vector3 position = GetSpawnPosition(selectedTeam);
+        PhotonNetwork.Instantiate(playerPrefabResourceName, position, GetSpawnRotation(position));
         playerSpawned = true;
     }
 
@@ -177,13 +179,22 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
         if (PhotonNetwork.InRoom)
         {
-            PhotonNetwork.Instantiate(playerPrefabResourceName, position, Quaternion.identity);
+            PhotonNetwork.Instantiate(playerPrefabResourceName, position, GetSpawnRotation(position));
         }
         else if (Resources.Load<GameObject>(playerPrefabResourceName) is GameObject prefab)
         {
-            Instantiate(prefab, position, Quaternion.identity);
+            Instantiate(prefab, position, GetSpawnRotation(position));
         }
         playerSpawned = true;
+    }
+
+    public Quaternion GetSpawnRotation(Vector3 position)
+    {
+        Vector3 direction = mapCenter - position;
+        direction.y = 0f;
+        return direction.sqrMagnitude > .0001f
+            ? Quaternion.LookRotation(direction, Vector3.up)
+            : Quaternion.identity;
     }
 
     private Vector3 GetSpawnPosition(int team)

@@ -1,0 +1,10258 @@
+[
+  {
+    "name": "Foundation",
+    "pos": [
+      0,
+      -0.4,
+      0
+    ],
+    "size": [
+      132,
+      0.8,
+      92
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Central avenue",
+    "pos": [
+      0,
+      0.015,
+      0
+    ],
+    "size": [
+      124,
+      0.025,
+      12
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Cross street",
+    "pos": [
+      0,
+      0.02,
+      -29
+    ],
+    "size": [
+      124,
+      0.03,
+      6
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Cross street",
+    "pos": [
+      0,
+      0.02,
+      29
+    ],
+    "size": [
+      124,
+      0.03,
+      6
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Service avenue",
+    "pos": [
+      -24,
+      0.02,
+      0
+    ],
+    "size": [
+      6,
+      0.03,
+      84
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Service avenue",
+    "pos": [
+      24,
+      0.02,
+      0
+    ],
+    "size": [
+      6,
+      0.03,
+      84
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Boundary retaining wall",
+    "pos": [
+      -65,
+      2,
+      0
+    ],
+    "size": [
+      1,
+      4,
+      92
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Boundary retaining wall",
+    "pos": [
+      0,
+      2,
+      -45
+    ],
+    "size": [
+      130,
+      4,
+      1
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha base screen",
+    "pos": [
+      -51,
+      1.8,
+      -7
+    ],
+    "size": [
+      1,
+      3.6,
+      7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha base identification",
+    "pos": [
+      -50.48,
+      2.7,
+      -7
+    ],
+    "size": [
+      0.04,
+      0.8,
+      5
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha base screen",
+    "pos": [
+      -51,
+      1.8,
+      7
+    ],
+    "size": [
+      1,
+      3.6,
+      7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha base identification",
+    "pos": [
+      -50.48,
+      2.7,
+      7
+    ],
+    "size": [
+      0.04,
+      0.8,
+      5
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha base flank cover",
+    "pos": [
+      -57,
+      0.7,
+      -15
+    ],
+    "size": [
+      5,
+      1.4,
+      0.8
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha base flank cover",
+    "pos": [
+      -57,
+      0.7,
+      15
+    ],
+    "size": [
+      5,
+      1.4,
+      0.8
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Boundary retaining wall",
+    "pos": [
+      65,
+      2,
+      0
+    ],
+    "size": [
+      1,
+      4,
+      92
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Boundary retaining wall",
+    "pos": [
+      0,
+      2,
+      45
+    ],
+    "size": [
+      130,
+      4,
+      1
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo base screen",
+    "pos": [
+      51,
+      1.8,
+      -7
+    ],
+    "size": [
+      1,
+      3.6,
+      7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo base identification",
+    "pos": [
+      50.48,
+      2.7,
+      -7
+    ],
+    "size": [
+      0.04,
+      0.8,
+      5
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo base screen",
+    "pos": [
+      51,
+      1.8,
+      7
+    ],
+    "size": [
+      1,
+      3.6,
+      7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo base identification",
+    "pos": [
+      50.48,
+      2.7,
+      7
+    ],
+    "size": [
+      0.04,
+      0.8,
+      5
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo base flank cover",
+    "pos": [
+      57,
+      0.7,
+      -15
+    ],
+    "size": [
+      5,
+      1.4,
+      0.8
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo base flank cover",
+    "pos": [
+      57,
+      0.7,
+      15
+    ],
+    "size": [
+      5,
+      1.4,
+      0.8
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      -10.5,
+      10.0,
+      -9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      -10.5,
+      0.2,
+      -9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      -10.5,
+      10.0,
+      0
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      -10.5,
+      0.2,
+      0
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      -10.5,
+      10.0,
+      9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      -10.5,
+      0.2,
+      9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      0,
+      10.0,
+      -9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      0,
+      0.2,
+      -9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      0,
+      10.0,
+      0
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      0,
+      0.2,
+      0
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      0,
+      10.0,
+      9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      0,
+      0.2,
+      9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      10.5,
+      10.0,
+      -9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      10.5,
+      0.2,
+      -9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      10.5,
+      10.0,
+      0
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      10.5,
+      0.2,
+      0
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL concrete column",
+    "pos": [
+      10.5,
+      10.0,
+      9.5
+    ],
+    "size": [
+      0.65,
+      20,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL column footing",
+    "pos": [
+      10.5,
+      0.2,
+      9.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor 1",
+    "pos": [
+      0,
+      3.82,
+      0
+    ],
+    "size": [
+      22,
+      0.36,
+      20
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      3.5,
+      -9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      4.55,
+      -9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      3.55,
+      -9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      3.5,
+      9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      4.55,
+      9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      3.55,
+      9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      4.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      4.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      4.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      4.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL partial core wall",
+    "pos": [
+      -2.5,
+      5.5,
+      0
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor supplies",
+    "pos": [
+      3,
+      4.65,
+      4.4
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor 2",
+    "pos": [
+      0,
+      7.82,
+      0
+    ],
+    "size": [
+      22,
+      0.36,
+      20
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      7.5,
+      -9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      8.55,
+      -9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      7.55,
+      -9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      7.5,
+      9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      8.55,
+      9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      7.55,
+      9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      8.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      8.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      8.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      8.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL partial core wall",
+    "pos": [
+      2.5,
+      9.5,
+      0
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor supplies",
+    "pos": [
+      3,
+      8.65,
+      4.4
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor 3",
+    "pos": [
+      0,
+      11.82,
+      0
+    ],
+    "size": [
+      22,
+      0.36,
+      20
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      11.5,
+      -9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      12.55,
+      -9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      11.55,
+      -9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      11.5,
+      9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      12.55,
+      9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      11.55,
+      9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      12.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      12.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      12.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      12.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL partial core wall",
+    "pos": [
+      -2.5,
+      13.5,
+      0
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor supplies",
+    "pos": [
+      3,
+      12.65,
+      4.4
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor 4",
+    "pos": [
+      0,
+      15.82,
+      0
+    ],
+    "size": [
+      22,
+      0.36,
+      20
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      15.5,
+      -9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      16.55,
+      -9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      15.55,
+      -9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      15.5,
+      9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      16.55,
+      9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      15.55,
+      9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      16.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      16.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      16.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      16.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL partial core wall",
+    "pos": [
+      2.5,
+      17.5,
+      0
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor supplies",
+    "pos": [
+      3,
+      16.65,
+      4.4
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor 5",
+    "pos": [
+      0,
+      19.82,
+      0
+    ],
+    "size": [
+      22,
+      0.36,
+      20
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      19.5,
+      -9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      20.55,
+      -9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      19.55,
+      -9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL edge beam",
+    "pos": [
+      0,
+      19.5,
+      9.75
+    ],
+    "size": [
+      22,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL parapet",
+    "pos": [
+      0,
+      20.55,
+      9.75
+    ],
+    "size": [
+      14,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL level stripe",
+    "pos": [
+      0,
+      19.55,
+      9.8865
+    ],
+    "size": [
+      21,
+      0.18,
+      0.05
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      20.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      -10.75,
+      20.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      20.55,
+      -5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL side cover",
+    "pos": [
+      10.75,
+      20.55,
+      5.4
+    ],
+    "size": [
+      0.3,
+      1.1,
+      6.4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL floor supplies",
+    "pos": [
+      3,
+      20.65,
+      4.4
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 1",
+    "pos": [
+      0,
+      1.836096987425904,
+      -11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      2.06,
+      -12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      2.06,
+      -10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      3.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      4.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      -0.18,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      0.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 2",
+    "pos": [
+      0,
+      5.836096987425904,
+      -11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      6.06,
+      -12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      6.06,
+      -10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      7.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      8.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      3.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      4.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 3",
+    "pos": [
+      0,
+      9.836096987425904,
+      -11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      10.06,
+      -12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      10.06,
+      -10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      11.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      12.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      7.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      8.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 4",
+    "pos": [
+      0,
+      13.836096987425904,
+      -11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      14.06,
+      -12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      14.06,
+      -10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      15.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      16.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      11.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      12.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 5",
+    "pos": [
+      0,
+      17.836096987425904,
+      -11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      18.06,
+      -12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      18.06,
+      -10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": -12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      19.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      20.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      15.82,
+      -10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      16.55,
+      -13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 1",
+    "pos": [
+      0,
+      1.836096987425904,
+      11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      2.06,
+      10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      2.06,
+      12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      -0.18,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      0.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      3.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      4.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 2",
+    "pos": [
+      0,
+      5.836096987425904,
+      11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      6.06,
+      10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      6.06,
+      12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      3.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      4.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      7.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      8.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 3",
+    "pos": [
+      0,
+      9.836096987425904,
+      11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      10.06,
+      10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      10.06,
+      12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      7.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      8.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      11.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      12.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 4",
+    "pos": [
+      0,
+      13.836096987425904,
+      11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      14.06,
+      10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      14.06,
+      12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      11.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      12.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      15.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      16.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair flight 5",
+    "pos": [
+      0,
+      17.836096987425904,
+      11.55
+    ],
+    "size": [
+      18.579088914585775,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      18.06,
+      10.13
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair stringer",
+    "pos": [
+      0,
+      18.06,
+      12.97
+    ],
+    "size": [
+      18.439088914585774,
+      0.14,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 12.528807709151511,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      -9.8,
+      15.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      -9.8,
+      16.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL stair landing",
+    "pos": [
+      9.8,
+      19.82,
+      10.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL landing guard",
+    "pos": [
+      9.8,
+      20.55,
+      13.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed crown column",
+    "pos": [
+      -10.5,
+      21.7,
+      -9.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed crown column",
+    "pos": [
+      -10.5,
+      21.7,
+      9.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed crown column",
+    "pos": [
+      10.5,
+      21.7,
+      -9.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed crown column",
+    "pos": [
+      10.5,
+      21.7,
+      9.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed roof beam",
+    "pos": [
+      0,
+      23.2,
+      -9.5
+    ],
+    "size": [
+      22,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "CITADEL exposed roof beam",
+    "pos": [
+      0,
+      23.2,
+      9.5
+    ],
+    "size": [
+      22,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -41.5,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -41.5,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -41.5,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -34,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -34,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -34,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -26.5,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -26.5,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame concrete column",
+    "pos": [
+      -26.5,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame floor 1",
+    "pos": [
+      -34,
+      3.82,
+      23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame edge beam",
+    "pos": [
+      -34,
+      3.5,
+      17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame parapet",
+    "pos": [
+      -34,
+      4.55,
+      17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame level stripe",
+    "pos": [
+      -34,
+      3.55,
+      17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha north frame edge beam",
+    "pos": [
+      -34,
+      3.5,
+      28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame parapet",
+    "pos": [
+      -34,
+      4.55,
+      28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame level stripe",
+    "pos": [
+      -34,
+      3.55,
+      28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -41.75,
+      4.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -41.75,
+      4.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -26.25,
+      4.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -26.25,
+      4.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame partial core wall",
+    "pos": [
+      -36.5,
+      5.5,
+      23
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame floor supplies",
+    "pos": [
+      -31,
+      4.65,
+      25.64
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame floor 2",
+    "pos": [
+      -34,
+      7.82,
+      23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame edge beam",
+    "pos": [
+      -34,
+      7.5,
+      17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame parapet",
+    "pos": [
+      -34,
+      8.55,
+      17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame level stripe",
+    "pos": [
+      -34,
+      7.55,
+      17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha north frame edge beam",
+    "pos": [
+      -34,
+      7.5,
+      28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame parapet",
+    "pos": [
+      -34,
+      8.55,
+      28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame level stripe",
+    "pos": [
+      -34,
+      7.55,
+      28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -41.75,
+      8.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -41.75,
+      8.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -26.25,
+      8.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame side cover",
+    "pos": [
+      -26.25,
+      8.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame floor supplies",
+    "pos": [
+      -31,
+      8.65,
+      25.64
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair flight 1",
+    "pos": [
+      -34,
+      1.8313451914576864,
+      15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -40.8,
+      3.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -40.8,
+      4.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -27.2,
+      -0.18,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -27.2,
+      0.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair flight 2",
+    "pos": [
+      -34,
+      5.831345191457687,
+      15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      6.06,
+      14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      6.06,
+      16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -40.8,
+      7.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -40.8,
+      8.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -27.2,
+      3.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -27.2,
+      4.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair flight 1",
+    "pos": [
+      -34,
+      1.8313451914576864,
+      30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -40.8,
+      -0.18,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -40.8,
+      0.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -27.2,
+      3.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -27.2,
+      4.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair flight 2",
+    "pos": [
+      -34,
+      5.831345191457687,
+      30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      6.06,
+      29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair stringer",
+    "pos": [
+      -34,
+      6.06,
+      31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -40.8,
+      3.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -40.8,
+      4.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame stair landing",
+    "pos": [
+      -27.2,
+      7.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame landing guard",
+    "pos": [
+      -27.2,
+      8.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed crown column",
+    "pos": [
+      -41.5,
+      9.7,
+      17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed crown column",
+    "pos": [
+      -41.5,
+      9.7,
+      28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed crown column",
+    "pos": [
+      -26.5,
+      9.7,
+      17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed crown column",
+    "pos": [
+      -26.5,
+      9.7,
+      28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed roof beam",
+    "pos": [
+      -34,
+      11.2,
+      17.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha north frame exposed roof beam",
+    "pos": [
+      -34,
+      11.2,
+      28.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -41.5,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -41.5,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -41.5,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -41.5,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -34,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -34,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -34,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -34,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -26.5,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -26.5,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame concrete column",
+    "pos": [
+      -26.5,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame column footing",
+    "pos": [
+      -26.5,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame floor 1",
+    "pos": [
+      -34,
+      3.82,
+      -23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame edge beam",
+    "pos": [
+      -34,
+      3.5,
+      -28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame parapet",
+    "pos": [
+      -34,
+      4.55,
+      -28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame level stripe",
+    "pos": [
+      -34,
+      3.55,
+      -28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha south frame edge beam",
+    "pos": [
+      -34,
+      3.5,
+      -17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame parapet",
+    "pos": [
+      -34,
+      4.55,
+      -17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame level stripe",
+    "pos": [
+      -34,
+      3.55,
+      -17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha south frame side cover",
+    "pos": [
+      -41.75,
+      4.55,
+      -26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame side cover",
+    "pos": [
+      -41.75,
+      4.55,
+      -19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame side cover",
+    "pos": [
+      -26.25,
+      4.55,
+      -26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame side cover",
+    "pos": [
+      -26.25,
+      4.55,
+      -19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame floor supplies",
+    "pos": [
+      -31,
+      4.65,
+      -20.36
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair flight 1",
+    "pos": [
+      -34,
+      1.8313451914576864,
+      -30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      -31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      -29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair landing",
+    "pos": [
+      -40.8,
+      3.82,
+      -29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame landing guard",
+    "pos": [
+      -40.8,
+      4.55,
+      -32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair landing",
+    "pos": [
+      -27.2,
+      -0.18,
+      -29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame landing guard",
+    "pos": [
+      -27.2,
+      0.55,
+      -32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair flight 1",
+    "pos": [
+      -34,
+      1.8313451914576864,
+      -15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      -16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair stringer",
+    "pos": [
+      -34,
+      2.06,
+      -14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Alpha",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair landing",
+    "pos": [
+      -40.8,
+      -0.18,
+      -16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame landing guard",
+    "pos": [
+      -40.8,
+      0.55,
+      -14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame stair landing",
+    "pos": [
+      -27.2,
+      3.82,
+      -16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame landing guard",
+    "pos": [
+      -27.2,
+      4.55,
+      -14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed crown column",
+    "pos": [
+      -41.5,
+      5.7,
+      -28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed crown column",
+    "pos": [
+      -41.5,
+      5.7,
+      -17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed crown column",
+    "pos": [
+      -26.5,
+      5.7,
+      -28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed crown column",
+    "pos": [
+      -26.5,
+      5.7,
+      -17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed roof beam",
+    "pos": [
+      -34,
+      7.2,
+      -28.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha south frame exposed roof beam",
+    "pos": [
+      -34,
+      7.2,
+      -17.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha garage pillar",
+    "pos": [
+      -42,
+      2,
+      -5
+    ],
+    "size": [
+      0.6,
+      4,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha garage pillar",
+    "pos": [
+      -42,
+      2,
+      5
+    ],
+    "size": [
+      0.6,
+      4,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha garage canopy",
+    "pos": [
+      -42,
+      4,
+      0
+    ],
+    "size": [
+      8,
+      0.35,
+      11
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha garage rear wall",
+    "pos": [
+      -46,
+      1.5,
+      3
+    ],
+    "size": [
+      0.4,
+      3,
+      4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -17,
+      0.65,
+      -8
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -17,
+      1.1,
+      -8
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -17,
+      0.65,
+      9
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -17,
+      1.1,
+      9
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -27,
+      0.65,
+      -3
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -27,
+      1.1,
+      -3
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -28,
+      0.65,
+      7
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -28,
+      1.1,
+      7
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -44,
+      0.65,
+      -12
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -44,
+      1.1,
+      -12
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -46,
+      0.65,
+      12
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -46,
+      1.1,
+      12
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -13,
+      0.65,
+      -32
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -13,
+      1.1,
+      -32
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -16,
+      0.65,
+      34
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -16,
+      1.1,
+      34
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -46,
+      0.65,
+      -36
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -46,
+      1.1,
+      -36
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha concrete barricade",
+    "pos": [
+      -50,
+      0.65,
+      34
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha cover stripe",
+    "pos": [
+      -50,
+      1.1,
+      34
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha container",
+    "pos": [
+      -21,
+      1.4,
+      -36
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -23.6,
+      1.4,
+      -37.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -22.3,
+      1.4,
+      -37.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -21,
+      1.4,
+      -37.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -19.7,
+      1.4,
+      -37.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -18.4,
+      1.4,
+      -37.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      -21,
+      2.84,
+      -36
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha container",
+    "pos": [
+      -19,
+      1.4,
+      23
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -21.6,
+      1.4,
+      21.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -20.3,
+      1.4,
+      21.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -19,
+      1.4,
+      21.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -17.7,
+      1.4,
+      21.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -16.4,
+      1.4,
+      21.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      -19,
+      2.84,
+      23
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha container",
+    "pos": [
+      -49,
+      1.4,
+      -24
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -51.6,
+      1.4,
+      -25.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -50.3,
+      1.4,
+      -25.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -49,
+      1.4,
+      -25.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -47.7,
+      1.4,
+      -25.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      -46.4,
+      1.4,
+      -25.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Alpha",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      -49,
+      2.84,
+      -24
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -15,
+      0.85,
+      -3
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -15.6,
+      0.85,
+      -3
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -14.4,
+      0.85,
+      -3
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -20,
+      0.85,
+      5
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -20.6,
+      0.85,
+      5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -19.4,
+      0.85,
+      5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -28,
+      0.85,
+      -10
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -28.6,
+      0.85,
+      -10
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -27.4,
+      0.85,
+      -10
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -45,
+      0.85,
+      5
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -45.6,
+      0.85,
+      5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -44.4,
+      0.85,
+      5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -9,
+      0.85,
+      -25
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -9.6,
+      0.85,
+      -25
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -8.4,
+      0.85,
+      -25
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -9,
+      0.85,
+      27
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -9.6,
+      0.85,
+      27
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -8.4,
+      0.85,
+      27
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -52,
+      0.85,
+      -32
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -52.6,
+      0.85,
+      -32
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -51.4,
+      0.85,
+      -32
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha supply stack",
+    "pos": [
+      -31,
+      0.85,
+      -38
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -31.6,
+      0.85,
+      -38
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      -30.4,
+      0.85,
+      -38
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -8,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -20,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -42,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -55,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -8,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -20,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -42,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Alpha peripheral cover",
+    "pos": [
+      -55,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -17,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -21,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -25,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -29,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -33,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -37,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -41,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      -45,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -14.0,
+      0.2,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -14.75,
+      0.32,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 7,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -15.5,
+      0.2,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 14,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -16.25,
+      0.32,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 21,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -17.0,
+      0.2,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 28,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -17.75,
+      0.32,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 35,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      -18.5,
+      0.2,
+      -41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 42,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      26.5,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      26.5,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      26.5,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      34,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      34,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      34,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      34,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      34,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      34,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      41.5,
+      4.0,
+      17.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      41.5,
+      4.0,
+      23
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame concrete column",
+    "pos": [
+      41.5,
+      4.0,
+      28.5
+    ],
+    "size": [
+      0.65,
+      8,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame floor 1",
+    "pos": [
+      34,
+      3.82,
+      23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame edge beam",
+    "pos": [
+      34,
+      3.5,
+      17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame parapet",
+    "pos": [
+      34,
+      4.55,
+      17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame level stripe",
+    "pos": [
+      34,
+      3.55,
+      17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo north frame edge beam",
+    "pos": [
+      34,
+      3.5,
+      28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame parapet",
+    "pos": [
+      34,
+      4.55,
+      28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame level stripe",
+    "pos": [
+      34,
+      3.55,
+      28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      26.25,
+      4.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      26.25,
+      4.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      41.75,
+      4.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      41.75,
+      4.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame partial core wall",
+    "pos": [
+      31.5,
+      5.5,
+      23
+    ],
+    "size": [
+      3,
+      3,
+      0.5
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame floor supplies",
+    "pos": [
+      37,
+      4.65,
+      25.64
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame floor 2",
+    "pos": [
+      34,
+      7.82,
+      23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame edge beam",
+    "pos": [
+      34,
+      7.5,
+      17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame parapet",
+    "pos": [
+      34,
+      8.55,
+      17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame level stripe",
+    "pos": [
+      34,
+      7.55,
+      17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo north frame edge beam",
+    "pos": [
+      34,
+      7.5,
+      28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame parapet",
+    "pos": [
+      34,
+      8.55,
+      28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame level stripe",
+    "pos": [
+      34,
+      7.55,
+      28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      26.25,
+      8.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      26.25,
+      8.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      41.75,
+      8.55,
+      19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame side cover",
+    "pos": [
+      41.75,
+      8.55,
+      26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame floor supplies",
+    "pos": [
+      37,
+      8.65,
+      25.64
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair flight 1",
+    "pos": [
+      34,
+      1.8313451914576864,
+      15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      27.2,
+      3.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      27.2,
+      4.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      40.8,
+      -0.18,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      40.8,
+      0.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair flight 2",
+    "pos": [
+      34,
+      5.831345191457687,
+      15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      6.06,
+      14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      6.06,
+      16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      27.2,
+      7.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      27.2,
+      8.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      40.8,
+      3.82,
+      16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      40.8,
+      4.55,
+      14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair flight 1",
+    "pos": [
+      34,
+      1.8313451914576864,
+      30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      27.2,
+      -0.18,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      27.2,
+      0.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      40.8,
+      3.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      40.8,
+      4.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair flight 2",
+    "pos": [
+      34,
+      5.831345191457687,
+      30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      6.06,
+      29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair stringer",
+    "pos": [
+      34,
+      6.06,
+      31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      27.2,
+      3.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      27.2,
+      4.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame stair landing",
+    "pos": [
+      40.8,
+      7.82,
+      29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame landing guard",
+    "pos": [
+      40.8,
+      8.55,
+      32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed crown column",
+    "pos": [
+      26.5,
+      9.7,
+      17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed crown column",
+    "pos": [
+      26.5,
+      9.7,
+      28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed crown column",
+    "pos": [
+      41.5,
+      9.7,
+      17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed crown column",
+    "pos": [
+      41.5,
+      9.7,
+      28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed roof beam",
+    "pos": [
+      34,
+      11.2,
+      17.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo north frame exposed roof beam",
+    "pos": [
+      34,
+      11.2,
+      28.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      26.5,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      26.5,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      26.5,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      26.5,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      34,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      34,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      34,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      34,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      34,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      34,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      41.5,
+      2.0,
+      -28.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      -28.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      41.5,
+      2.0,
+      -23
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      -23
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame concrete column",
+    "pos": [
+      41.5,
+      2.0,
+      -17.5
+    ],
+    "size": [
+      0.65,
+      4,
+      0.65
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame column footing",
+    "pos": [
+      41.5,
+      0.2,
+      -17.5
+    ],
+    "size": [
+      1.1,
+      0.4,
+      1.1
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame floor 1",
+    "pos": [
+      34,
+      3.82,
+      -23
+    ],
+    "size": [
+      16,
+      0.36,
+      12
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame edge beam",
+    "pos": [
+      34,
+      3.5,
+      -28.75
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame parapet",
+    "pos": [
+      34,
+      4.55,
+      -28.75
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame level stripe",
+    "pos": [
+      34,
+      3.55,
+      -28.8305
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo south frame edge beam",
+    "pos": [
+      34,
+      3.5,
+      -17.25
+    ],
+    "size": [
+      16,
+      0.6,
+      0.45
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame parapet",
+    "pos": [
+      34,
+      4.55,
+      -17.25
+    ],
+    "size": [
+      8,
+      1.1,
+      0.3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame level stripe",
+    "pos": [
+      34,
+      3.55,
+      -17.1695
+    ],
+    "size": [
+      15,
+      0.18,
+      0.05
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo south frame side cover",
+    "pos": [
+      26.25,
+      4.55,
+      -26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame side cover",
+    "pos": [
+      26.25,
+      4.55,
+      -19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame side cover",
+    "pos": [
+      41.75,
+      4.55,
+      -26.240000000000002
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame side cover",
+    "pos": [
+      41.75,
+      4.55,
+      -19.759999999999998
+    ],
+    "size": [
+      0.3,
+      1.1,
+      3.84
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame floor supplies",
+    "pos": [
+      37,
+      4.65,
+      -20.36
+    ],
+    "size": [
+      2,
+      1.3,
+      1.3
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair flight 1",
+    "pos": [
+      34,
+      1.8313451914576864,
+      -30.55
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      -31.97
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      -29.130000000000003
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": -18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair landing",
+    "pos": [
+      27.2,
+      3.82,
+      -29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame landing guard",
+    "pos": [
+      27.2,
+      4.55,
+      -32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair landing",
+    "pos": [
+      40.8,
+      -0.18,
+      -29.6
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame landing guard",
+    "pos": [
+      40.8,
+      0.55,
+      -32.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair flight 1",
+    "pos": [
+      34,
+      1.8313451914576864,
+      -15.45
+    ],
+    "size": [
+      12.789110640673519,
+      0.32,
+      2.8
+    ],
+    "material": "Deck",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      -16.869999999999997
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair stringer",
+    "pos": [
+      34,
+      2.06,
+      -14.03
+    ],
+    "size": [
+      12.649110640673518,
+      0.14,
+      0.12
+    ],
+    "material": "Bravo",
+    "angle": 18.43494882292201,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair landing",
+    "pos": [
+      27.2,
+      -0.18,
+      -16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame landing guard",
+    "pos": [
+      27.2,
+      0.55,
+      -14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame stair landing",
+    "pos": [
+      40.8,
+      3.82,
+      -16.4
+    ],
+    "size": [
+      2.2,
+      0.36,
+      5
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame landing guard",
+    "pos": [
+      40.8,
+      4.55,
+      -14.0
+    ],
+    "size": [
+      2.2,
+      1.1,
+      0.16
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed crown column",
+    "pos": [
+      26.5,
+      5.7,
+      -28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed crown column",
+    "pos": [
+      26.5,
+      5.7,
+      -17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed crown column",
+    "pos": [
+      41.5,
+      5.7,
+      -28.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed crown column",
+    "pos": [
+      41.5,
+      5.7,
+      -17.5
+    ],
+    "size": [
+      0.35,
+      3.4,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed roof beam",
+    "pos": [
+      34,
+      7.2,
+      -28.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo south frame exposed roof beam",
+    "pos": [
+      34,
+      7.2,
+      -17.5
+    ],
+    "size": [
+      16,
+      0.32,
+      0.35
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo garage pillar",
+    "pos": [
+      42,
+      2,
+      -5
+    ],
+    "size": [
+      0.6,
+      4,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo garage pillar",
+    "pos": [
+      42,
+      2,
+      5
+    ],
+    "size": [
+      0.6,
+      4,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo garage canopy",
+    "pos": [
+      42,
+      4,
+      0
+    ],
+    "size": [
+      8,
+      0.35,
+      11
+    ],
+    "material": "Deck",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo garage rear wall",
+    "pos": [
+      46,
+      1.5,
+      3
+    ],
+    "size": [
+      0.4,
+      3,
+      4
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      17,
+      0.65,
+      8
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      17,
+      1.1,
+      8
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      17,
+      0.65,
+      -9
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      17,
+      1.1,
+      -9
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      27,
+      0.65,
+      3
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      27,
+      1.1,
+      3
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      28,
+      0.65,
+      -7
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      28,
+      1.1,
+      -7
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      44,
+      0.65,
+      12
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      44,
+      1.1,
+      12
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      46,
+      0.65,
+      -12
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      46,
+      1.1,
+      -12
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      13,
+      0.65,
+      32
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      13,
+      1.1,
+      32
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      16,
+      0.65,
+      -34
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      16,
+      1.1,
+      -34
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      46,
+      0.65,
+      36
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      46,
+      1.1,
+      36
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo concrete barricade",
+    "pos": [
+      50,
+      0.65,
+      -34
+    ],
+    "size": [
+      3.8,
+      1.3,
+      0.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo cover stripe",
+    "pos": [
+      50,
+      1.1,
+      -34
+    ],
+    "size": [
+      3.82,
+      0.14,
+      0.72
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo container",
+    "pos": [
+      21,
+      1.4,
+      36
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      18.4,
+      1.4,
+      34.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      19.7,
+      1.4,
+      34.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      21,
+      1.4,
+      34.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      22.3,
+      1.4,
+      34.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      23.6,
+      1.4,
+      34.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      21,
+      2.84,
+      36
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo container",
+    "pos": [
+      19,
+      1.4,
+      -23
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      16.4,
+      1.4,
+      -24.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      17.7,
+      1.4,
+      -24.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      19,
+      1.4,
+      -24.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      20.3,
+      1.4,
+      -24.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      21.6,
+      1.4,
+      -24.33
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      19,
+      2.84,
+      -23
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo container",
+    "pos": [
+      49,
+      1.4,
+      24
+    ],
+    "size": [
+      7,
+      2.8,
+      2.6
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      46.4,
+      1.4,
+      22.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      47.7,
+      1.4,
+      22.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      49,
+      1.4,
+      22.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      50.3,
+      1.4,
+      22.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container ribs",
+    "pos": [
+      51.6,
+      1.4,
+      22.67
+    ],
+    "size": [
+      0.08,
+      2.65,
+      0.09
+    ],
+    "material": "Bravo",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Container roof",
+    "pos": [
+      49,
+      2.84,
+      24
+    ],
+    "size": [
+      7.15,
+      0.08,
+      2.75
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      15,
+      0.85,
+      3
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      14.4,
+      0.85,
+      3
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      15.6,
+      0.85,
+      3
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      20,
+      0.85,
+      -5
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      19.4,
+      0.85,
+      -5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      20.6,
+      0.85,
+      -5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      28,
+      0.85,
+      10
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      27.4,
+      0.85,
+      10
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      28.6,
+      0.85,
+      10
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      45,
+      0.85,
+      -5
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      44.4,
+      0.85,
+      -5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      45.6,
+      0.85,
+      -5
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      9,
+      0.85,
+      25
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      8.4,
+      0.85,
+      25
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      9.6,
+      0.85,
+      25
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      9,
+      0.85,
+      -27
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      8.4,
+      0.85,
+      -27
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      9.6,
+      0.85,
+      -27
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      52,
+      0.85,
+      32
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      51.4,
+      0.85,
+      32
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      52.6,
+      0.85,
+      32
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo supply stack",
+    "pos": [
+      31,
+      0.85,
+      38
+    ],
+    "size": [
+      1.7,
+      1.7,
+      1.7
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      30.4,
+      0.85,
+      38
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Supply strapping",
+    "pos": [
+      31.6,
+      0.85,
+      38
+    ],
+    "size": [
+      0.12,
+      1.72,
+      1.74
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      8,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      20,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      42,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      55,
+      0.9,
+      -39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      8,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      20,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      42,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Bravo peripheral cover",
+    "pos": [
+      55,
+      0.9,
+      39
+    ],
+    "size": [
+      3,
+      1.8,
+      0.6
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      17,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      21,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      25,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      29,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      33,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      37,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      41,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Avenue dash",
+    "pos": [
+      45,
+      0.04,
+      0
+    ],
+    "size": [
+      1.7,
+      0.02,
+      0.12
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      14.0,
+      0.2,
+      41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      14.75,
+      0.32,
+      41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 7,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      15.5,
+      0.2,
+      41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 14,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      16.25,
+      0.32,
+      41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 21,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      17.0,
+      0.2,
+      41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 28,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      17.75,
+      0.32,
+      41
+    ],
+    "size": [
+      1.2,
+      0.64,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 35,
+    "solid": true
+  },
+  {
+    "name": "Concrete rubble",
+    "pos": [
+      18.5,
+      0.2,
+      41
+    ],
+    "size": [
+      1.2,
+      0.4,
+      0.8
+    ],
+    "material": "Concrete",
+    "angle": 42,
+    "solid": true
+  },
+  {
+    "name": "Crane base",
+    "pos": [
+      14,
+      0.4,
+      19
+    ],
+    "size": [
+      3,
+      0.8,
+      3
+    ],
+    "material": "Concrete",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crane mast",
+    "pos": [
+      13.4,
+      14,
+      18.4
+    ],
+    "size": [
+      0.2,
+      28,
+      0.2
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crane mast",
+    "pos": [
+      13.4,
+      14,
+      19.6
+    ],
+    "size": [
+      0.2,
+      28,
+      0.2
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crane mast",
+    "pos": [
+      14.6,
+      14,
+      18.4
+    ],
+    "size": [
+      0.2,
+      28,
+      0.2
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crane mast",
+    "pos": [
+      14.6,
+      14,
+      19.6
+    ],
+    "size": [
+      0.2,
+      28,
+      0.2
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": true
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      2,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      4,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      6,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      8,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      10,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      12,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      14,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      16,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      18,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      20,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      22,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      24,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      26,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane mast tie",
+    "pos": [
+      14,
+      28,
+      19
+    ],
+    "size": [
+      1.5,
+      0.13,
+      1.5
+    ],
+    "material": "Steel",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane boom",
+    "pos": [
+      4,
+      28,
+      19
+    ],
+    "size": [
+      34,
+      0.5,
+      0.75
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane counterweight",
+    "pos": [
+      19,
+      27.5,
+      19
+    ],
+    "size": [
+      3,
+      1.5,
+      2
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane hoist cable",
+    "pos": [
+      -10,
+      23,
+      19
+    ],
+    "size": [
+      0.045,
+      10,
+      0.045
+    ],
+    "material": "Dark",
+    "angle": 0,
+    "solid": false
+  },
+  {
+    "name": "Crane suspended hook",
+    "pos": [
+      -10,
+      18,
+      19
+    ],
+    "size": [
+      0.3,
+      0.5,
+      0.25
+    ],
+    "material": "Marking",
+    "angle": 0,
+    "solid": false
+  }
+]

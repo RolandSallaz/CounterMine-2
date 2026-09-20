@@ -1839,8 +1839,21 @@ MonoBehaviour:
     magazineSize: 20
     roundsPerMinute: 400
     automatic: 0
-    damage: 28
-    recoilKick: 2.2
+    damage: 20
+    recoilKick: 1
+    recoil:
+      animation: {fileID: 11400000, guid: b5dce297f3224f7e97ff3ac638fe8c2a, type: 2}
+      cameraPitch: {x: 0.2, y: 0.3}
+      rotateAroundGrip: 1
+      cameraYaw: 0.12
+      heatPerShot: 0.12
+      heatRecovery: 0.8
+      sustainedFireMultiplier: 1.25
+      hipSpread: 1
+      heatSpread: 2
+      moveSpread: 2.5
+      airSpread: 3
+      crouchSpreadMultiplier: 0.7
     characterIdle: {fileID: 7400000, guid: 909e73cbbee115c41846b470c302174d, type: 2}
     weaponIdle: {fileID: 7400000, guid: ac4795453cd19fa4485dbdf1445f7442, type: 2}
     characterEquip: {fileID: 7400000, guid: ca542d6ca50626f4d8a9346bf3524f47, type: 2}
@@ -2008,7 +2021,6 @@ MonoBehaviour:
   sustainedFireMultiplier: 1.6
   cameraPitch: {x: 0.35, y: 0.6}
   cameraYaw: 0.2
-  pistolKickMultiplier: 2.2
   hipSpread: 1.2
   heatSpread: 3.5
   moveSpread: 4.2
