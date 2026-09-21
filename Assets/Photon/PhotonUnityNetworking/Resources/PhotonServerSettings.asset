@@ -49,6 +49,11 @@ MonoBehaviour:
   - GrenadeThrowRPC
   - RequestGrenade
   - BroadcastGrenade
+  - Launch
+  - ReceiveActivation
+  - RequestActivation
+  - ReceiveMilkorShot
+  - RequestMilkorShot
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

@@ -34,7 +34,7 @@ public sealed class WeaponHandIK : MonoBehaviour
     private void LateUpdate()
     {
         if (animationSource == null || !animationSource.isActiveAndEnabled ||
-            animationSource.LastEvaluatedFrame != Time.frameCount || !animationSource.IsIdlePlaying) return;
+            animationSource.LastEvaluatedFrame != Time.frameCount || !animationSource.CanPoseHands) return;
         Solve();
     }
 

@@ -25,6 +25,8 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public WeaponAimRig aimRig;
         public Transform muzzle, leftGrip, rightGrip;
         public int magazineSize = 30;
+        public bool finiteReserve;
+        public float proceduralEquipSeconds;
         public float roundsPerMinute = 600;
         public bool automatic = true;
         public int damage = 34;
@@ -122,6 +124,10 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         var entry = Array.Find(weapons, w => w != null && w.id == id);
         if (entry == null || entry.animator == null || entry.characterIdle == null || entry.weaponIdle == null) return false;
         if (currentWeapon == entry) return true;
+        if (weaponAnimancer != null && currentWeapon != null && currentWeapon.proceduralEquipSeconds > 0)
+            weaponAnimancer.transform.SetLocalPositionAndRotation(weaponRestPosition, weaponRestRotation);
+        weaponRestPosition = entry.animator.transform.localPosition;
+        weaponRestRotation = entry.animator.transform.localRotation;
         BindBolt(entry);
         if (weaponAnimancer != null && weaponAnimancer.IsPlayableInitialized) weaponAnimancer.Playable.PauseGraph();
         foreach (var w in weapons) if (w != null && w.animator != null) w.animator.gameObject.SetActive(w == entry);
@@ -132,7 +138,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (entry.aimRig != null) root.GetComponentInChildren<WeaponAimController>(true)?.Equip(entry.aimRig);
         if (entry.muzzle != null) root.GetComponent<NetworkWeapon>()?.SetMuzzle(entry.muzzle);
         root.GetComponent<NetworkWeapon>()?.SetDamage(entry.damage);
-        root.GetComponent<WeaponAmmo>()?.SelectWeapon(entry.id, entry.magazineSize);
+        root.GetComponent<WeaponAmmo>()?.SelectWeapon(entry.id, entry.magazineSize, entry.finiteReserve);
         root.GetComponentInChildren<WeaponRecoilController>(true)?.ConfigureFire(entry.roundsPerMinute, entry.automatic, entry.recoilKick, entry.recoil, entry.rightGrip);
         if (entry.leftGrip != null && entry.rightGrip != null)
             foreach (var ik in root.GetComponentsInChildren<WeaponHandIK>(true)) ik.SetGrips(entry.leftGrip, entry.rightGrip);
@@ -205,8 +211,14 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     public bool IsPlayingAction => IsEquipping;
     public bool IsIdlePlaying => isActiveAndEnabled && armsState != null && weaponState != null && !IsPlayingAction;
     public float ActionProgress => IsPlayingAction && activeArmsClip != null && activeWeaponClip != null
-        ? Mathf.Clamp01((float)(elapsedSeconds / Math.Max(.000001, Math.Max(activeArmsClip.length, activeWeaponClip.length)))) : 0;
+        ? Mathf.Clamp01((float)(elapsedSeconds / Math.Max(.000001, ActionDuration))) : 0;
+    public bool ProceduralEquip => IsEquipping && currentWeapon != null && currentWeapon.proceduralEquipSeconds > 0;
+    public bool CanPoseHands => IsIdlePlaying || ProceduralEquip;
     public bool CanFire => IsIdlePlaying;
+    private float ActionDuration => ProceduralEquip ? currentWeapon.proceduralEquipSeconds :
+        activeArmsClip != null && activeWeaponClip != null ? Mathf.Max(activeArmsClip.length, activeWeaponClip.length) : 0;
+    private Vector3 weaponRestPosition;
+    private Quaternion weaponRestRotation;
 
     public double NormalizedTime => armsState != null && activeArmsClip != null && activeArmsClip.length > 0f ? armsState.NormalizedTimeD : 0;
     public int LastEvaluatedFrame { get; private set; } = -1;
@@ -224,6 +236,8 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (IsRemote && !applyingNetwork) return;
         if (!isActiveAndEnabled) return;
         ActionId = "equip";
+        if (currentWeapon != null && currentWeapon.proceduralEquipSeconds > 0)
+        { PlayPair(armsIdleClip, weaponIdleClip, true); return; }
         if (armsEquipClip == null || weaponEquipClip == null) { RestartIdle(); return; }
         PlayPair(armsEquipClip, weaponEquipClip, true);
     }
@@ -279,7 +293,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     {
         if (armsState == null || weaponState == null) return;
         elapsedSeconds = Math.Max(0, Now - StartedAt) * playbackSpeed;
-        if (IsEquipping && elapsedSeconds >= System.Math.Max(activeArmsClip.length, activeWeaponClip.length))
+        if (IsEquipping && elapsedSeconds >= ActionDuration)
         {
             RestartIdle();
             return;
@@ -289,7 +303,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
 
     private void EvaluatePair(double seconds)
     {
-        double duration = IsEquipping ? System.Math.Max(activeArmsClip.length, activeWeaponClip.length) :
+        double duration = IsEquipping ? ActionDuration :
             activeArmsClip.length > 0f ? activeArmsClip.length : activeWeaponClip.length;
         double phase = duration > 0 ? seconds / duration : 0;
         if (IsEquipping) phase = System.Math.Min(phase, 1);
@@ -299,7 +313,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         weaponState.TimeD = phase * activeWeaponClip.length;
         // A zero-duration idle can skip native transform writes at unchanged time.
         // Never let last frame's IK become the next frame's animation input.
-        if (!IsEquipping && activeArmsClip.length == 0f) RestoreIdlePose();
+        if ((!IsEquipping || ProceduralEquip) && activeArmsClip.length == 0f) RestoreIdlePose();
         armsAnimancer.Evaluate(0f);
         weaponAnimancer.Evaluate(0f);
         if (!IsEquipping && bolt != null && currentWeapon != null)
@@ -311,7 +325,15 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
             Vector3 travel = bolt.parent.InverseTransformVector(backwards * currentWeapon.boltTravel);
             bolt.localPosition = boltRest + travel * amount;
         }
-        if (!IsEquipping && activeArmsClip.length == 0f && idleBones == null) CaptureIdlePose();
+        if ((!IsEquipping || ProceduralEquip) && activeArmsClip.length == 0f && idleBones == null) CaptureIdlePose();
+        if (currentWeapon != null && currentWeapon.proceduralEquipSeconds > 0)
+        {
+            float t = ProceduralEquip ? Mathf.Clamp01((float)(seconds / ActionDuration)) : 1f;
+            float lift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / .82f));
+            float settle = Mathf.Sin(Mathf.Clamp01((t - .65f) / .35f) * Mathf.PI) * .018f;
+            WeaponRoot.localPosition = weaponRestPosition + new Vector3(.08f, -.32f, -.14f) * (1f - lift) + Vector3.up * settle;
+            WeaponRoot.localRotation = weaponRestRotation * Quaternion.Euler(new Vector3(32f, -18f, 24f) * (1f - lift));
+        }
         LastEvaluatedFrame = Time.frameCount;
     }
 

@@ -22,30 +22,33 @@ public sealed class GrenadeProjectile : MonoBehaviour
     private Player killer;
     private int sourceTeam;
     private int seed;
-    private bool authority;
     private GameObject visual;
+    private bool impactRound, exploded;
+    private Transform shooter;
+    private float Radius => impactRound ? 6f : BlastRadius;
     /// <summary>Current simulated position (follows bounces, valid until the blast).</summary>
     public Vector3 Position => position;
 
     private void OnDestroy() => Active.Remove(this);
 
-    public static void Launch(Vector3 start, Vector3 velocity, double throwTime, Player killer, int seed, int team = 0)
+    public static void Launch(Vector3 start, Vector3 velocity, double throwTime, Player killer, int seed, int team = 0, bool impactRound = false, Transform shooter = null)
     {
         var go = new GameObject("Grenade");
         go.transform.position = start;
         var projectile = go.AddComponent<GrenadeProjectile>();
         projectile.position = start;
+        projectile.impactRound = impactRound; projectile.shooter = shooter;
         projectile.velocity = velocity;
         projectile.throwTime = throwTime;
         projectile.killer = killer;
         projectile.sourceTeam = killer != null ? TeamSafeZone.AttackerTeam(killer) : team;
         projectile.seed = seed;
-        projectile.authority = !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
         Active.Add(projectile);
         if (grenadeModel == null) grenadeModel = Resources.Load<GameObject>("Grenade/grenade");
-        if (grenadeModel != null)
+        var model = impactRound ? Resources.Load<GameObject>("Milkor/Round") : grenadeModel;
+        if (model != null)
         {
-            projectile.visual = Instantiate(grenadeModel, start, Random.rotationUniform);
+            projectile.visual = Instantiate(model, start, impactRound ? Quaternion.LookRotation(velocity) : Random.rotationUniform);
             projectile.visual.transform.SetParent(go.transform, true);
             foreach (var collider in projectile.visual.GetComponentsInChildren<Collider>(true)) Destroy(collider);
         }
@@ -54,7 +57,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
     private void Update()
     {
         double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
-        if (now >= throwTime + Fuse) { Explode(); return; }
+        if (now >= throwTime + (impactRound ? 6f : Fuse)) { Explode(); return; }
         Simulate(Time.deltaTime);
     }
 
@@ -74,6 +77,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
                     out Vector3 point, out Vector3 normal))
                 {
                     position = point + normal * .02f;
+                    if (impactRound) { Explode(); return; }
                     Vector3 reflected = velocity;
                     float into = Vector3.Dot(reflected, normal);
                     if (into < 0f) reflected -= normal * (into * 1.42f);
@@ -85,7 +89,8 @@ public sealed class GrenadeProjectile : MonoBehaviour
                 if (velocity.sqrMagnitude < .000001f) break;
             }
             transform.position = position;
-            if (visual != null && velocity.sqrMagnitude > 1f)
+            if (impactRound && visual != null && velocity.sqrMagnitude > 1f) visual.transform.rotation = Quaternion.LookRotation(velocity);
+            else if (visual != null && velocity.sqrMagnitude > 1f)
                 visual.transform.Rotate(new Vector3(7f, 3f, 5f) * (Time.deltaTime * velocity.magnitude * .2f), Space.Self);
         }
         else transform.position = position;
@@ -95,7 +100,9 @@ public sealed class GrenadeProjectile : MonoBehaviour
         out Vector3 point, out Vector3 normal)
     {
         // The shared query handles saturated hit buffers without dropping nearby walls.
-        var hit = BulletHitUtility.CastCover(origin, direction, distance, null, ~0, sourceTeam: sourceTeam);
+        var hit = impactRound
+            ? BulletHitUtility.Cast(origin, direction, distance, shooter, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0)
+            : BulletHitUtility.CastCover(origin, direction, distance, null, ~0, sourceTeam: sourceTeam);
         point = hit.point;
         normal = hit.normal;
         return hit.didHit;
@@ -114,14 +121,17 @@ public sealed class GrenadeProjectile : MonoBehaviour
 
     private void Explode()
     {
+        if (exploded) return;
+        exploded = true;
         Active.Remove(this);
         ExplosionFlash.Spawn(position, seed);
-        if (authority) DealDamage(position);
+        if ((!PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient)) DealDamage(position);
         Destroy(gameObject);
     }
 
     private void DealDamage(Vector3 at)
     {
+        if (impactRound && !ConquestMatch.CombatAllowed) return;
         int throwerTeam = 0;
         if (killer != null && killer.CustomProperties["team"] is int team) throwerTeam = team;
         // Visual lift must never move the damage origin through a ceiling or low cover.
@@ -135,21 +145,21 @@ public sealed class GrenadeProjectile : MonoBehaviour
             Vector3 chest = capsule != null && capsule.enabled ? capsule.bounds.center : victim.transform.position + Vector3.up * 1.2f;
             Vector3 toVictim = chest - blastOrigin;
             float distance = toVictim.magnitude;
-            if (distance > BlastRadius) continue;
+            if (distance > Radius) continue;
             int victimTeam = BotController.TeamOf(victim);
             bool isThrower = killer != null && victim.photonView != null &&
                 !BotController.IsBot(victim) && victim.photonView.OwnerActorNr == killer.ActorNumber;
             // Own grenade always hurts its thrower; other teammates are still spared.
             if (!isThrower && throwerTeam != 0 && victimTeam != 0 && throwerTeam == victimTeam) continue;
             if (TeamSafeZone.Protects(victim, sourceTeam) || IsBlastBlocked(blastOrigin, chest, sourceTeam)) continue;
-            float fullRadius = BlastRadius * FullDamageFraction;
+            float fullRadius = impactRound ? 2f : Radius * FullDamageFraction;
             float fall = distance <= fullRadius ? 1f
-                : 1f - (distance - fullRadius) / (BlastRadius - fullRadius);
-            int damage = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(MinDamage, MaxDamage, fall)));
+                : 1f - (distance - fullRadius) / (Radius - fullRadius);
+            int damage = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(impactRound ? 15f : MinDamage, impactRound ? 110f : MaxDamage, fall)));
             // Heavy blast impulse: survivors ignore it, kills fling the ragdoll away from the blast.
             Vector3 flat = distance > .001f ? toVictim / distance : Vector3.zero;
             Vector3 force = (flat + Vector3.up * .7f).normalized * 45f;
-            victim.ApplyMasterDamage(damage, force, chest, killer, 0, "grenade");
+            victim.ApplyMasterDamage(damage, force, chest, killer, 0, impactRound ? MilkorSkill.WeaponId : "grenade");
         }
     }
 }

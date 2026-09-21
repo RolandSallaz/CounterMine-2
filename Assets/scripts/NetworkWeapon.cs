@@ -115,6 +115,11 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
             playerCamera == null || muzzle == null || (health != null && health.IsDead) || lastLocalShotFrame == Time.frameCount) return false;
         if (TeamSafeZone.ContainsAny(playerCamera.transform.position) || TeamSafeZone.ContainsAny(muzzle.position)) return false;
         lastLocalShotFrame = Time.frameCount;
+        if (weaponAnimation != null && weaponAnimation.WeaponId == MilkorSkill.WeaponId)
+        {
+            var launcher = GetComponent<MilkorSkill>();
+            return launcher != null && launcher.Fire(muzzle.position, ApplySpread(playerCamera.transform.forward));
+        }
         int sequence = ++nextSequence;
         double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
         Vector3 eye = playerCamera.transform.position;
@@ -152,6 +157,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
 
     private bool AcceptShot(int sequence, double time, double now, Vector3 eye, Vector3 direction, Vector3 start)
     {
+        if (weaponAnimation != null && weaponAnimation.WeaponId == MilkorSkill.WeaponId) return false;
         if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(eye) || TeamSafeZone.ContainsAny(start)) return false;
         if (sequence <= Mathf.Max(lastAcceptedSequence, lastConfirmedSequence) || sequence <= 0 ||
             double.IsNaN(time) || double.IsInfinity(time) || time < now - .75 || time > now + .1 ||

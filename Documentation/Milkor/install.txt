@@ -1,0 +1,1 @@
+Installed Milkor MGL Mk 1S: remapped URP materials, player catalog, six-round finite magazine, procedural equip, projectile and audio.

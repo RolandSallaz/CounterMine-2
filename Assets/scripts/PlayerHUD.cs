@@ -42,6 +42,8 @@ public sealed class PlayerHUD : MonoBehaviour
     [SerializeField] private HitDirectionIndicator hitDirection;
     [SerializeField] private ThreatArrow threatArrow;
     private readonly System.Collections.Generic.List<GrenadeProjectile> threatScratch = new System.Collections.Generic.List<GrenadeProjectile>();
+    private int milkorProgress = -1, milkorCharges = -1, milkorRemaining = -1;
+    private bool milkorEquipped;
     private readonly SkillSlotUI[] skillCards = new SkillSlotUI[RadarSkill.SlotCount];
     private int radarProgress = -1, radarCharges = -1;
     private bool radarWasActive;
@@ -360,11 +362,20 @@ public sealed class PlayerHUD : MonoBehaviour
         if (created)
             for (int i = 0; i < skillCards.Length; i++)
                 skillCards[i] = SkillSlotUI.Create(safeArea != null ? safeArea : transform, i);
-        if (!created && radarProgress == radar.Progress && radarCharges == radar.Charges && radarWasActive == radar.Active) return;
+        var mgl = health.GetComponent<MilkorSkill>();
+        var reward = MilkorRewards.Read(health.photonView.OwnerActorNr);
+        int remaining = mgl != null ? mgl.Remaining : 0;
+        bool equipped = mgl != null && mgl.Equipped;
+        if (!created && radarProgress == radar.Progress && radarCharges == radar.Charges && radarWasActive == radar.Active &&
+            milkorProgress == reward.Kills && milkorCharges == reward.Charges && milkorRemaining == remaining && milkorEquipped == equipped) return;
+        milkorProgress = reward.Kills; milkorCharges = reward.Charges; milkorRemaining = remaining; milkorEquipped = equipped;
         radarProgress = radar.Progress; radarCharges = radar.Charges; radarWasActive = radar.Active;
         for (int i = 0; i < skillCards.Length; i++)
             skillCards[i].SetState(radar.SkillAt(i) != RadarSkill.SkillKind.None,
-                i == 0 ? radar.Progress : 0, i == 0 ? radar.Charges : 0, i == 0 && radar.Active);
+                i == 0 ? radar.Progress : reward.Kills, i == 0 ? radar.Charges : reward.Charges,
+                i == 0 ? radar.Active : i == 1 && mgl != null && mgl.Equipped,
+                i == 1 ? MilkorRewards.RequiredKills : RadarSkill.RequiredKills,
+                i == 1 ? "MILKOR MGL" : "RADAR", i + 3, i == 1 && mgl != null ? mgl.Remaining : -1);
     }
     private void UpdateRespawn(bool dead)
     {
@@ -652,11 +663,11 @@ public sealed class PlayerHUD : MonoBehaviour
         playerName.text=string.IsNullOrWhiteSpace(health.photonView.Owner?.NickName)?"OPERATOR":health.photonView.Owner.NickName.ToUpperInvariant();
         healthValue.text=health.CurrentHealth.ToString("000");healthValue.color=health.CurrentHealth<=25?danger:Color.white;
         healthFill.color=health.CurrentHealth<=25?danger:color;healthFill.rectTransform.anchorMax=new Vector2(Mathf.Clamp01((float)health.CurrentHealth/health.MaximumHealth),1);
-        var id=animationSource!=null?animationSource.WeaponId:null;weaponName.text=id=="ak74"?"AK-74":string.IsNullOrEmpty(id)?"UNARMED":id.Replace('_',' ').ToUpperInvariant();
+        var id=animationSource!=null?animationSource.WeaponId:null;weaponName.text=string.IsNullOrEmpty(id)?"UNARMED":GameAudio.WeaponName(id);
         if(ammoLabel!=null)
         {
             if(ammo==null){ammoLabel.text="--";ammoLabel.color=Color.white;}
-            else{ammoLabel.text=ammo.MagAmmo+" / INF";ammoLabel.color=ammo.MagAmmo<=0?danger:Color.white;}
+            else{ammoLabel.text=ammo.MagAmmo+(ammo.FiniteReserve ? " / 6" : " / INF");ammoLabel.color=ammo.MagAmmo<=0?danger:Color.white;}
         }
         if(grenadeLabel!=null)
         {

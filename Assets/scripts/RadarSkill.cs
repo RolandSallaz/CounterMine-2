@@ -12,8 +12,8 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
     public const int RequiredKills = 5;
     public const float Duration = 15f;
     public const int SlotCount = 3;
-    public enum SkillKind { None, Radar }
-    private readonly SkillKind[] slots = { SkillKind.Radar, SkillKind.None, SkillKind.None };
+    public enum SkillKind { None, Radar, Milkor }
+    private readonly SkillKind[] slots = { SkillKind.Radar, SkillKind.Milkor, SkillKind.None };
     public SkillKind SkillAt(int slot) => slot >= 0 && slot < SlotCount ? slots[slot] : SkillKind.None;
     public static RadarSkill Instance { get; private set; }
     private readonly RadarChargeProgress charge = new RadarChargeProgress();
@@ -99,6 +99,8 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
             BotController.IsBot(owner) || ownerCamera == null || !ownerCamera.enabled) return false;
         switch (SkillAt(slot))
         {
+            case SkillKind.Milkor:
+                return owner.GetComponent<MilkorSkill>()?.TryActivate() == true;
             case SkillKind.Radar:
                 if (!charge.TryActivate(Time.unscaledTimeAsDouble)) return false;
                 nextScan = 0;

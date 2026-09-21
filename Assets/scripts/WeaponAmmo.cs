@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>Magazine ammo for the mounted weapon. Reserve is infinite: reloading refills the mag.
+/// <summary>Per-weapon magazines. Normal weapons have infinite reserve; reward weapons cannot reload.
 /// Owner-authoritative: dry shots are blocked on the shooter, so the master never sees them.</summary>
 [DisallowMultipleComponent]
 public sealed class WeaponAmmo : MonoBehaviour
@@ -16,6 +16,13 @@ public sealed class WeaponAmmo : MonoBehaviour
     public int MagazineSize => magazineSize;
     public int MagAmmo { get; private set; }
     public bool IsReloading { get; private set; }
+    public bool FiniteReserve { get; private set; }
+    public int SavedAmmo(string id) => equippedWeapon == id ? MagAmmo : magazines.TryGetValue(id, out int count) ? count : 0;
+    public void SetFiniteAmmo(string id, int count)
+    {
+        magazines[id] = Mathf.Clamp(count, 0, MilkorRewards.Capacity);
+        if (equippedWeapon == id) { MagAmmo = magazines[id]; IsReloading = false; }
+    }
     public bool CanShoot => !IsReloading && MagAmmo > 0;
 
     private PhotonView photonView;
@@ -24,13 +31,14 @@ public sealed class WeaponAmmo : MonoBehaviour
     private float nextDrySound;
     private string equippedWeapon;
     private readonly System.Collections.Generic.Dictionary<string,int> magazines = new System.Collections.Generic.Dictionary<string,int>();
-    public void SelectWeapon(string id, int capacity)
+    public void SelectWeapon(string id, int capacity, bool finiteReserve = false)
     {
         if (equippedWeapon == id) return;
         if (!string.IsNullOrEmpty(equippedWeapon)) magazines[equippedWeapon] = MagAmmo;
         equippedWeapon = id;
+        FiniteReserve = finiteReserve;
         magazineSize = Mathf.Max(1,capacity);
-        MagAmmo = magazines.TryGetValue(id,out int saved) ? Mathf.Clamp(saved,0,magazineSize) : magazineSize;
+        MagAmmo = magazines.TryGetValue(id,out int saved) ? Mathf.Clamp(saved,0,magazineSize) : finiteReserve ? 0 : magazineSize;
         // Switching interrupts a reload; it must not refill either magazine.
         IsReloading = false; animDriven = false;
     }
@@ -64,7 +72,7 @@ public sealed class WeaponAmmo : MonoBehaviour
 
     public bool TryStartReload()
     {
-        if (IsReloading || MagAmmo >= magazineSize || weaponAnimation == null) return false;
+        if (FiniteReserve || IsReloading || MagAmmo >= magazineSize || weaponAnimation == null) return false;
         if (health != null && health.IsDead) return false;
         if (weaponAnimation.PlayWeaponAction("reload"))
         {

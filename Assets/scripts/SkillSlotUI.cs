@@ -8,6 +8,7 @@ public sealed class SkillSlotUI : MonoBehaviour
     private Text caption, count, charges;
     private Image background;
     private Image radarIcon;
+    private SkillSlotGraphic launcherIcon;
     private float displayed, target;
     private bool active, ready, available;
     private static readonly Color Cyan = new Color(.35f, .8f, .95f);
@@ -27,6 +28,9 @@ public sealed class SkillSlotUI : MonoBehaviour
         card.background = go.GetComponent<Image>(); card.background.raycastTarget = false;
         card.background.color = new Color(.02f, .035f, .045f, .94f);
         var outline = go.AddComponent<Outline>(); outline.effectColor = new Color(.25f, .4f, .46f, .5f); outline.effectDistance = new Vector2(1, -1);
+        card.launcherIcon = Graphic(go.transform, "Launcher Icon", new Vector2(0, 3), new Vector2(78, 78), true);
+        card.launcherIcon.Launcher = true; card.launcherIcon.color = new Color(.5f,.8f,.9f,.22f);
+        card.launcherIcon.transform.SetAsFirstSibling();
         card.ring = Graphic(go.transform, "Clockwise Progress", Vector2.zero, new Vector2(64, 64), false);
         card.icon = Graphic(go.transform, "Icon", Vector2.zero, new Vector2(26, 26), true);
         var iconObject = new GameObject("Radar Icon", typeof(RectTransform), typeof(Image));
@@ -65,16 +69,17 @@ public sealed class SkillSlotUI : MonoBehaviour
         graphic.rectTransform.anchoredPosition = position; graphic.rectTransform.sizeDelta = size;
         return graphic;
     }
-    public void SetState(bool assigned, int progress, int storedCharges, bool running)
+    public void SetState(bool assigned, int progress, int storedCharges, bool running, int requiredKills = RadarSkill.RequiredKills, string title = "RADAR", int key = 3, int remaining = -1)
     {
-        available = assigned; active = running; ready = assigned && storedCharges > 0;
-        target = assigned ? Mathf.Clamp01((float)progress / RadarSkill.RequiredKills) : 0;
+        available = assigned; active = running; ready = assigned && (storedCharges > 0 || remaining > 0);
+        target = assigned ? Mathf.Clamp01((float)progress / requiredKills) : 0;
         if (ready && !active) target = 1;
         icon.Locked = !assigned; icon.SetVerticesDirty();
         icon.enabled = !assigned;
-        radarIcon.enabled = assigned && radarIcon.sprite != null;
-        caption.text = !assigned ? "EMPTY SLOT" : active ? "RADAR ACTIVE" : ready ? "PRESS 3" : "RADAR";
-        count.text = !assigned ? "" : ready && !active ? "0" : (RadarSkill.RequiredKills - progress).ToString();
+        launcherIcon.enabled = assigned && title != "RADAR";
+        radarIcon.enabled = assigned && title == "RADAR" && radarIcon.sprite != null;
+        caption.text = !assigned ? "EMPTY SLOT" : active ? title : ready ? "PRESS " + key : title;
+        count.text = !assigned ? "" : remaining > 0 ? remaining.ToString() : ready && !active ? "0" : (requiredKills - progress).ToString();
         charges.text = assigned && storedCharges > 0 ? "x" + storedCharges : "";
     }
     private void Update()
@@ -91,7 +96,7 @@ public sealed class SkillSlotUI : MonoBehaviour
 
 public sealed class SkillSlotGraphic : MaskableGraphic
 {
-    public bool Icon, Locked;
+    public bool Icon, Locked, Launcher;
     private float fill;
     public float Fill { set { if (Mathf.Approximately(fill, value)) return; fill = value; SetVerticesDirty(); } }
     protected override void OnPopulateMesh(VertexHelper mesh)
@@ -101,6 +106,14 @@ public sealed class SkillSlotGraphic : MaskableGraphic
         {
             Arc(mesh, r, 0, 1, 2, new Color(.17f, .25f, .29f, .8f));
             Arc(mesh, r, 0, fill, 3, color);
+        }
+        else if (Launcher)
+        {
+            Arc(mesh, r * .36f, 0, 1, 4, color);
+            Line(mesh, new Vector2(-r*.9f, r*.3f), new Vector2(r*.35f, r*.3f), 6, color);
+            Line(mesh, new Vector2(r*.25f, r*.3f), new Vector2(r*.95f, r*.08f), 7, color);
+            Line(mesh, new Vector2(r*.4f, r*.08f), new Vector2(r*.57f, -r*.5f), 6, color);
+            Line(mesh, new Vector2(-r*.6f, r*.22f), new Vector2(-r*.6f, -r*.4f), 5, color);
         }
         else if (Locked)
         {
