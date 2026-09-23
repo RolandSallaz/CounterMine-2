@@ -1,0 +1,7 @@
+Measured deformed mesh vertices in weapon-local metres (unit root scale).
+Width: 0,1589 m
+Height with optic and foregrip: 0,2857 m
+Overall length: 0,7621 m
+Root scale: (1.00, 1.00, 1.00)
+Manufacturer Mk 1S nominal overall length: 754 mm stock retracted / 832 mm stock extended; width 163 mm; height 207 mm (accessories vary).
+Source: https://milkor.ae/wp-content/uploads/2025/02/Milkor-Weapons-Division.pdf (PDF p. 5).

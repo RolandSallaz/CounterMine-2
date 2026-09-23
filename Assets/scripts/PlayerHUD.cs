@@ -34,6 +34,7 @@ public sealed class PlayerHUD : MonoBehaviour
     private float respawnRequestedAt;
     private float respawnHoldProgress;
     private GameObject respawnPanel;
+    private DeathShopUI deathShop;
     private Button respawnButton;
     private Text respawnLabel;
     private Image respawnFill;
@@ -44,6 +45,7 @@ public sealed class PlayerHUD : MonoBehaviour
     private readonly System.Collections.Generic.List<GrenadeProjectile> threatScratch = new System.Collections.Generic.List<GrenadeProjectile>();
     private int milkorProgress = -1, milkorCharges = -1, milkorRemaining = -1;
     private bool milkorEquipped;
+    private int previousSkillLayout = -1;
     private readonly SkillSlotUI[] skillCards = new SkillSlotUI[RadarSkill.SlotCount];
     private int radarProgress = -1, radarCharges = -1;
     private bool radarWasActive;
@@ -71,6 +73,7 @@ public sealed class PlayerHUD : MonoBehaviour
         // Prefab root is stored with scale 0 — unhide immediately so the HUD
         // (and respawn button) works even before Bind() in all builds.
         if (transform.localScale.x == 0f) transform.localScale = Vector3.one;
+        GameLocalization.BindHUD(transform);
         hudCanvas = GetComponent<Canvas>();
         UpdateSafeArea();
     }
@@ -92,6 +95,7 @@ public sealed class PlayerHUD : MonoBehaviour
         // canvas (including the respawn button) stays invisible / unclickable.
         transform.localScale = Vector3.one;
         EnsureEventSystem();
+        deathShop?.Bind(player);
         health=player;animationSource=player.GetComponentInChildren<WeaponIdleSynchronizer>(true);
         if (isActiveAndEnabled) health.Damaged += ShowHitDirection;
         aim=player.GetComponentInChildren<WeaponAimController>(true);recoil=player.GetComponentInChildren<WeaponRecoilController>(true);
@@ -276,7 +280,7 @@ public sealed class PlayerHUD : MonoBehaviour
         if (suicide)
         {
             AddKillfeedLabel(entry.transform, victimName, victimColor, TextAnchor.MiddleRight);
-            AddKillfeedLabel(entry.transform, "died", new Color(1f, 1f, 1f, .65f), TextAnchor.MiddleRight);
+            AddKillfeedLabel(entry.transform, GameLocalization.T("died"), new Color(1f, 1f, 1f, .65f), TextAnchor.MiddleRight);
         }
         else
         {
@@ -335,6 +339,18 @@ public sealed class PlayerHUD : MonoBehaviour
     {
         if(health==null){if(healthScreenEffect!=null)healthScreenEffect.Clear();return;}
         if(PhotonNetwork.InRoom&&!health.photonView.IsMine){gameObject.SetActive(false);return;}
+        if (health.IsDead)
+        {
+            var lobby = Object.FindFirstObjectByType<LobbyManager>();
+            if (lobby != null)
+            {
+                healthScreenEffect?.Clear();
+                deathShop?.Close();
+                lobby.ShowAfterDeath(health, respawnDelay);
+                gameObject.SetActive(false);
+                return;
+            }
+        }
         if (healthScreenEffect != null) healthScreenEffect.Tick((float)health.CurrentHealth / Mathf.Max(1, health.MaximumHealth), health.IsDead, Time.unscaledDeltaTime);
         if(Time.unscaledTime>=refreshAt){refreshAt=Time.unscaledTime+.1f;Refresh();}
         RefreshStamina();
@@ -366,16 +382,22 @@ public sealed class PlayerHUD : MonoBehaviour
         var reward = MilkorRewards.Read(health.photonView.OwnerActorNr);
         int remaining = mgl != null ? mgl.Remaining : 0;
         bool equipped = mgl != null && mgl.Equipped;
-        if (!created && radarProgress == radar.Progress && radarCharges == radar.Charges && radarWasActive == radar.Active &&
+        int layout = (int)radar.SkillAt(0) + (int)radar.SkillAt(1) * 4 + (int)radar.SkillAt(2) * 16;
+        if (!created && layout == previousSkillLayout && radarProgress == radar.Progress && radarCharges == radar.Charges && radarWasActive == radar.Active &&
             milkorProgress == reward.Kills && milkorCharges == reward.Charges && milkorRemaining == remaining && milkorEquipped == equipped) return;
+        previousSkillLayout = layout;
         milkorProgress = reward.Kills; milkorCharges = reward.Charges; milkorRemaining = remaining; milkorEquipped = equipped;
         radarProgress = radar.Progress; radarCharges = radar.Charges; radarWasActive = radar.Active;
         for (int i = 0; i < skillCards.Length; i++)
-            skillCards[i].SetState(radar.SkillAt(i) != RadarSkill.SkillKind.None,
-                i == 0 ? radar.Progress : reward.Kills, i == 0 ? radar.Charges : reward.Charges,
-                i == 0 ? radar.Active : i == 1 && mgl != null && mgl.Equipped,
-                i == 1 ? MilkorRewards.RequiredKills : RadarSkill.RequiredKills,
-                i == 1 ? "MILKOR MGL" : "RADAR", i + 3, i == 1 && mgl != null ? mgl.Remaining : -1);
+        {
+            var kind = radar.SkillAt(i);
+            bool launcher = kind == RadarSkill.SkillKind.Milkor;
+            skillCards[i].SetState(kind != RadarSkill.SkillKind.None,
+                launcher ? reward.Kills : radar.Progress, launcher ? reward.Charges : radar.Charges,
+                launcher ? equipped : kind == RadarSkill.SkillKind.Radar && radar.Active,
+                launcher ? MilkorRewards.RequiredKills : RadarSkill.RequiredKills,
+                launcher ? "MILKOR MGL" : "RADAR", i + 3, launcher ? remaining : -1);
+        }
     }
     private void UpdateRespawn(bool dead)
     {
@@ -386,6 +408,7 @@ public sealed class PlayerHUD : MonoBehaviour
             respawnHoldProgress = 0f;
             if (respawnFill != null) respawnFill.fillAmount = 0f;
             if (respawnPanel != null) respawnPanel.SetActive(false);
+            deathShop?.Close();
             return;
         }
         if (deathAt < 0f)
@@ -412,6 +435,12 @@ public sealed class PlayerHUD : MonoBehaviour
         // If a previous click didn't produce a new life within a few seconds, allow retrying.
         if (respawning && Time.unscaledTime - respawnRequestedAt > 5f) respawning = false;
 
+        if (deathShop != null && deathShop.IsOpen)
+        {
+            deathShop.transform.SetAsLastSibling(); respawnHoldProgress = 0;
+            if (respawnFill != null) respawnFill.fillAmount = 0;
+            return;
+        }
         // Gate by respawnDelay (min time since death before input counts).
         float sinceDeath = Time.unscaledTime - deathAt;
         bool gated = sinceDeath < respawnDelay;
@@ -450,10 +479,10 @@ public sealed class PlayerHUD : MonoBehaviour
         if (respawnFill != null) respawnFill.fillAmount = Mathf.Clamp01(respawnHoldProgress);
         if (respawnLabel != null)
         {
-            if (respawning) respawnLabel.text = "SPAWNING...";
-            else if (gated) respawnLabel.text = $"READY IN {Mathf.CeilToInt(respawnDelay - sinceDeath)}...";
-            else if (respawnHoldProgress > 0f) respawnLabel.text = $"HOLD [{respawnHoldKey}] {Mathf.RoundToInt(respawnHoldProgress * 100f)}%";
-            else respawnLabel.text = $"RESPAWN [SPACE] / HOLD [{respawnHoldKey}]";
+            if (respawning) respawnLabel.text = GameLocalization.T("SPAWNING...");
+            else if (gated) respawnLabel.text = GameLocalization.Format("ГОТОВНОСТЬ ЧЕРЕЗ {0}...", Mathf.CeilToInt(respawnDelay - sinceDeath));
+            else if (respawnHoldProgress > 0f) respawnLabel.text = GameLocalization.Format("УДЕРЖИВАЙТЕ [{0}] {1}%", respawnHoldKey, Mathf.RoundToInt(respawnHoldProgress * 100f));
+            else respawnLabel.text = GameLocalization.Format("ВОЗРОДИТЬСЯ [SPACE] / УДЕРЖИВАЙТЕ [{0}]", respawnHoldKey);
         }
     }
 
@@ -538,7 +567,7 @@ public sealed class PlayerHUD : MonoBehaviour
         panelRect.anchorMax = new Vector2(.5f, .5f);
         panelRect.pivot = new Vector2(.5f, .5f);
         panelRect.anchoredPosition = new Vector2(0f, -120f);
-        panelRect.sizeDelta = new Vector2(320f, 150f);
+        panelRect.sizeDelta = new Vector2(420f, 184f);
         var bg = respawnPanel.AddComponent<Image>();
         bg.color = new Color(0f, 0f, 0f, .6f);
         bg.raycastTarget = false;
@@ -598,8 +627,20 @@ public sealed class PlayerHUD : MonoBehaviour
         respawnLabel.alignment = TextAnchor.MiddleCenter;
         respawnLabel.raycastTarget = false;
         respawnLabel.color = Color.white;
-        respawnLabel.text = "RESPAWN";
+        respawnLabel.text = GameLocalization.T("RESPAWN");
         respawnButton.onClick.AddListener(OnRespawnClicked);
+        deathShop = DeathShopUI.Create(hudCanvas.transform, health, OnRespawnClicked);
+        var shopGo = new GameObject("Shop Button", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+        shopGo.transform.SetParent(respawnPanel.transform, false); shopGo.transform.SetAsFirstSibling();
+        shopGo.GetComponent<Image>().color = new Color(.12f,.25f,.3f,.98f);
+        shopGo.GetComponent<LayoutElement>().preferredHeight = 56;
+        var shopButton = shopGo.GetComponent<Button>(); shopButton.navigation = new Navigation { mode = Navigation.Mode.None };
+        shopButton.onClick.AddListener(() => { if (!respawning) deathShop.Open(); });
+        var shopLabelGo = new GameObject("Label", typeof(RectTransform), typeof(Text)); shopLabelGo.transform.SetParent(shopGo.transform, false);
+        var shopText = shopLabelGo.GetComponent<Text>(); shopText.font = font; shopText.fontSize = 20;
+        GameLocalization.Bind(shopText, "МАГАЗИН / СНАРЯЖЕНИЕ"); shopText.alignment = TextAnchor.MiddleCenter; shopText.raycastTarget = false;
+        shopText.rectTransform.anchorMin = Vector2.zero; shopText.rectTransform.anchorMax = Vector2.one;
+        shopText.rectTransform.offsetMin = shopText.rectTransform.offsetMax = Vector2.zero;
     }
 
     private void OnRespawnClicked()
@@ -607,10 +648,11 @@ public sealed class PlayerHUD : MonoBehaviour
         // Guard against double clicks: each extra call would spawn an additional player.
         if (respawning) return;
         if (health == null || !health.IsDead) return;
+        deathShop?.Close();
         respawning = true;
         respawnRequestedAt = Time.unscaledTime;
         if (respawnButton != null) respawnButton.interactable = false;
-        if (respawnLabel != null) respawnLabel.text = "SPAWNING...";
+        if (respawnLabel != null) respawnLabel.text = GameLocalization.T("SPAWNING...");
         try { GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true); } catch { }
         // Inside the click handler, so pointer-lock requests stay browser-legal (WebGL).
         // Must not throw — otherwise the spawn below never runs (classic build-only bug).
@@ -659,15 +701,15 @@ public sealed class PlayerHUD : MonoBehaviour
         if(health==null)return;
         int team=health.photonView.Owner?.CustomProperties["team"] is int t?t:1;
         Color color=team==2?teamTwo:teamOne;accent.color=color;
-        teamLabel.text=team==2?"BRAVO / 02":"ALPHA / 01";teamLabel.color=color;
-        playerName.text=string.IsNullOrWhiteSpace(health.photonView.Owner?.NickName)?"OPERATOR":health.photonView.Owner.NickName.ToUpperInvariant();
+        teamLabel.text=team==2?GameLocalization.T("BRAVO / 02"):GameLocalization.T("ALPHA / 01");teamLabel.color=color;
+        playerName.text=string.IsNullOrWhiteSpace(health.photonView.Owner?.NickName)?GameLocalization.T("OPERATOR"):health.photonView.Owner.NickName.ToUpperInvariant();
         healthValue.text=health.CurrentHealth.ToString("000");healthValue.color=health.CurrentHealth<=25?danger:Color.white;
         healthFill.color=health.CurrentHealth<=25?danger:color;healthFill.rectTransform.anchorMax=new Vector2(Mathf.Clamp01((float)health.CurrentHealth/health.MaximumHealth),1);
-        var id=animationSource!=null?animationSource.WeaponId:null;weaponName.text=string.IsNullOrEmpty(id)?"UNARMED":GameAudio.WeaponName(id);
+        var id=animationSource!=null?animationSource.WeaponId:null;weaponName.text=string.IsNullOrEmpty(id)?GameLocalization.T("UNARMED"):GameAudio.WeaponName(id);
         if(ammoLabel!=null)
         {
             if(ammo==null){ammoLabel.text="--";ammoLabel.color=Color.white;}
-            else{ammoLabel.text=ammo.MagAmmo+(ammo.FiniteReserve ? " / 6" : " / INF");ammoLabel.color=ammo.MagAmmo<=0?danger:Color.white;}
+            else{ammoLabel.text=ammo.MagAmmo+(ammo.FiniteReserve ? " / 6" : GameLocalization.T(" / INF"));ammoLabel.color=ammo.MagAmmo<=0?danger:Color.white;}
         }
         if(grenadeLabel!=null)
         {
@@ -675,10 +717,10 @@ public sealed class PlayerHUD : MonoBehaviour
             else{grenadeLabel.text="G x"+grenades.Grenades;grenadeLabel.color=grenades.Grenades<=0?danger:Color.white;}
         }
         bool dead=health.IsDead;bool rag=ragdoll!=null&&ragdoll.IsRagdoll;bool action=animationSource!=null&&animationSource.IsPlayingAction;
-        weaponState.text=dead?"OFFLINE":TeamSafeZone.BlocksWeapons(health)?"SAFE ZONE":rag?"RAGDOLL":action?"BUSY":"READY";
-        actionLabel.text=animationSource!=null&&animationSource.ActionId=="reload"?"RELOADING":"EQUIPPING";
-        deathLabel.gameObject.SetActive(dead);deathLabel.text="ELIMINATED";
-        connection.text=PhotonNetwork.InRoom?"LIVE  /  "+PhotonNetwork.GetPing()+" MS":"LOCAL";
+        weaponState.text=dead?GameLocalization.T("OFFLINE"):TeamSafeZone.BlocksWeapons(health)?GameLocalization.T("SAFE ZONE"):rag?GameLocalization.T("RAGDOLL"):action?GameLocalization.T("BUSY"):GameLocalization.T("READY");
+        actionLabel.text=animationSource!=null&&animationSource.ActionId=="reload"?GameLocalization.T("RELOADING"):GameLocalization.T("EQUIPPING");
+        deathLabel.gameObject.SetActive(dead);deathLabel.text=GameLocalization.T("ELIMINATED");
+        connection.text=PhotonNetwork.InRoom?GameLocalization.T("LIVE  /  ")+PhotonNetwork.GetPing()+GameLocalization.T(" MS"):GameLocalization.T("LOCAL");
         RefreshStamina();
     }
     private void RefreshStamina()

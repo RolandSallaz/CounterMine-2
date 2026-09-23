@@ -7,11 +7,13 @@ public sealed class WeaponSight : MonoBehaviour
     [SerializeField] private Transform aimPoint;
     [SerializeField, Min(.01f)] private float eyeRelief = .08f;
     [SerializeField, Range(5f, 100f)] private float aimedFieldOfView = 60f;
+    [SerializeField] private bool preservePeripheralFieldOfView;
     [Tooltip("Higher priority optics are selected automatically unless a sight was explicitly selected.")]
     [SerializeField] private int selectionPriority;
     public Transform AimPoint => aimPoint != null ? aimPoint : transform;
     public float EyeRelief => eyeRelief;
     public float AimedFieldOfView => aimedFieldOfView;
+    public bool PreservePeripheralFieldOfView => preservePeripheralFieldOfView;
     public int SelectionPriority => selectionPriority;
     private WeaponAimRig rig;
     private void OnEnable() => RefreshOwner();

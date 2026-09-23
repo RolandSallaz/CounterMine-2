@@ -13,7 +13,7 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
     public const float Duration = 15f;
     public const int SlotCount = 3;
     public enum SkillKind { None, Radar, Milkor }
-    private readonly SkillKind[] slots = { SkillKind.Radar, SkillKind.Milkor, SkillKind.None };
+    private readonly SkillKind[] slots = { SkillKind.None, SkillKind.None, SkillKind.None };
     public SkillKind SkillAt(int slot) => slot >= 0 && slot < SlotCount ? slots[slot] : SkillKind.None;
     public static RadarSkill Instance { get; private set; }
     private readonly RadarChargeProgress charge = new RadarChargeProgress();
@@ -41,6 +41,9 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
             DontDestroyOnLoad(Instance.gameObject);
         }
         Instance.owner = player; Instance.ownerCamera = camera; Instance.nextScan = 0f;
+        var data = YandexPlayerData.Current;
+        Instance.slots[0] = data.Owns("radar") && data.equippedSkills.Contains("radar") ? SkillKind.Radar : SkillKind.None;
+        Instance.slots[1] = data.Owns("milkor") && data.equippedSkills.Contains("milkor") ? SkillKind.Milkor : SkillKind.None;
     }
     public override void OnEnable()
     {
@@ -59,6 +62,7 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
     private void HandleKill(PlayerHealth.KillInfo info)
     {
         if (!PhotonNetwork.InRoom || PhotonNetwork.LocalPlayer == null) return;
+        if (!System.Array.Exists(slots, skill => skill == SkillKind.Radar)) return;
         if (!charge.Record(info, PhotonNetwork.LocalPlayer.ActorNumber, Time.unscaledTimeAsDouble)) return;
         nextScan = 0f;
         GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);

@@ -26,7 +26,8 @@ public sealed class WeaponAimController : MonoBehaviour
     public float ErgonomicsNormalized => weapon != null ? weapon.Ergonomics / 100f : .55f;
     public float AimInTime => Mathf.Max(.01f, Mathf.Lerp(Handling != null ? Handling.lowErgonomicsAimTime : .5f,
         Handling != null ? Handling.highErgonomicsAimTime : .16f, ErgonomicsNormalized));
-    public float LookSensitivityMultiplier => Mathf.Lerp(1f, Handling != null ? Handling.aimedSensitivity : .7f, AimAmount);
+    public float LookSensitivityMultiplier => Mathf.Lerp(1f, (Handling != null ? Handling.aimedSensitivity : .7f) *
+        (weapon != null && weapon.TryGetComponent<ScopedSightView>(out var scope) ? scope.SensitivityMultiplier : 1f), AimAmount);
     public float MovementSpeedMultiplier => Mathf.Lerp(1f, Handling != null ? Handling.aimedMovementSpeed : .65f, AimAmount);
     public float SwayMultiplier => Mathf.Lerp(1f, Mathf.Lerp(.4f, .16f, ErgonomicsNormalized), AimAmount);
     public bool BlocksSprint => isActiveAndEnabled && (IsAiming || AimAmount > .01f);
@@ -83,7 +84,7 @@ public sealed class WeaponAimController : MonoBehaviour
         var sight = weapon != null && weapon.isActiveAndEnabled ? weapon.ActiveSight : null;
         if (sight != null && TryCalculateAlignment(sight, out var position, out var rotation))
         {
-            float fov = Mathf.Min(restFieldOfView, sight.AimedFieldOfView);
+            float fov = sight.PreservePeripheralFieldOfView ? restFieldOfView : Mathf.Min(restFieldOfView, sight.AimedFieldOfView);
             if (sight != lastSight)
             {
                 switchPosition = hasAlignment ? alignmentPosition : position;

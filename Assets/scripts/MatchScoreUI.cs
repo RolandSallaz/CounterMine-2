@@ -41,17 +41,17 @@ public sealed class MatchScoreUI : MonoBehaviour
         bg.color = new Color(.018f, .027f, .039f, .96f); bg.raycastTarget = false;
         var border = panel.gameObject.AddComponent<Outline>();
         border.effectColor = new Color(.24f, .42f, .55f, .65f); border.effectDistance = new Vector2(1f, -1f);
-        Label(panel, "ТАБЛИЦА СЧЁТА", 24, Color.white, .025f, .65f, 12, 30);
+        Label(panel, GameLocalization.T("ТАБЛИЦА СЧЁТА"), 24, Color.white, .025f, .65f, 12, 30);
         var musicCredit = Label(panel, GameAudio.BackgroundMusicCredit, 11, Muted, .52f, .975f, 10, 32);
         musicCredit.alignment = TextAnchor.UpperRight;
         totals = Label(panel, "", 16, Gold, .025f, .97f, 46, 24);
         Label(panel, "#", 13, Muted, .025f, .07f, 82, 22);
-        Label(panel, "ИГРОК", 13, Muted, .08f, .43f, 82, 22);
-        Label(panel, "КОМАНДА", 12, Muted, .44f, .6f, 82, 22);
-        Label(panel, "У", 13, Muted, .61f, .68f, 82, 22);
-        Label(panel, "С", 13, Muted, .69f, .76f, 82, 22);
-        Label(panel, "П", 13, Muted, .77f, .84f, 82, 22);
-        Label(panel, "ОЧКИ", 13, Gold, .85f, .98f, 82, 22);
+        Label(panel, GameLocalization.T("ИГРОК"), 13, Muted, .08f, .43f, 82, 22);
+        Label(panel, GameLocalization.T("КОМАНДА"), 12, Muted, .44f, .6f, 82, 22);
+        Label(panel, GameLocalization.T("У"), 13, Muted, .61f, .68f, 82, 22);
+        Label(panel, GameLocalization.T("С"), 13, Muted, .69f, .76f, 82, 22);
+        Label(panel, GameLocalization.T("П"), 13, Muted, .77f, .84f, 82, 22);
+        Label(panel, GameLocalization.T("ОЧКИ"), 13, Gold, .85f, .98f, 82, 22);
         footer = Label(panel, "", 13, Muted, .025f, .98f, 0, 26);
         footer.rectTransform.anchorMin = new Vector2(.025f, 0);
         footer.rectTransform.anchorMax = new Vector2(.98f, 0);
@@ -75,7 +75,7 @@ public sealed class MatchScoreUI : MonoBehaviour
         rect.pivot = new Vector2(.5f, 1);
         rect.anchoredPosition = new Vector2(0, -top); rect.sizeDelta = new Vector2(0, height);
         var text = rect.gameObject.AddComponent<Text>();
-        text.font = font; text.fontSize = size; text.color = tint; text.text = value;
+        text.font = font; text.fontSize = size; text.color = tint; GameLocalization.Bind(text, value);
         text.supportRichText = false; text.raycastTarget = false;
         text.alignment = TextAnchor.MiddleLeft;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -145,12 +145,12 @@ public sealed class MatchScoreUI : MonoBehaviour
             row.background.color = local ? new Color(.13f, .23f, .29f, .95f) : new Color(.075f, .105f, .14f, i % 2 == 0 ? .85f : .4f);
             row.stripe.color = team; row.rank.text = (firstRow + i + 1).ToString();
             row.name.text = (local ? "› " : "") + entry.name;
-            row.team.text = entry.team == 1 ? "ALPHA" : entry.team == 2 ? "BRAVO" : "—"; row.team.color = team;
+            row.team.text = entry.team == 1 ? GameLocalization.T("ALPHA") : entry.team == 2 ? GameLocalization.T("BRAVO") : "—"; row.team.color = team;
             row.kills.text = entry.kills.ToString(); row.deaths.text = entry.deaths.ToString();
             row.assists.text = entry.assists.ToString(); row.score.text = entry.score.ToString();
         }
-        totals.text = "ВАШИ ОЧКИ  " + KillRewards.Score + "     /     ДЕНЬГИ  " + YandexPlayerData.Current.money;
-        footer.text = "У — убийства   С — смерти   П — помощь" + (entries.Count > visible ? "     |     Колесо / PgUp / PgDn  " + (firstRow + 1) + "–" + (firstRow + count) + "/" + entries.Count : "     |     TAB — закрыть");
+        totals.text = GameLocalization.T("ВАШИ ОЧКИ  ") + KillRewards.Score + GameLocalization.T("     /     ДЕНЬГИ  ") + YandexPlayerData.Current.money;
+        footer.text = GameLocalization.T("У — убийства   С — смерти   П — помощь") + (entries.Count > visible ? GameLocalization.T("     |     Колесо / PgUp / PgDn  ") + (firstRow + 1) + "–" + (firstRow + count) + "/" + entries.Count : GameLocalization.T("     |     TAB — закрыть"));
     }
     private void AddToast(KillRewards.Notice notice)
     {
@@ -160,7 +160,7 @@ public sealed class MatchScoreUI : MonoBehaviour
         var image = root.gameObject.AddComponent<Image>(); image.color = new Color(.02f, .035f, .05f, .93f); image.raycastTarget = false;
         var accent = Rect("Accent", root, Vector2.zero, new Vector2(0, 1)); accent.sizeDelta = new Vector2(3, 0);
         var strip = accent.gameObject.AddComponent<Image>(); strip.color = notice.kill ? Gold : new Color(.35f, .85f, .9f); strip.raycastTarget = false;
-        string title = notice.kill ? "УБИЙСТВО" : "ПОМОЩЬ";
+        string title = notice.kill ? GameLocalization.T("УБИЙСТВО") : GameLocalization.T("ПОМОЩЬ");
         if (notice.count > 1) title += " ×" + notice.count;
         var label = Label(root, title + " +" + notice.amount, 22, strip.color, .045f, .955f, 0, 42);
         label.alignment = TextAnchor.MiddleCenter;

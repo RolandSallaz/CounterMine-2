@@ -1,0 +1,2 @@
+PASS URP shader compilation, lens/ADS alignment and player-camera ADS preview, centered and shifted eye, aperture clipping, front-side hiding and depth occlusion.
+Reticle pixels: centered 196, shifted 196. Editor rendering; WebGL runtime was not run.

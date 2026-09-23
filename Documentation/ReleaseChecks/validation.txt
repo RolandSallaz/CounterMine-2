@@ -1,0 +1,4 @@
+FAIL
+System.Exception: Preparation title must refresh
+  at ValidateReleaseUI.Run () [0x0033d] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateReleaseUI.cs:68 
+  at ValidateReleaseUI.Poll () [0x00025] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateReleaseUI.cs:19 

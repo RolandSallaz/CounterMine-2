@@ -44,6 +44,9 @@ public sealed class MilkorRewards : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient || !ConquestMatch.CombatAllowed ||
             !RadarSkill.CountsAsKill(info, info.killerActorNr)) return;
+        var killer = PhotonNetwork.CurrentRoom.GetPlayer(info.killerActorNr);
+        if (!(killer?.CustomProperties[NetworkWeaponPresentation.SkillLoadoutKey] is string[] skills) ||
+            !System.Array.Exists(skills, id => id == MilkorSkill.WeaponId)) return;
         var state = Read(info.killerActorNr);
         state.RecordKill();
         Publish(info.killerActorNr, state);

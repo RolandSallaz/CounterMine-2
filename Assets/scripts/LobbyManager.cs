@@ -16,10 +16,18 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] private Vector3 mapCenter = Vector3.zero;
     [SerializeField] private bool autoJoinOnStart = true;
 
-    private string status = "Choose a team.";
+    private System.Func<string> status = () => GameLocalization.T("Choose a team.");
     private bool playerSpawned;
     private int selectedTeam;
     private int matchmakingIndex = 1;
+    private DeploymentScreen deploymentScreen;
+    private StartMenuScreen startMenu;
+    private bool modeSelected;
+    private bool singlePlayer;
+    private GameObject pendingCorpse;
+    private float deployAvailableAt;
+    public bool CanDeploy => !playerSpawned && PhotonNetwork.InRoom && YandexPlayerData.IsLoaded && Time.unscaledTime >= deployAvailableAt;
+    public string ConnectionStatus => status();
 
     private void Start()
     {
@@ -28,13 +36,30 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         ConquestMatch.Ensure();
         KillRewards.EnsureSubscribed();
         YandexPlayerData.Load();
+        startMenu = StartMenuScreen.Create(this, Resources.Load<GameObject>(playerPrefabResourceName), GetMenuPosition());
 #if UNITY_WEBGL && !UNITY_EDITOR
         YandexCloudSave.RequestPlayerName(playerName =>
         {
             if (!string.IsNullOrEmpty(playerName)) PhotonNetwork.NickName = playerName;
         });
 #endif
-        if (autoJoinOnStart) Connect();
+    }
+
+    private Vector3 GetMenuPosition()
+    {
+        foreach (var point in FindObjectsByType<TeamSpawnPoint>(FindObjectsSortMode.InstanceID))
+            if (point.Team == 1) return point.transform.position;
+        return fallbackSpawnPosition;
+    }
+
+    public void StartGame(bool offline)
+    {
+        if (modeSelected) return;
+        modeSelected = true;
+        singlePlayer = offline;
+        if (startMenu != null) { startMenu.gameObject.SetActive(false); Destroy(startMenu.gameObject); }
+        ShowDeploymentScreen();
+        Connect();
     }
 
     private void SelectTeam(int team)
@@ -42,12 +67,21 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         GameAudio.Effect("UI/click", Vector3.zero, .5f, 1f, true);
         selectedTeam = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { TeamProperty, team } });
-        status = $"Team {team} selected. Connecting to Photon...";
+        status = () => GameLocalization.Format("Выбрана команда {0}. Подключение к Photon...", team);
         Connect();
     }
 
     public void Connect()
     {
+        if (!modeSelected) return;
+        if (singlePlayer)
+        {
+            // OfflineMode invokes OnConnectedToMaster synchronously. Bots and match rules
+            // then use the same room lifecycle without contacting Photon servers.
+            if (!PhotonNetwork.OfflineMode) PhotonNetwork.OfflineMode = true;
+            else if (!PhotonNetwork.InRoom) PhotonNetwork.CreateRoom("Solo");
+            return;
+        }
         if (PhotonNetwork.IsConnected)
         {
             matchmakingIndex = 1;
@@ -55,23 +89,25 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        status = "Connecting to Photon...";
-        PhotonNetwork.ConnectUsingSettings();
+        status = () => GameLocalization.T("Connecting to Photon...");
         PhotonNetwork.GameVersion = GameVersion;
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
-        status = "Connected. Joining room...";
+        if (!modeSelected) return;
+        if (singlePlayer) { PhotonNetwork.CreateRoom("Solo"); return; }
+        status = () => GameLocalization.T("Connected. Joining room...");
         matchmakingIndex = 1;
         JoinFirstAvailableRoom();
     }
 
     public override void OnJoinedRoom()
     {
-        status = $"In room {PhotonNetwork.CurrentRoom.Name} ({PhotonNetwork.CurrentRoom.PlayerCount}/{maxPlayers})";
+        status = () => GameLocalization.Format("Комната {0} ({1}/{2})", PhotonNetwork.CurrentRoom.Name, PhotonNetwork.CurrentRoom.PlayerCount, maxPlayers);
         if (selectedTeam == 0) AutoPickTeam();
-        SpawnPlayer();
+        ShowDeploymentScreen();
     }
 
     /// <summary>Auto-balance: join the weaker side (humans + bots), random on tie.</summary>
@@ -90,17 +126,17 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         int team = team1 == team2 ? Random.Range(1, 3) : team2 < team1 ? 2 : 1;
         selectedTeam = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { TeamProperty, team } });
-        status = $"Auto-joined team {team}.";
+        status = () => GameLocalization.Format("Вы автоматически вступили в команду {0}.", team);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        status = $"In room {PhotonNetwork.CurrentRoom.Name} ({PhotonNetwork.CurrentRoom.PlayerCount}/{maxPlayers})";
+        status = () => GameLocalization.Format("Комната {0} ({1}/{2})", PhotonNetwork.CurrentRoom.Name, PhotonNetwork.CurrentRoom.PlayerCount, maxPlayers);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        status = $"In room {PhotonNetwork.CurrentRoom.Name} ({PhotonNetwork.CurrentRoom.PlayerCount}/{maxPlayers})";
+        status = () => GameLocalization.Format("Комната {0} ({1}/{2})", PhotonNetwork.CurrentRoom.Name, PhotonNetwork.CurrentRoom.PlayerCount, maxPlayers);
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -111,8 +147,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             matchmakingIndex++;
             if (matchmakingIndex > Mathf.Max(1, maxRoomsToTry))
             {
-                status = "All rooms are full, try again later.";
-                Debug.LogError(status);
+                status = () => GameLocalization.T("All rooms are full, try again later.");
+                Debug.LogError(status());
                 return;
             }
             JoinFirstAvailableRoom();
@@ -124,14 +160,49 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinOrCreateRoom(BucketName(matchmakingIndex), options, TypedLobby.Default);
             return;
         }
-        status = $"Could not join room ({returnCode}): {message}";
-        Debug.LogError(status);
+        status = () => GameLocalization.Format("Ошибка входа ({0}): {1}", returnCode, message);
+        Debug.LogError(status());
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         playerSpawned = false;
-        status = $"Disconnected: {cause}";
+        status = () => GameLocalization.Format("Соединение потеряно: {0}", cause);
+        ShowDeploymentScreen();
+    }
+
+    private void ShowDeploymentScreen()
+    {
+        if (deploymentScreen == null) deploymentScreen = DeploymentScreen.Create(this);
+        deploymentScreen.gameObject.SetActive(true);
+    }
+
+    public void ShowAfterDeath(PlayerHealth player, float delay)
+    {
+        if (player == null || !player.IsDead || BotController.IsBot(player) ||
+            (PhotonNetwork.InRoom && !player.photonView.IsMine)) return;
+        pendingCorpse = player.gameObject;
+        deployAvailableAt = Time.unscaledTime + Mathf.Max(0f, delay);
+        playerSpawned = false;
+        ShowDeploymentScreen();
+    }
+
+    public void Deploy()
+    {
+        if (!CanDeploy) return;
+        SpawnPlayer();
+        if (!playerSpawned) return;
+        if (pendingCorpse != null) PhotonNetwork.Destroy(pendingCorpse);
+        pendingCorpse = null;
+        if (deploymentScreen != null) deploymentScreen.gameObject.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void OnDestroy()
+    {
+        if (startMenu != null) Destroy(startMenu.gameObject);
+        if (deploymentScreen != null) Destroy(deploymentScreen.gameObject);
     }
 
     private string BucketName(int index) => $"{roomPrefix}-{index}";
@@ -144,7 +215,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
 
         matchmakingIndex = Mathf.Max(1, matchmakingIndex);
-        status = $"Looking for a room ({BucketName(matchmakingIndex)})...";
+        status = () => GameLocalization.Format("Поиск комнаты ({0})...", BucketName(matchmakingIndex));
         PhotonNetwork.JoinRoom(BucketName(matchmakingIndex));
     }
 
@@ -217,7 +288,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             return fallbackSpawnPosition;
         }
 
-        int spawnIndex = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % matchingPoints;
+        int spawnIndex = Mathf.Max(0, PhotonNetwork.LocalPlayer.ActorNumber - 1) % matchingPoints;
         foreach (TeamSpawnPoint spawnPoint in spawnPoints)
         {
             if (spawnPoint.Team == team && spawnIndex-- == 0)
@@ -231,19 +302,19 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void OnGUI()
     {
-        if (playerSpawned) return;
-        GUI.Box(new Rect(16f, 16f, 430f, 128f), "CounterMine test lobby");
-        GUI.Label(new Rect(30f, 45f, 400f, 24f), status);
-        GUI.Label(new Rect(30f, 70f, 400f, 24f), $"Region: {PhotonNetwork.CloudRegion}");
+        if (!modeSelected || playerSpawned || autoJoinOnStart) return;
+        GUI.Box(new Rect(16f, 16f, 430f, 128f), GameLocalization.T("CounterMine test lobby"));
+        GUI.Label(new Rect(30f, 45f, 400f, 24f), status());
+        GUI.Label(new Rect(30f, 70f, 400f, 24f), GameLocalization.Format("Регион: {0}", PhotonNetwork.CloudRegion));
 
         if (selectedTeam == 0 && !autoJoinOnStart)
         {
-            if (GUI.Button(new Rect(30f, 100f, 180f, 28f), "Join Team 1"))
+            if (GUI.Button(new Rect(30f, 100f, 180f, 28f), GameLocalization.T("Join Team 1")))
             {
                 SelectTeam(1);
             }
 
-            if (GUI.Button(new Rect(230f, 100f, 180f, 28f), "Join Team 2"))
+            if (GUI.Button(new Rect(230f, 100f, 180f, 28f), GameLocalization.T("Join Team 2")))
             {
                 SelectTeam(2);
             }

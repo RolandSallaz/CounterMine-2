@@ -42,7 +42,9 @@ public sealed class MilkorSkill : MonoBehaviourPun
     private void RequestActivation(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient || info.Sender == null || info.Sender.ActorNumber != photonView.OwnerActorNr) return;
-        bool accepted = ConquestMatch.CombatAllowed && health != null && !health.IsDead &&
+        bool enabledSkill = info.Sender.CustomProperties[NetworkWeaponPresentation.SkillLoadoutKey] is string[] skills &&
+            System.Array.Exists(skills, id => id == WeaponId);
+        bool accepted = enabledSkill && ConquestMatch.CombatAllowed && health != null && !health.IsDead &&
             MilkorRewards.Activate(info.Sender.ActorNumber, photonView.ViewID);
         int rounds = accepted ? MilkorRewards.Read(info.Sender.ActorNumber).Ammo : 0;
         photonView.RPC(nameof(ReceiveActivation), info.Sender, accepted, rounds);

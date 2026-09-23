@@ -1,0 +1,2 @@
+PASS: disconnected startup, two localized buttons, visual-only model, blur shader, screenshot, offline room, bot spawning, duplicate-deploy guard, death screen and respawn.
+Online matchmaking and WebGL need separate live checks.

@@ -5,7 +5,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.Build;
 
 /// <summary>Headless WebGL build for GitHub Pages. Run: Unity -batchmode -quit -executeMethod WebGLBuildGhPages.Build
-/// with CM_WEBGL_OUTPUT set to the output directory. Uses the default template.
+/// with CM_WEBGL_OUTPUT set to the output directory. Uses the Yandex Games template.
 /// Brotli stays on (small upload); Decompression Fallback decodes client-side,
 /// which is Unity's documented setup for static hosts without content-encoding
 /// headers (exactly GitHub Pages).</summary>
@@ -16,7 +16,7 @@ public static class WebGLBuildGhPages
         string output = Environment.GetEnvironmentVariable("CM_WEBGL_OUTPUT");
         if (string.IsNullOrEmpty(output))
             throw new Exception("CM_WEBGL_OUTPUT env var is not set.");
-        PlayerSettings.WebGL.template = "APPLICATION:Default";
+        PlayerSettings.WebGL.template = "PROJECT:YandexGames";
         PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
         PlayerSettings.WebGL.decompressionFallback = true;
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
@@ -39,10 +39,10 @@ public static class WebGLBuildGhPages
         {
             if (report.summary.platform != BuildTarget.WebGL) return;
             if (Environment.GetEnvironmentVariable("CM_GHPAGES_BUILD") != "1") return;
-            PlayerSettings.WebGL.template = "APPLICATION:Default";
+            PlayerSettings.WebGL.template = "PROJECT:YandexGames";
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
             PlayerSettings.WebGL.decompressionFallback = true;
-            Console.WriteLine("[WebGLBuild] gh-pages settings forced: default template, brotli + fallback");
+            Console.WriteLine("[WebGLBuild] gh-pages settings forced: YandexGames template, brotli + fallback");
         }
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb42e753c576b74794134306d6db8b3, type: 3}
+  m_Name: HK416 Handling
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponHandlingProfile
+  ergonomics: 65
+  lowErgonomicsAimTime: 0.38
+  highErgonomicsAimTime: 0.12
+  aimOutTimeMultiplier: 0.65
+  aimedSensitivity: 0.65
+  aimedMovementSpeed: 0.65
+  sightSwitchTime: 0.16
+  sprintPosition: {x: 0.055, y: -0.015, z: 0.045}
+  sprintRotation: {x: 10, y: -48, z: -18}
+  sprintBlendTime: 0.14
+  sprintBob: 0.016
+  sprintBobFrequency: 0.5

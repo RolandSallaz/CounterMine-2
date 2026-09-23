@@ -1,0 +1,1097 @@
+{
+  "entries": [
+    {"source": "Single player", "ru": "Одиночная игра", "en": "Single player"},
+    {"source": "Multiplayer", "ru": "Мультиплеер", "en": "Multiplayer"},
+
+    {
+      "source": "Покупки остаются навсегда. Выбор применяется после возрождения.",
+      "ru": "Покупки остаются навсегда. Выбор применяется после возрождения.",
+      "en": "Purchases are permanent. Loadout changes apply on respawn."
+    },
+    {
+      "source": "Purchases are permanent. Loadout changes apply on respawn.",
+      "ru": "Покупки остаются навсегда. Выбор применяется после возрождения.",
+      "en": "Purchases are permanent. Loadout changes apply on respawn."
+    },
+    {
+      "source": "МАГАЗИН",
+      "ru": "МАГАЗИН",
+      "en": "SHOP"
+    },
+    {
+      "source": "SHOP",
+      "ru": "МАГАЗИН",
+      "en": "SHOP"
+    },
+    {
+      "source": "СНАРЯЖЕНИЕ ДЛЯ СЛЕДУЮЩЕГО ВЫХОДА",
+      "ru": "СНАРЯЖЕНИЕ ДЛЯ СЛЕДУЮЩЕГО ВЫХОДА",
+      "en": "LOADOUT FOR YOUR NEXT LIFE"
+    },
+    {
+      "source": "LOADOUT FOR YOUR NEXT LIFE",
+      "ru": "СНАРЯЖЕНИЕ ДЛЯ СЛЕДУЮЩЕГО ВЫХОДА",
+      "en": "LOADOUT FOR YOUR NEXT LIFE"
+    },
+    {
+      "source": "ОСНОВНОЕ ОРУЖИЕ",
+      "ru": "ОСНОВНОЕ ОРУЖИЕ",
+      "en": "PRIMARY WEAPONS"
+    },
+    {
+      "source": "PRIMARY WEAPONS",
+      "ru": "ОСНОВНОЕ ОРУЖИЕ",
+      "en": "PRIMARY WEAPONS"
+    },
+    {
+      "source": "ПИСТОЛЕТЫ",
+      "ru": "ПИСТОЛЕТЫ",
+      "en": "PISTOLS"
+    },
+    {
+      "source": "PISTOLS",
+      "ru": "ПИСТОЛЕТЫ",
+      "en": "PISTOLS"
+    },
+    {
+      "source": "НАВЫКИ / КИЛЛСТРИКИ",
+      "ru": "НАВЫКИ / КИЛЛСТРИКИ",
+      "en": "SKILLS / KILLSTREAKS"
+    },
+    {
+      "source": "SKILLS / KILLSTREAKS",
+      "ru": "НАВЫКИ / КИЛЛСТРИКИ",
+      "en": "SKILLS / KILLSTREAKS"
+    },
+    {
+      "source": "ГОТОВО",
+      "ru": "ГОТОВО",
+      "en": "DONE"
+    },
+    {
+      "source": "DONE",
+      "ru": "ГОТОВО",
+      "en": "DONE"
+    },
+    {
+      "source": "Навык снят со следующего снаряжения.",
+      "ru": "Навык снят со следующего снаряжения.",
+      "en": "Skill removed from your next loadout."
+    },
+    {
+      "source": "Skill removed from your next loadout.",
+      "ru": "Навык снят со следующего снаряжения.",
+      "en": "Skill removed from your next loadout."
+    },
+    {
+      "source": "ЗАГРУЗКА…",
+      "ru": "ЗАГРУЗКА…",
+      "en": "LOADING…"
+    },
+    {
+      "source": "LOADING…",
+      "ru": "ЗАГРУЗКА…",
+      "en": "LOADING…"
+    },
+    {
+      "source": "В СНАРЯЖЕНИИ",
+      "ru": "В СНАРЯЖЕНИИ",
+      "en": "EQUIPPED"
+    },
+    {
+      "source": "EQUIPPED",
+      "ru": "В СНАРЯЖЕНИИ",
+      "en": "EQUIPPED"
+    },
+    {
+      "source": "КУПЛЕНО НАВСЕГДА",
+      "ru": "КУПЛЕНО НАВСЕГДА",
+      "en": "OWNED"
+    },
+    {
+      "source": "OWNED",
+      "ru": "КУПЛЕНО НАВСЕГДА",
+      "en": "OWNED"
+    },
+    {
+      "source": "ПОСТОЯННАЯ ПОКУПКА",
+      "ru": "ПОСТОЯННАЯ ПОКУПКА",
+      "en": "PERMANENT PURCHASE"
+    },
+    {
+      "source": "PERMANENT PURCHASE",
+      "ru": "ПОСТОЯННАЯ ПОКУПКА",
+      "en": "PERMANENT PURCHASE"
+    },
+    {
+      "source": "КЛАВИША ",
+      "ru": "КЛАВИША ",
+      "en": "KEY "
+    },
+    {
+      "source": "KEY ",
+      "ru": "КЛАВИША ",
+      "en": "KEY "
+    },
+    {
+      "source": "КУПИТЬ И ВЫБРАТЬ",
+      "ru": "КУПИТЬ И ВЫБРАТЬ",
+      "en": "BUY AND EQUIP"
+    },
+    {
+      "source": "BUY AND EQUIP",
+      "ru": "КУПИТЬ И ВЫБРАТЬ",
+      "en": "BUY AND EQUIP"
+    },
+    {
+      "source": "НЕ ХВАТАЕТ ДЕНЕГ",
+      "ru": "НЕ ХВАТАЕТ ДЕНЕГ",
+      "en": "NOT ENOUGH MONEY"
+    },
+    {
+      "source": "NOT ENOUGH MONEY",
+      "ru": "НЕ ХВАТАЕТ ДЕНЕГ",
+      "en": "NOT ENOUGH MONEY"
+    },
+    {
+      "source": "УБРАТЬ",
+      "ru": "УБРАТЬ",
+      "en": "REMOVE"
+    },
+    {
+      "source": "REMOVE",
+      "ru": "УБРАТЬ",
+      "en": "REMOVE"
+    },
+    {
+      "source": "ВЫБРАНО",
+      "ru": "ВЫБРАНО",
+      "en": "SELECTED"
+    },
+    {
+      "source": "SELECTED",
+      "ru": "ВЫБРАНО",
+      "en": "SELECTED"
+    },
+    {
+      "source": "ВЫБРАТЬ",
+      "ru": "ВЫБРАТЬ",
+      "en": "EQUIP"
+    },
+    {
+      "source": "EQUIP",
+      "ru": "ВЫБРАТЬ",
+      "en": "EQUIP"
+    },
+    {
+      "source": "не выбраны",
+      "ru": "не выбраны",
+      "en": "none selected"
+    },
+    {
+      "source": "none selected",
+      "ru": "не выбраны",
+      "en": "none selected"
+    },
+    {
+      "source": "СЛЕДУЮЩЕЕ СНАРЯЖЕНИЕ\n",
+      "ru": "СЛЕДУЮЩЕЕ СНАРЯЖЕНИЕ\n",
+      "en": "NEXT LOADOUT\n"
+    },
+    {
+      "source": "NEXT LOADOUT\n",
+      "ru": "СЛЕДУЮЩЕЕ СНАРЯЖЕНИЕ\n",
+      "en": "NEXT LOADOUT\n"
+    },
+    {
+      "source": "без пистолета",
+      "ru": "без пистолета",
+      "en": "no pistol"
+    },
+    {
+      "source": "no pistol",
+      "ru": "без пистолета",
+      "en": "no pistol"
+    },
+    {
+      "source": "ТАБЛИЦА СЧЁТА",
+      "ru": "ТАБЛИЦА СЧЁТА",
+      "en": "SCOREBOARD"
+    },
+    {
+      "source": "SCOREBOARD",
+      "ru": "ТАБЛИЦА СЧЁТА",
+      "en": "SCOREBOARD"
+    },
+    {
+      "source": "ИГРОК",
+      "ru": "ИГРОК",
+      "en": "PLAYER"
+    },
+    {
+      "source": "PLAYER",
+      "ru": "ИГРОК",
+      "en": "PLAYER"
+    },
+    {
+      "source": "КОМАНДА",
+      "ru": "КОМАНДА",
+      "en": "TEAM"
+    },
+    {
+      "source": "TEAM",
+      "ru": "КОМАНДА",
+      "en": "TEAM"
+    },
+    {
+      "source": "У",
+      "ru": "У",
+      "en": "K"
+    },
+    {
+      "source": "K",
+      "ru": "У",
+      "en": "K"
+    },
+    {
+      "source": "С",
+      "ru": "С",
+      "en": "D"
+    },
+    {
+      "source": "D",
+      "ru": "С",
+      "en": "D"
+    },
+    {
+      "source": "П",
+      "ru": "П",
+      "en": "A"
+    },
+    {
+      "source": "A",
+      "ru": "П",
+      "en": "A"
+    },
+    {
+      "source": "ОЧКИ",
+      "ru": "ОЧКИ",
+      "en": "SCORE"
+    },
+    {
+      "source": "SCORE",
+      "ru": "ОЧКИ",
+      "en": "SCORE"
+    },
+    {
+      "source": "ВАШИ ОЧКИ  ",
+      "ru": "ВАШИ ОЧКИ  ",
+      "en": "YOUR SCORE  "
+    },
+    {
+      "source": "YOUR SCORE  ",
+      "ru": "ВАШИ ОЧКИ  ",
+      "en": "YOUR SCORE  "
+    },
+    {
+      "source": "     /     ДЕНЬГИ  ",
+      "ru": "     /     ДЕНЬГИ  ",
+      "en": "     /     MONEY  "
+    },
+    {
+      "source": "     /     MONEY  ",
+      "ru": "     /     ДЕНЬГИ  ",
+      "en": "     /     MONEY  "
+    },
+    {
+      "source": "У — убийства   С — смерти   П — помощь",
+      "ru": "У — убийства   С — смерти   П — помощь",
+      "en": "K — kills   D — deaths   A — assists"
+    },
+    {
+      "source": "K — kills   D — deaths   A — assists",
+      "ru": "У — убийства   С — смерти   П — помощь",
+      "en": "K — kills   D — deaths   A — assists"
+    },
+    {
+      "source": "УБИЙСТВО",
+      "ru": "УБИЙСТВО",
+      "en": "KILL"
+    },
+    {
+      "source": "KILL",
+      "ru": "УБИЙСТВО",
+      "en": "KILL"
+    },
+    {
+      "source": "ПОМОЩЬ",
+      "ru": "ПОМОЩЬ",
+      "en": "ASSIST"
+    },
+    {
+      "source": "ASSIST",
+      "ru": "ПОМОЩЬ",
+      "en": "ASSIST"
+    },
+    {
+      "source": "МАГАЗИН / СНАРЯЖЕНИЕ",
+      "ru": "МАГАЗИН / СНАРЯЖЕНИЕ",
+      "en": "SHOP / LOADOUT"
+    },
+    {
+      "source": "SHOP / LOADOUT",
+      "ru": "МАГАЗИН / СНАРЯЖЕНИЕ",
+      "en": "SHOP / LOADOUT"
+    },
+    {
+      "source": "Профиль ещё загружается.",
+      "ru": "Профиль ещё загружается.",
+      "en": "Your profile is still loading."
+    },
+    {
+      "source": "Your profile is still loading.",
+      "ru": "Профиль ещё загружается.",
+      "en": "Your profile is still loading."
+    },
+    {
+      "source": "Предмет недоступен.",
+      "ru": "Предмет недоступен.",
+      "en": "Item unavailable."
+    },
+    {
+      "source": "Item unavailable.",
+      "ru": "Предмет недоступен.",
+      "en": "Item unavailable."
+    },
+    {
+      "source": "Недостаточно денег.",
+      "ru": "Недостаточно денег.",
+      "en": "Not enough money."
+    },
+    {
+      "source": "Not enough money.",
+      "ru": "Недостаточно денег.",
+      "en": "Not enough money."
+    },
+    {
+      "source": "Все слоты навыков заняты.",
+      "ru": "Все слоты навыков заняты.",
+      "en": "All skill slots are full."
+    },
+    {
+      "source": "All skill slots are full.",
+      "ru": "Все слоты навыков заняты.",
+      "en": "All skill slots are full."
+    },
+    {
+      "source": "Выбрано для следующего возрождения.",
+      "ru": "Выбрано для следующего возрождения.",
+      "en": "Equipped for your next respawn."
+    },
+    {
+      "source": "Equipped for your next respawn.",
+      "ru": "Выбрано для следующего возрождения.",
+      "en": "Equipped for your next respawn."
+    },
+    {
+      "source": "Куплено навсегда и выбрано.",
+      "ru": "Куплено навсегда и выбрано.",
+      "en": "Purchased permanently and equipped."
+    },
+    {
+      "source": "Purchased permanently and equipped.",
+      "ru": "Куплено навсегда и выбрано.",
+      "en": "Purchased permanently and equipped."
+    },
+    {
+      "source": " м",
+      "ru": " м",
+      "en": " m"
+    },
+    {
+      "source": " m",
+      "ru": " м",
+      "en": " m"
+    },
+    {
+      "source": "  СПОР",
+      "ru": "  СПОР",
+      "en": "  CONTESTED"
+    },
+    {
+      "source": "  CONTESTED",
+      "ru": "  СПОР",
+      "en": "  CONTESTED"
+    },
+    {
+      "source": "ТОЧКА ОСПАРИВАЕТСЯ",
+      "ru": "ТОЧКА ОСПАРИВАЕТСЯ",
+      "en": "POINT CONTESTED"
+    },
+    {
+      "source": "POINT CONTESTED",
+      "ru": "ТОЧКА ОСПАРИВАЕТСЯ",
+      "en": "POINT CONTESTED"
+    },
+    {
+      "source": "ТОЧКА ",
+      "ru": "ТОЧКА ",
+      "en": "POINT "
+    },
+    {
+      "source": "POINT ",
+      "ru": "ТОЧКА ",
+      "en": "POINT "
+    },
+    {
+      "source": " ПОД КОНТРОЛЕМ  ·  +1 ОЧКО/С",
+      "ru": " ПОД КОНТРОЛЕМ  ·  +1 ОЧКО/С",
+      "en": " CONTROLLED  ·  +1 POINT/S"
+    },
+    {
+      "source": " CONTROLLED  ·  +1 POINT/S",
+      "ru": " ПОД КОНТРОЛЕМ  ·  +1 ОЧКО/С",
+      "en": " CONTROLLED  ·  +1 POINT/S"
+    },
+    {
+      "source": "НЕЙТРАЛИЗАЦИЯ ",
+      "ru": "НЕЙТРАЛИЗАЦИЯ ",
+      "en": "NEUTRALIZING "
+    },
+    {
+      "source": "NEUTRALIZING ",
+      "ru": "НЕЙТРАЛИЗАЦИЯ ",
+      "en": "NEUTRALIZING "
+    },
+    {
+      "source": "ЗАХВАТ ТОЧКИ ",
+      "ru": "ЗАХВАТ ТОЧКИ ",
+      "en": "CAPTURING POINT "
+    },
+    {
+      "source": "CAPTURING POINT ",
+      "ru": "ЗАХВАТ ТОЧКИ ",
+      "en": "CAPTURING POINT "
+    },
+    {
+      "source": "НИЧЬЯ",
+      "ru": "НИЧЬЯ",
+      "en": "DRAW"
+    },
+    {
+      "source": "DRAW",
+      "ru": "НИЧЬЯ",
+      "en": "DRAW"
+    },
+    {
+      "source": "ПОБЕДА СИНЕЙ КОМАНДЫ",
+      "ru": "ПОБЕДА СИНЕЙ КОМАНДЫ",
+      "en": "BLUE TEAM WINS"
+    },
+    {
+      "source": "BLUE TEAM WINS",
+      "ru": "ПОБЕДА СИНЕЙ КОМАНДЫ",
+      "en": "BLUE TEAM WINS"
+    },
+    {
+      "source": "ПОБЕДА ОРАНЖЕВОЙ КОМАНДЫ",
+      "ru": "ПОБЕДА ОРАНЖЕВОЙ КОМАНДЫ",
+      "en": "ORANGE TEAM WINS"
+    },
+    {
+      "source": "ORANGE TEAM WINS",
+      "ru": "ПОБЕДА ОРАНЖЕВОЙ КОМАНДЫ",
+      "en": "ORANGE TEAM WINS"
+    },
+    {
+      "source": "Универсальный автомат для боя на средней дистанции.",
+      "ru": "Универсальный автомат для боя на средней дистанции.",
+      "en": "An all-purpose assault rifle for medium-range combat."
+    },
+    {
+      "source": "An all-purpose assault rifle for medium-range combat.",
+      "ru": "Универсальный автомат для боя на средней дистанции.",
+      "en": "An all-purpose assault rifle for medium-range combat."
+    },
+    {
+      "source": "30 ПАТРОНОВ  /  АВТОМАТИЧЕСКИЙ",
+      "ru": "30 ПАТРОНОВ  /  АВТОМАТИЧЕСКИЙ",
+      "en": "30 ROUNDS  /  AUTOMATIC"
+    },
+    {
+      "source": "30 ROUNDS  /  AUTOMATIC",
+      "ru": "30 ПАТРОНОВ  /  АВТОМАТИЧЕСКИЙ",
+      "en": "30 ROUNDS  /  AUTOMATIC"
+    },
+    {
+      "source": "Скорострельный автомат с удобным управлением и механическим прицелом.",
+      "ru": "Скорострельный автомат с удобным управлением и механическим прицелом.",
+      "en": "A fast-firing assault rifle with easy handling and iron sights."
+    },
+    {
+      "source": "A fast-firing assault rifle with easy handling and iron sights.",
+      "ru": "Скорострельный автомат с удобным управлением и механическим прицелом.",
+      "en": "A fast-firing assault rifle with easy handling and iron sights."
+    },
+    {
+      "source": "30 ПАТРОНОВ  /  800 ВЫСТР./МИН",
+      "ru": "30 ПАТРОНОВ  /  800 ВЫСТР./МИН",
+      "en": "30 ROUNDS  /  800 RPM"
+    },
+    {
+      "source": "30 ROUNDS  /  800 RPM",
+      "ru": "30 ПАТРОНОВ  /  800 ВЫСТР./МИН",
+      "en": "30 ROUNDS  /  800 RPM"
+    },
+    {
+      "source": "Мощная снайперская винтовка с оптическим прицелом и продольно-скользящим затвором.",
+      "ru": "Мощная снайперская винтовка с оптическим прицелом и продольно-скользящим затвором.",
+      "en": "A powerful bolt-action sniper rifle with a telescopic sight."
+    },
+    {
+      "source": "A powerful bolt-action sniper rifle with a telescopic sight.",
+      "ru": "Мощная снайперская винтовка с оптическим прицелом и продольно-скользящим затвором.",
+      "en": "A powerful bolt-action sniper rifle with a telescopic sight."
+    },
+    {
+      "source": "5 ПАТРОНОВ  /  ОПТИЧЕСКИЙ ПРИЦЕЛ",
+      "ru": "5 ПАТРОНОВ  /  ОПТИЧЕСКИЙ ПРИЦЕЛ",
+      "en": "5 ROUNDS  /  TELESCOPIC SIGHT"
+    },
+    {
+      "source": "5 ROUNDS  /  TELESCOPIC SIGHT",
+      "ru": "5 ПАТРОНОВ  /  ОПТИЧЕСКИЙ ПРИЦЕЛ",
+      "en": "5 ROUNDS  /  TELESCOPIC SIGHT"
+    },
+    {
+      "source": "Лёгкий запасной пистолет с быстрым прицеливанием.",
+      "ru": "Лёгкий запасной пистолет с быстрым прицеливанием.",
+      "en": "A lightweight sidearm with fast aiming."
+    },
+    {
+      "source": "A lightweight sidearm with fast aiming.",
+      "ru": "Лёгкий запасной пистолет с быстрым прицеливанием.",
+      "en": "A lightweight sidearm with fast aiming."
+    },
+    {
+      "source": "20 ПАТРОНОВ  /  ОДИНОЧНЫЙ ОГОНЬ",
+      "ru": "20 ПАТРОНОВ  /  ОДИНОЧНЫЙ ОГОНЬ",
+      "en": "20 ROUNDS  /  SEMI-AUTOMATIC"
+    },
+    {
+      "source": "20 ROUNDS  /  SEMI-AUTOMATIC",
+      "ru": "20 ПАТРОНОВ  /  ОДИНОЧНЫЙ ОГОНЬ",
+      "en": "20 ROUNDS  /  SEMI-AUTOMATIC"
+    },
+    {
+      "source": "РАДАР",
+      "ru": "РАДАР",
+      "en": "RADAR"
+    },
+    {
+      "source": "RADAR",
+      "ru": "РАДАР",
+      "en": "RADAR"
+    },
+    {
+      "source": "Подсвечивает противников за укрытиями на 15 секунд.",
+      "ru": "Подсвечивает противников за укрытиями на 15 секунд.",
+      "en": "Highlights enemies behind cover for 15 seconds."
+    },
+    {
+      "source": "Highlights enemies behind cover for 15 seconds.",
+      "ru": "Подсвечивает противников за укрытиями на 15 секунд.",
+      "en": "Highlights enemies behind cover for 15 seconds."
+    },
+    {
+      "source": "5 УБИЙСТВ  /  15 СЕКУНД",
+      "ru": "5 УБИЙСТВ  /  15 СЕКУНД",
+      "en": "5 KILLS  /  15 SECONDS"
+    },
+    {
+      "source": "5 KILLS  /  15 SECONDS",
+      "ru": "5 УБИЙСТВ  /  15 СЕКУНД",
+      "en": "5 KILLS  /  15 SECONDS"
+    },
+    {
+      "source": "Шесть гранат. Взрыв при попадании. Без перезарядки.",
+      "ru": "Шесть гранат. Взрыв при попадании. Без перезарядки.",
+      "en": "Six grenades. Detonate on impact. No reloads."
+    },
+    {
+      "source": "Six grenades. Detonate on impact. No reloads.",
+      "ru": "Шесть гранат. Взрыв при попадании. Без перезарядки.",
+      "en": "Six grenades. Detonate on impact. No reloads."
+    },
+    {
+      "source": "10 УБИЙСТВ  /  6 ГРАНАТ",
+      "ru": "10 УБИЙСТВ  /  6 ГРАНАТ",
+      "en": "10 KILLS  /  6 GRENADES"
+    },
+    {
+      "source": "10 KILLS  /  6 GRENADES",
+      "ru": "10 УБИЙСТВ  /  6 ГРАНАТ",
+      "en": "10 KILLS  /  6 GRENADES"
+    },
+    {
+      "source": "погиб",
+      "ru": "погиб",
+      "en": "died"
+    },
+    {
+      "source": "died",
+      "ru": "погиб",
+      "en": "died"
+    },
+    {
+      "source": "ВОЗРОЖДЕНИЕ...",
+      "ru": "ВОЗРОЖДЕНИЕ...",
+      "en": "SPAWNING..."
+    },
+    {
+      "source": "SPAWNING...",
+      "ru": "ВОЗРОЖДЕНИЕ...",
+      "en": "SPAWNING..."
+    },
+    {
+      "source": "ВОЗРОДИТЬСЯ",
+      "ru": "ВОЗРОДИТЬСЯ",
+      "en": "RESPAWN"
+    },
+    {
+      "source": "RESPAWN",
+      "ru": "ВОЗРОДИТЬСЯ",
+      "en": "RESPAWN"
+    },
+    {
+      "source": "ОПЕРАТОР",
+      "ru": "ОПЕРАТОР",
+      "en": "OPERATOR"
+    },
+    {
+      "source": "OPERATOR",
+      "ru": "ОПЕРАТОР",
+      "en": "OPERATOR"
+    },
+    {
+      "source": "БЕЗ ОРУЖИЯ",
+      "ru": "БЕЗ ОРУЖИЯ",
+      "en": "UNARMED"
+    },
+    {
+      "source": "UNARMED",
+      "ru": "БЕЗ ОРУЖИЯ",
+      "en": "UNARMED"
+    },
+    {
+      "source": "МЁРТВ",
+      "ru": "МЁРТВ",
+      "en": "OFFLINE"
+    },
+    {
+      "source": "OFFLINE",
+      "ru": "МЁРТВ",
+      "en": "OFFLINE"
+    },
+    {
+      "source": "БЕЗОПАСНАЯ ЗОНА",
+      "ru": "БЕЗОПАСНАЯ ЗОНА",
+      "en": "SAFE ZONE"
+    },
+    {
+      "source": "SAFE ZONE",
+      "ru": "БЕЗОПАСНАЯ ЗОНА",
+      "en": "SAFE ZONE"
+    },
+    {
+      "source": "ПАДЕНИЕ",
+      "ru": "ПАДЕНИЕ",
+      "en": "RAGDOLL"
+    },
+    {
+      "source": "RAGDOLL",
+      "ru": "ПАДЕНИЕ",
+      "en": "RAGDOLL"
+    },
+    {
+      "source": "ЗАНЯТ",
+      "ru": "ЗАНЯТ",
+      "en": "BUSY"
+    },
+    {
+      "source": "BUSY",
+      "ru": "ЗАНЯТ",
+      "en": "BUSY"
+    },
+    {
+      "source": "ГОТОВ",
+      "ru": "ГОТОВ",
+      "en": "READY"
+    },
+    {
+      "source": "READY",
+      "ru": "ГОТОВ",
+      "en": "READY"
+    },
+    {
+      "source": "ПЕРЕЗАРЯДКА",
+      "ru": "ПЕРЕЗАРЯДКА",
+      "en": "RELOADING"
+    },
+    {
+      "source": "RELOADING",
+      "ru": "ПЕРЕЗАРЯДКА",
+      "en": "RELOADING"
+    },
+    {
+      "source": "ДОСТАВАНИЕ",
+      "ru": "ДОСТАВАНИЕ",
+      "en": "EQUIPPING"
+    },
+    {
+      "source": "EQUIPPING",
+      "ru": "ДОСТАВАНИЕ",
+      "en": "EQUIPPING"
+    },
+    {
+      "source": "ВЫ УБИТЫ",
+      "ru": "ВЫ УБИТЫ",
+      "en": "ELIMINATED"
+    },
+    {
+      "source": "ELIMINATED",
+      "ru": "ВЫ УБИТЫ",
+      "en": "ELIMINATED"
+    },
+    {
+      "source": "В СЕТИ  /  ",
+      "ru": "В СЕТИ  /  ",
+      "en": "LIVE  /  "
+    },
+    {
+      "source": "LIVE  /  ",
+      "ru": "В СЕТИ  /  ",
+      "en": "LIVE  /  "
+    },
+    {
+      "source": " МС",
+      "ru": " МС",
+      "en": " MS"
+    },
+    {
+      "source": " MS",
+      "ru": " МС",
+      "en": " MS"
+    },
+    {
+      "source": "ЛОКАЛЬНО",
+      "ru": "ЛОКАЛЬНО",
+      "en": "LOCAL"
+    },
+    {
+      "source": "LOCAL",
+      "ru": "ЛОКАЛЬНО",
+      "en": "LOCAL"
+    },
+    {
+      "source": "ПУСТОЙ СЛОТ",
+      "ru": "ПУСТОЙ СЛОТ",
+      "en": "EMPTY SLOT"
+    },
+    {
+      "source": "EMPTY SLOT",
+      "ru": "ПУСТОЙ СЛОТ",
+      "en": "EMPTY SLOT"
+    },
+    {
+      "source": "НАЖМИТЕ ",
+      "ru": "НАЖМИТЕ ",
+      "en": "PRESS "
+    },
+    {
+      "source": "PRESS ",
+      "ru": "НАЖМИТЕ ",
+      "en": "PRESS "
+    },
+    {
+      "source": "АЛЬФА",
+      "ru": "АЛЬФА",
+      "en": "ALPHA"
+    },
+    {
+      "source": "ALPHA",
+      "ru": "АЛЬФА",
+      "en": "ALPHA"
+    },
+    {
+      "source": "БРАВО",
+      "ru": "БРАВО",
+      "en": "BRAVO"
+    },
+    {
+      "source": "BRAVO",
+      "ru": "БРАВО",
+      "en": "BRAVO"
+    },
+    {
+      "source": "АЛЬФА / 01",
+      "ru": "АЛЬФА / 01",
+      "en": "ALPHA / 01"
+    },
+    {
+      "source": "ALPHA / 01",
+      "ru": "АЛЬФА / 01",
+      "en": "ALPHA / 01"
+    },
+    {
+      "source": "БРАВО / 02",
+      "ru": "БРАВО / 02",
+      "en": "BRAVO / 02"
+    },
+    {
+      "source": "BRAVO / 02",
+      "ru": "БРАВО / 02",
+      "en": "BRAVO / 02"
+    },
+    {
+      "source": " / БЕСК",
+      "ru": " / БЕСК",
+      "en": " / INF"
+    },
+    {
+      "source": " / INF",
+      "ru": " / БЕСК",
+      "en": " / INF"
+    },
+    {
+      "source": "ТАКТИЧЕСКИЕ ОПЕРАЦИИ",
+      "ru": "ТАКТИЧЕСКИЕ ОПЕРАЦИИ",
+      "en": "TACTICAL OPERATIONS"
+    },
+    {
+      "source": "TACTICAL OPERATIONS",
+      "ru": "ТАКТИЧЕСКИЕ ОПЕРАЦИИ",
+      "en": "TACTICAL OPERATIONS"
+    },
+    {
+      "source": "СОСТОЯНИЕ",
+      "ru": "СОСТОЯНИЕ",
+      "en": "VITALS"
+    },
+    {
+      "source": "VITALS",
+      "ru": "СОСТОЯНИЕ",
+      "en": "VITALS"
+    },
+    {
+      "source": "ЗДОРОВЬЕ",
+      "ru": "ЗДОРОВЬЕ",
+      "en": "HEALTH"
+    },
+    {
+      "source": "HEALTH",
+      "ru": "ЗДОРОВЬЕ",
+      "en": "HEALTH"
+    },
+    {
+      "source": "ВЫНОСЛИВОСТЬ",
+      "ru": "ВЫНОСЛИВОСТЬ",
+      "en": "STAMINA"
+    },
+    {
+      "source": "STAMINA",
+      "ru": "ВЫНОСЛИВОСТЬ",
+      "en": "STAMINA"
+    },
+    {
+      "source": "01  /  ОСНОВНОЕ",
+      "ru": "01  /  ОСНОВНОЕ",
+      "en": "01  /  PRIMARY"
+    },
+    {
+      "source": "01  /  PRIMARY",
+      "ru": "01  /  ОСНОВНОЕ",
+      "en": "01  /  PRIMARY"
+    },
+    {
+      "source": "ПКМ  ПРИЦЕЛ     /     SHIFT  БЕГ",
+      "ru": "ПКМ  ПРИЦЕЛ     /     SHIFT  БЕГ",
+      "en": "RMB  AIM     /     SHIFT  SPRINT"
+    },
+    {
+      "source": "RMB  AIM     /     SHIFT  SPRINT",
+      "ru": "ПКМ  ПРИЦЕЛ     /     SHIFT  БЕГ",
+      "en": "RMB  AIM     /     SHIFT  SPRINT"
+    },
+    {
+      "source": "Выберите команду.",
+      "ru": "Выберите команду.",
+      "en": "Choose a team."
+    },
+    {
+      "source": "Choose a team.",
+      "ru": "Выберите команду.",
+      "en": "Choose a team."
+    },
+    {
+      "source": "Подключение к Photon...",
+      "ru": "Подключение к Photon...",
+      "en": "Connecting to Photon..."
+    },
+    {
+      "source": "Connecting to Photon...",
+      "ru": "Подключение к Photon...",
+      "en": "Connecting to Photon..."
+    },
+    {
+      "source": "Подключено. Вход в комнату...",
+      "ru": "Подключено. Вход в комнату...",
+      "en": "Connected. Joining room..."
+    },
+    {
+      "source": "Connected. Joining room...",
+      "ru": "Подключено. Вход в комнату...",
+      "en": "Connected. Joining room..."
+    },
+    {
+      "source": "Все комнаты заняты, попробуйте позже.",
+      "ru": "Все комнаты заняты, попробуйте позже.",
+      "en": "All rooms are full, try again later."
+    },
+    {
+      "source": "All rooms are full, try again later.",
+      "ru": "Все комнаты заняты, попробуйте позже.",
+      "en": "All rooms are full, try again later."
+    },
+    {
+      "source": "Лобби CounterMine",
+      "ru": "Лобби CounterMine",
+      "en": "CounterMine test lobby"
+    },
+    {
+      "source": "CounterMine test lobby",
+      "ru": "Лобби CounterMine",
+      "en": "CounterMine test lobby"
+    },
+    {
+      "source": "Войти в команду 1",
+      "ru": "Войти в команду 1",
+      "en": "Join Team 1"
+    },
+    {
+      "source": "Join Team 1",
+      "ru": "Войти в команду 1",
+      "en": "Join Team 1"
+    },
+    {
+      "source": "Войти в команду 2",
+      "ru": "Войти в команду 2",
+      "en": "Join Team 2"
+    },
+    {
+      "source": "Join Team 2",
+      "ru": "Войти в команду 2",
+      "en": "Join Team 2"
+    },
+    {
+      "source": "     |     Колесо / PgUp / PgDn  ",
+      "ru": "     |     Колесо / PgUp / PgDn  ",
+      "en": "     |     Scroll / PgUp / PgDn  "
+    },
+    {
+      "source": "     |     Scroll / PgUp / PgDn  ",
+      "ru": "     |     Колесо / PgUp / PgDn  ",
+      "en": "     |     Scroll / PgUp / PgDn  "
+    },
+    {
+      "source": "     |     TAB — закрыть",
+      "ru": "     |     TAB — закрыть",
+      "en": "     |     TAB — close"
+    },
+    {
+      "source": "     |     TAB — close",
+      "ru": "     |     TAB — закрыть",
+      "en": "     |     TAB — close"
+    },
+    {
+      "source": "ГОТОВНОСТЬ ЧЕРЕЗ {0}...",
+      "ru": "ГОТОВНОСТЬ ЧЕРЕЗ {0}...",
+      "en": "READY IN {0}..."
+    },
+    {
+      "source": "УДЕРЖИВАЙТЕ [{0}] {1}%",
+      "ru": "УДЕРЖИВАЙТЕ [{0}] {1}%",
+      "en": "HOLD [{0}] {1}%"
+    },
+    {
+      "source": "ВОЗРОДИТЬСЯ [SPACE] / УДЕРЖИВАЙТЕ [{0}]",
+      "ru": "ВОЗРОДИТЬСЯ [SPACE] / УДЕРЖИВАЙТЕ [{0}]",
+      "en": "RESPAWN [SPACE] / HOLD [{0}]"
+    },
+    {
+      "source": "<color=#40BAFF>СИНИЕ  {0}</color>     :     <color=#FF7D3D>{1}  ОРАНЖЕВЫЕ</color>",
+      "ru": "<color=#40BAFF>СИНИЕ  {0}</color>     :     <color=#FF7D3D>{1}  ОРАНЖЕВЫЕ</color>",
+      "en": "<color=#40BAFF>BLUE  {0}</color>     :     <color=#FF7D3D>{1}  ORANGE</color>"
+    },
+    {
+      "source": "РАУНД {0}   ·   {1:00}:{2:00}",
+      "ru": "РАУНД {0}   ·   {1:00}:{2:00}",
+      "en": "ROUND {0}   ·   {1:00}:{2:00}"
+    },
+    {
+      "source": "{0}\n{1} : {2}\n\nСледующий раунд через {3} с\nTAB — личные результаты",
+      "ru": "{0}\n{1} : {2}\n\nСледующий раунд через {3} с\nTAB — личные результаты",
+      "en": "{0}\n{1} : {2}\n\nNext round in {3} s\nTAB — personal results"
+    },
+    {
+      "source": "Выбрана команда {0}. Подключение к Photon...",
+      "ru": "Выбрана команда {0}. Подключение к Photon...",
+      "en": "Team {0} selected. Connecting to Photon..."
+    },
+    {
+      "source": "Комната {0} ({1}/{2})",
+      "ru": "Комната {0} ({1}/{2})",
+      "en": "In room {0} ({1}/{2})"
+    },
+    {
+      "source": "Вы автоматически вступили в команду {0}.",
+      "ru": "Вы автоматически вступили в команду {0}.",
+      "en": "Auto-joined team {0}."
+    },
+    {
+      "source": "Ошибка входа ({0}): {1}",
+      "ru": "Ошибка входа ({0}): {1}",
+      "en": "Could not join room ({0}): {1}"
+    },
+    {
+      "source": "Соединение потеряно: {0}",
+      "ru": "Соединение потеряно: {0}",
+      "en": "Disconnected: {0}"
+    },
+    {
+      "source": "Поиск комнаты ({0})...",
+      "ru": "Поиск комнаты ({0})...",
+      "en": "Looking for a room ({0})..."
+    },
+    {
+      "source": "Регион: {0}",
+      "ru": "Регион: {0}",
+      "en": "Region: {0}"
+    },
+    {
+      "source": "Подготовка к бою",
+      "ru": "Подготовка к бою",
+      "en": "Prepare for battle"
+    },
+    {
+      "source": "В БОЙ [SPACE]",
+      "ru": "В БОЙ [SPACE]",
+      "en": "DEPLOY [SPACE]"
+    },
+    {
+      "source": "ПОДКЛЮЧИТЬСЯ",
+      "ru": "ПОДКЛЮЧИТЬСЯ",
+      "en": "CONNECT"
+    }
+  ]
+}

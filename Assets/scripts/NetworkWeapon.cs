@@ -57,7 +57,9 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
     private long ShotKey(int sequence) => ((long)photonView.ViewID << 32) | (uint)sequence;
 
-    public void SetMuzzle(Transform nextMuzzle) => muzzle = nextMuzzle;
+    private float maximumMuzzleReach = 1f;
+    public void SetMuzzle(Transform nextMuzzle, float reach = 1f)
+    { muzzle = nextMuzzle; maximumMuzzleReach = Mathf.Clamp(reach, 1f, 1.6f); }
     public void SetDamage(int amount) => damage = Mathf.Max(1,amount);
 
     public bool FireBotShot(Vector3 eye, Vector3 direction, float spreadDegrees)
@@ -163,7 +165,7 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
             double.IsNaN(time) || double.IsInfinity(time) || time < now - .75 || time > now + .1 ||
             !BulletHitUtility.IsFinite(eye) || !BulletHitUtility.IsFinite(direction) || !BulletHitUtility.IsFinite(start) ||
             direction.sqrMagnitude < .9f || direction.sqrMagnitude > 1.1f ||
-            Vector3.Distance(eye, transform.position) > 3f || Vector3.Distance(start, eye) > 1f ||
+            Vector3.Distance(eye, transform.position) > 3f || Vector3.Distance(start, eye) > maximumMuzzleReach ||
             (health != null && health.IsDead)) return false;
         float rate = recoil != null ? recoil.RoundsPerMinute : 600f;
         tokens = Mathf.Min(2f, tokens + (float)System.Math.Max(0, now - tokenTime) * rate / 60f);

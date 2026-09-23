@@ -78,7 +78,7 @@ public sealed class ConquestHUD : MonoBehaviour
                 {
                     marker.rectTransform.anchorMin=marker.rectTransform.anchorMax=root.pivot;
                     marker.rectTransform.anchoredPosition=point;
-                    marker.text=match.Sites[i].label+"\n"+Mathf.RoundToInt(Vector3.Distance(local.transform.position,match.Sites[i].position))+" м";
+                    marker.text=match.Sites[i].label+"\n"+Mathf.RoundToInt(Vector3.Distance(local.transform.position,match.Sites[i].position))+GameLocalization.T(" м");
                     marker.color=TeamColor(state.Owner[i]);
                 }
             }
@@ -86,12 +86,12 @@ public sealed class ConquestHUD : MonoBehaviour
         }
         if(Time.unscaledTime<nextRefresh)return;nextRefresh=Time.unscaledTime+.1f;
         int seconds=Mathf.Max(0,Mathf.CeilToInt((float)(state.EndsAt-ConquestMatch.Now)));
-        score.text=$"<color=#40BAFF>СИНИЕ  {state.BluePoints}</color>     :     <color=#FF7D3D>{state.OrangePoints}  ОРАНЖЕВЫЕ</color>";
-        clock.text=$"РАУНД {state.Round}   ·   {seconds/60:00}:{seconds%60:00}";
+        score.text=GameLocalization.Format("<color=#40BAFF>СИНИЕ  {0}</color>     :     <color=#FF7D3D>{1}  ОРАНЖЕВЫЕ</color>", state.BluePoints, state.OrangePoints);
+        clock.text=GameLocalization.Format("РАУНД {0}   ·   {1:00}:{2:00}", state.Round, seconds/60, seconds%60);
         nearby.text="";
         for(int i=0;i<3;i++)
         {
-            points[i].text=match.Sites[i].label+(state.Contested[i]?"  СПОР":state.Owner[i]==0?"  —":"  ●");
+            points[i].text=match.Sites[i].label+(state.Contested[i]?GameLocalization.T("  СПОР"):state.Owner[i]==0?"  —":"  ●");
             points[i].color=TeamColor(state.Owner[i]);
             progress[i].rectTransform.sizeDelta=new Vector2(110*Mathf.Abs(state.Control[i]),3);
             progress[i].color=TeamColor(state.Control[i]>0?1:state.Control[i]<0?2:0);
@@ -100,17 +100,17 @@ public sealed class ConquestHUD : MonoBehaviour
                 int team=BotController.TeamOf(local);
                 bool neutralizing=team==1?state.Control[i]<0:state.Control[i]>0;
                 int percent=Mathf.RoundToInt((neutralizing?1-Mathf.Abs(state.Control[i]):Mathf.Abs(state.Control[i]))*100);
-                nearby.text=state.Contested[i]?"ТОЧКА ОСПАРИВАЕТСЯ":state.Owner[i]==team?
-                    "ТОЧКА "+match.Sites[i].label+" ПОД КОНТРОЛЕМ  ·  +1 ОЧКО/С":
-                    (neutralizing?"НЕЙТРАЛИЗАЦИЯ ":"ЗАХВАТ ТОЧКИ ")+match.Sites[i].label+"  ·  "+percent+"%";
+                nearby.text=state.Contested[i]?GameLocalization.T("ТОЧКА ОСПАРИВАЕТСЯ"):state.Owner[i]==team?
+                    GameLocalization.T("ТОЧКА ")+match.Sites[i].label+GameLocalization.T(" ПОД КОНТРОЛЕМ  ·  +1 ОЧКО/С"):
+                    (neutralizing?GameLocalization.T("НЕЙТРАЛИЗАЦИЯ "):GameLocalization.T("ЗАХВАТ ТОЧКИ "))+match.Sites[i].label+"  ·  "+percent+"%";
             }
         }
         results.gameObject.SetActive(!playing);
         if(!playing)
         {
-            string winner=state.Winner==0?"НИЧЬЯ":state.Winner==1?"ПОБЕДА СИНЕЙ КОМАНДЫ":"ПОБЕДА ОРАНЖЕВОЙ КОМАНДЫ";
+            string winner=state.Winner==0?GameLocalization.T("НИЧЬЯ"):state.Winner==1?GameLocalization.T("ПОБЕДА СИНЕЙ КОМАНДЫ"):GameLocalization.T("ПОБЕДА ОРАНЖЕВОЙ КОМАНДЫ");
             int wait=Mathf.Max(0,Mathf.CeilToInt((float)(state.EndsAt+ConquestRules.Intermission-ConquestMatch.Now)));
-            result.text=$"{winner}\n{state.BluePoints} : {state.OrangePoints}\n\nСледующий раунд через {wait} с\nTAB — личные результаты";
+            result.text=GameLocalization.Format("{0}\n{1} : {2}\n\nСледующий раунд через {3} с\nTAB — личные результаты", winner, state.BluePoints, state.OrangePoints, wait);
         }
     }
     private void OnDestroy()

@@ -1,0 +1,3 @@
+PASS default and legacy starter loadout, unchanged wallet, one-time migration preserves later selections.
+PASS profile migration, permanent purchases, no duplicate charge, insufficient funds, invalid item, category selection and save/load round trip.
+PASS shop UI and all three category previews; real wallet was not modified.

@@ -117,6 +117,7 @@ public static class InstallMilkor
             var muzzle = Marker("Muzzle", new Vector3(-6f, .18f, 0), player.transform.rotation);
             var sight = Marker("Sight", new Vector3(-.75f, 2.07f, 0), player.transform.rotation).gameObject.AddComponent<WeaponSight>();
             Set(rig, "defaultSight", sight);
+            InstallCollimator.Configure(weapon.transform, model.transform, sight);
             weapon.transform.position += rightHand.position - right.position;
             for (int i = 0; i < bones.Length; i++) { bones[i].SetLocalPositionAndRotation(positions[i], rotations[i]); bones[i].localScale = scales[i]; }
             foreach (var t in weapon.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = parent.gameObject.layer;

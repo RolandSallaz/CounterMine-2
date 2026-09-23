@@ -78,7 +78,7 @@ public sealed class SkillSlotUI : MonoBehaviour
         icon.enabled = !assigned;
         launcherIcon.enabled = assigned && title != "RADAR";
         radarIcon.enabled = assigned && title == "RADAR" && radarIcon.sprite != null;
-        caption.text = !assigned ? "EMPTY SLOT" : active ? title : ready ? "PRESS " + key : title;
+        GameLocalization.Bind(caption, () => !assigned ? GameLocalization.T("EMPTY SLOT") : active ? GameLocalization.T(title) : ready ? GameLocalization.T("PRESS ") + key : GameLocalization.T(title));
         count.text = !assigned ? "" : remaining > 0 ? remaining.ToString() : ready && !active ? "0" : (requiredKills - progress).ToString();
         charges.text = assigned && storedCharges > 0 ? "x" + storedCharges : "";
     }

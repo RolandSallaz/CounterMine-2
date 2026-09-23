@@ -64,11 +64,12 @@ public static class ValidateMilkor
                 Check(ammo.MagAmmo == 0 && !ammo.CanShoot && !ammo.IsReloading, "Empty auto-reload");
                 Check(sync.ApplyNetworkState("milkor", "equip", 0, 1), "Remote equip binding");
                 Check(!sync.PlayWeaponAction("reload"), "Unexpected reload animation");
-                Check(sync.WeaponRoot.GetComponentsInChildren<Renderer>(true).All(r => r.sharedMaterials.All(m => m != null && m.shader.name == "Universal Render Pipeline/Lit")), "Invalid materials");
+                Check(sync.WeaponRoot.GetComponentsInChildren<Renderer>(true).All(r => r.sharedMaterials.All(m => m != null && (m.shader.name == "Universal Render Pipeline/Lit" || m.shader.name == "CounterMine/Collimator"))), "Invalid materials");
                 var catalog = new SerializedObject(sync).FindProperty("weapons");
                 var entry = catalog.GetArrayElementAtIndex(2);
                 Check(entry.FindPropertyRelative("magazineSize").intValue == 6 && !entry.FindPropertyRelative("automatic").boolValue, "Magazine/cadence config");
                 ammo.SetFiniteAmmo("milkor", 6); sync.RestartIdle();
+                Measure(sync.WeaponRoot);
                 RenderPlayer(player, sync);
                 report.AppendLine("PASS player: finite magazine, no reload, weapon switching, procedural fire gate/hand IK, remote state, URP materials.");
             }
@@ -86,6 +87,39 @@ public static class ValidateMilkor
         }
         catch (Exception e) { report.AppendLine("FAIL " + e); Debug.LogException(e); }
         File.WriteAllText("Documentation/Milkor/validation.txt", report.ToString());
+    }
+    private static void Measure(Transform root)
+    {
+        Bounds bounds = new Bounds(); bool first = true;
+        foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
+        {
+            var skinned = renderer as SkinnedMeshRenderer;
+            Mesh mesh = skinned != null ? skinned.sharedMesh : renderer.GetComponent<MeshFilter>()?.sharedMesh;
+            if (mesh == null) continue;
+            var vertices = mesh.vertices;
+            var weights = mesh.boneWeights;
+            var matrices = skinned != null ? skinned.bones.Select((bone, i) => bone.localToWorldMatrix * mesh.bindposes[i]).ToArray() : null;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector3 vertex = vertices[i];
+                Vector3 world = renderer.transform.TransformPoint(vertex);
+                if (matrices != null && matrices.Length > 0 && weights.Length == vertices.Length)
+                {
+                    var w = weights[i];
+                    world = matrices[w.boneIndex0].MultiplyPoint3x4(vertex) * w.weight0;
+                    if (w.weight1 > 0) world += matrices[w.boneIndex1].MultiplyPoint3x4(vertex) * w.weight1;
+                    if (w.weight2 > 0) world += matrices[w.boneIndex2].MultiplyPoint3x4(vertex) * w.weight2;
+                    if (w.weight3 > 0) world += matrices[w.boneIndex3].MultiplyPoint3x4(vertex) * w.weight3;
+                }
+                Vector3 point = root.InverseTransformPoint(world);
+                if (first) { bounds = new Bounds(point, Vector3.zero); first = false; } else bounds.Encapsulate(point);
+            }
+        }
+        File.WriteAllText("Documentation/Milkor/dimensions.txt", "Measured deformed mesh vertices in weapon-local metres (unit root scale).\n" +
+            "Width: " + bounds.size.x.ToString("F4") + " m\nHeight with optic and foregrip: " + bounds.size.y.ToString("F4") +
+            " m\nOverall length: " + bounds.size.z.ToString("F4") + " m\nRoot scale: " + root.lossyScale +
+            "\nManufacturer Mk 1S nominal overall length: 754 mm stock retracted / 832 mm stock extended; width 163 mm; height 207 mm (accessories vary).\n" +
+            "Source: https://milkor.ae/wp-content/uploads/2025/02/Milkor-Weapons-Division.pdf (PDF p. 5).\n");
     }
     private static void RenderPlayer(GameObject player, WeaponIdleSynchronizer sync)
     {

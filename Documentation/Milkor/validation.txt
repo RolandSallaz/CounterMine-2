@@ -1,4 +1,5 @@
 PASS reward ledger: ten kills, queued charges, six shots, recall, life identity, migration snapshot, round reset.
-AK binding: enabled=True active=True room=True animator=AK-74 (Animancer.AnimancerComponent) arms=AK74_Idle_Character (UnityEngine.AnimationClip) weapon=AK74_Idle_Weapon (UnityEngine.AnimationClip)
-FAIL System.Exception: AK unavailable
-  at ValidateMilkor.Run () [0x0033d] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateMilkor.cs:48 
+PASS player: finite magazine, no reload, weapon switching, procedural fire gate/hand IK, remote state, URP materials.
+PASS model and first-person render previews, projectile asset, launch sound.
+PASS existing AK/UCP magazine, reload, animation, network state and recoil regression checks.
+Editor checks only; live multiplayer and WebGL performance require an actual match.

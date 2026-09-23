@@ -16,6 +16,9 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
     private Vector3[] positions;
     private Quaternion[] rotations;
     private bool receivedPose;
+    private bool loadoutBound;
+    private string primaryWeapon = "ak74", pistolWeapon = "";
+    public const string SkillLoadoutKey = "loadout/skills";
     private Vector3[] smoothPositions;
     private Quaternion[] smoothRotations;
     private string StateKey => "weapon:" + photonView.ViewID;
@@ -36,22 +39,34 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
         if (!photonView.ObservedComponents.Contains(this)) photonView.ObservedComponents.Add(this);
     }
 
+    private void BindLoadout()
+    {
+        if (loadoutBound || IsBot || !YandexPlayerData.IsLoaded || (PhotonNetwork.InRoom && !photonView.IsMine)) return;
+        var data = YandexPlayerData.Current;
+        primaryWeapon = data.equippedWeapon; pistolWeapon = data.equippedPistol;
+        loadoutBound = true;
+        EquipWeapon(primaryWeapon);
+        RadarSkill.Bind(GetComponent<PlayerHealth>(), GetComponentInChildren<Camera>(true));
+        if (PhotonNetwork.InRoom) photonView.Owner.SetCustomProperties(new Hashtable { [SkillLoadoutKey] = data.equippedSkills.ToArray() });
+    }
     private void Update()
     {
+        BindLoadout();
         if (IsBot ||
             (PhotonNetwork.InRoom && !photonView.IsMine) || !Application.isFocused ||
             Cursor.lockState != CursorLockMode.Locked || animationSource == null ||
             (ragdoll != null && ragdoll.IsRagdoll)) return;
         var health = GetComponent<PlayerHealth>();
         if (health != null && health.IsDead) return;
-        if (Keyboard.current?.digit1Key.wasPressedThisFrame == true && animationSource.WeaponId != "ak74") EquipWeapon("ak74");
-        if (Keyboard.current?.digit2Key.wasPressedThisFrame == true && animationSource.WeaponId != "ucp") EquipWeapon("ucp");
+        if (Keyboard.current?.digit1Key.wasPressedThisFrame == true && animationSource.WeaponId != primaryWeapon) EquipWeapon(primaryWeapon);
+        if (Keyboard.current?.digit2Key.wasPressedThisFrame == true && !string.IsNullOrEmpty(pistolWeapon) && animationSource.WeaponId != pistolWeapon) EquipWeapon(pistolWeapon);
     }
 
     private void Start()
     {
         if (animationSource == null) return;
         animationSource.StateChanged += PublishState;
+        BindLoadout();
         if (!PhotonNetwork.InRoom || photonView.IsMine) PublishState();
         else ReadState();
     }
