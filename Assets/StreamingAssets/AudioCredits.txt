@@ -1,6 +1,7 @@
-CounterMine audio credits
+BlockField audio credits
 
-All currently shipped clips use CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+The sound effects listed below use CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+Menu music uses CC BY 4.0; see Assets/Resources/Audio/MusicCredits.txt and the in-game Controls > Credits screen.
 
 Gunshots: Ben Jaszczak et al., The Free Firearm Sound Library
 https://opengameart.org/content/the-free-firearm-sound-library
@@ -111,3 +112,6 @@ Original Kenney license notices:
 	Follow on Twitter for updates:
 
 	http://twitter.com/KenneyNL
+
+Combat feedback (Combat/hit*.wav, Combat/hurt*.wav): original layered noise-impact synthesis for BlockField; no third-party samples or Battlefield recordings.
+

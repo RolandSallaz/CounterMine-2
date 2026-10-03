@@ -102,7 +102,7 @@ public sealed class WeaponAmmo : MonoBehaviour
         if (health != null && health.IsDead) return;
         if (!BotController.IsBot(this) && weaponAnimation.CanFire && MagAmmo < magazineSize &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&
-            Keyboard.current?.rKey.wasPressedThisFrame == true)
+            !PlatformLifecycle.InputBlocked && DesktopControls.ReloadPressed)
             TryStartReload();
     }
 

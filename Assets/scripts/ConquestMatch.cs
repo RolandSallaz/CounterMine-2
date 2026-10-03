@@ -9,7 +9,7 @@ public sealed class ConquestMatch : MonoBehaviourPunCallbacks
 {
     public const string StateKey = "conquest/state";
     public static ConquestMatch Instance { get; private set; }
-    public static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    public static double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
     public static bool CombatAllowed => !PhotonNetwork.InRoom ||
         (Instance != null && Instance.State != null && Instance.State.Playing(Now));
     [Serializable] public sealed class Site

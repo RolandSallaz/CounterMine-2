@@ -1,161 +1,126 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Scripting;
 
-/// <summary>Thin Yandex cloud-saves bridge (player.getData/setData, synced across devices).
-/// Outside WebGL builds it falls back to PlayerPrefs, so everything is testable in the editor.
-/// Async reads return via SendMessage to an internal receiver; a timeout guards missing SDK responses.</summary>
+/// <summary>Cloud reads must succeed before the profile can be edited. JS keeps an account-scoped durable write queue.</summary>
 public static class YandexCloudSave
 {
-    private const float ResponseTimeout = 6f;
-
+    public static string State { get; private set; } = "loading";
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")] private static extern void CloudSaveSet_js(string key, string json);
-    [DllImport("__Internal")] private static extern void CloudSaveGet_js(string key, string callbackObject, string callbackMethod);
-    [DllImport("__Internal")] private static extern void YandexPlayerName_js(string callbackObject, string callbackMethod);
+    [DllImport("__Internal")] private static extern void CloudSaveGet_js(string key, string obj, string method, int request);
+    [DllImport("__Internal")] private static extern void CloudSaveResolve_js(string key, int useLocal);
+    [DllImport("__Internal")] private static extern void YandexPlayerName_js(string obj, string method);
 #endif
-
     public static bool IsCloudPlatform =>
 #if UNITY_WEBGL && !UNITY_EDITOR
         true;
 #else
         false;
 #endif
-
-    public static void SaveJson(string key, string json)
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void Reset() { State="loading"; }
+    public static void SaveJson(string key,string json)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        try { CloudSaveSet_js(key, json); }
-        catch (Exception e) { Debug.LogWarning($"[CloudSave] set failed: {e.Message}"); }
+        try { CloudSaveSet_js(key,json); }
+        catch(Exception) { State="retrying"; }
 #else
-        PlayerPrefs.SetString(key, json);
-        PlayerPrefs.Save();
+        PlayerPrefs.SetString(key,json);PlayerPrefs.Save();State="saved";
 #endif
     }
-
-    public static void LoadJson(string key, string defaultValue, Action<string> callback)
+    public static void LoadJson(string key,string defaultValue,Action<string> callback)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Receiver.Instance.BeginLoad(key, defaultValue, callback);
+        Receiver.Instance.BeginLoad(key,defaultValue,callback);
 #else
-        callback?.Invoke(PlayerPrefs.GetString(key, defaultValue));
+        State="saved";callback?.Invoke(PlayerPrefs.GetString(key,defaultValue));
 #endif
     }
-
-    public static void SaveObject<T>(string key, T data) => SaveJson(key, JsonUtility.ToJson(data));
-
-    public static void LoadObject<T>(string key, Action<T> callback) where T : new()
+    public static void ResolveConflict(bool useLocal)
     {
-        LoadJson(key, "", json =>
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if(State=="conflict")CloudSaveResolve_js(YandexPlayerData.SaveKey,useLocal?1:0);
+#endif
+    }
+    public static void SaveObject<T>(string key,T data)=>SaveJson(key,JsonUtility.ToJson(data));
+    public static void LoadObject<T>(string key,Action<T> callback) where T:new()
+    {
+        LoadJson(key,"",json=>
         {
-            if (string.IsNullOrEmpty(json)) { callback?.Invoke(new T()); return; }
-            try { callback?.Invoke(JsonUtility.FromJson<T>(json)); }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[CloudSave] parse failed for '{key}': {e.Message}");
-                callback?.Invoke(new T());
-            }
+            T value;
+            try { value=string.IsNullOrEmpty(json)?new T():JsonUtility.FromJson<T>(json); }
+            catch(Exception) { State="invalid";return; }
+            if(value==null){State="invalid";return;}
+            callback?.Invoke(value);
         });
     }
-
-    /// <summary>Public Yandex player name (empty outside Yandex WebGL or when unavailable).</summary>
     public static void RequestPlayerName(Action<string> callback)
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Receiver.Instance.BeginNameRequest(callback);
+        Receiver.Instance.BeginName(callback);
 #else
         callback?.Invoke("");
 #endif
     }
-
-    private sealed class Receiver : MonoBehaviour
+    [Serializable] private sealed class Reply { public int request; public bool ok; public string value,error; }
+    [Preserve] private sealed class Receiver:MonoBehaviour
     {
         private static Receiver instance;
         public static Receiver Instance
         {
             get
             {
-                if (instance == null)
-                {
-                    var go = new GameObject("YandexCloudSave");
-                    DontDestroyOnLoad(go);
-                    instance = go.AddComponent<Receiver>();
-                }
+                if(instance==null){var go=new GameObject("YandexCloudSave");DontDestroyOnLoad(go);instance=go.AddComponent<Receiver>();}
                 return instance;
             }
         }
-
-        private Action<string> pendingLoad;
-        private string pendingDefault = "";
-        private Action<string> pendingName;
-        private int loadToken;
-        private int nameToken;
-
-        public void BeginLoad(string key, string defaultValue, Action<string> callback)
+        private Action<string> load,name;
+        private string key,fallback;
+        private int request;
+        private Coroutine readLoop;
+        public void BeginLoad(string nextKey,string defaultValue,Action<string> callback)
         {
-            pendingLoad = callback;
-            pendingDefault = defaultValue;
-            int token = ++loadToken;
-#if UNITY_WEBGL && !UNITY_EDITOR
-            try { CloudSaveGet_js(key, gameObject.name, nameof(OnCloudData)); }
-            catch (Exception e)
+            if(readLoop!=null)StopCoroutine(readLoop);
+            key=nextKey;fallback=defaultValue;load=callback;State="loading";
+            readLoop=StartCoroutine(ReadLoop());
+        }
+        private IEnumerator ReadLoop()
+        {
+            while(load!=null)
             {
-                Debug.LogWarning($"[CloudSave] get failed: {e.Message}");
-                FinishLoad(token, "");
-                return;
-            }
-            StartCoroutine(WaitTimeout(token, true));
-#else
-            FinishLoad(token, defaultValue);
-#endif
-        }
-
-        public void BeginNameRequest(Action<string> callback)
-        {
-            pendingName = callback;
-            int token = ++nameToken;
+                if(State=="conflict"){yield return new WaitForSecondsRealtime(.5f);continue;}
+                request++;
 #if UNITY_WEBGL && !UNITY_EDITOR
-            try { YandexPlayerName_js(gameObject.name, nameof(OnPlayerName)); }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[CloudSave] name request failed: {e.Message}");
-                FinishName(token, "");
-                return;
-            }
-            StartCoroutine(WaitTimeout(token, false));
-#else
-            FinishName(token, "");
+                try { CloudSaveGet_js(key,gameObject.name,nameof(OnCloudData),request); }
+                catch(Exception) { State="retrying"; }
 #endif
+                yield return new WaitForSecondsRealtime(20f);
+                if(load!=null&&State!="conflict")State="retrying";
+            }
+            readLoop=null;
         }
-
-        // Called from JS via SendMessage. Must stay public with a single string argument.
-        public void OnCloudData(string json) => FinishLoad(loadToken, json ?? "");
-        public void OnPlayerName(string playerName) => FinishName(nameToken, playerName ?? "");
-
-        private IEnumerator WaitTimeout(int token, bool isLoad)
+        [Preserve] public void OnCloudData(string json)
         {
-            yield return new WaitForSecondsRealtime(ResponseTimeout);
-            if (isLoad) FinishLoad(token, "");
-            else FinishName(token, "");
+            Reply reply;
+            try {reply=JsonUtility.FromJson<Reply>(json);}catch(Exception){State="retrying";return;}
+            if(reply==null||reply.request!=request||load==null)return;
+            if(!reply.ok){State=reply.error=="conflict"?"conflict":"retrying";return;}
+            var callback=load;load=null;
+            callback.Invoke(string.IsNullOrEmpty(reply.value)?fallback:reply.value);
         }
-
-        private void FinishLoad(int token, string json)
+        [Preserve] public void OnSaveStatus(string state) { State=state; }
+        public void BeginName(Action<string> callback)
         {
-            if (token != loadToken || pendingLoad == null) return;
-            var callback = pendingLoad;
-            pendingLoad = null;
-            loadToken++;
-            callback.Invoke(string.IsNullOrEmpty(json) ? pendingDefault : json);
+            name=callback;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            try {YandexPlayerName_js(gameObject.name,nameof(OnPlayerName));}catch(Exception){OnPlayerName("");}
+#endif
+            StartCoroutine(NameTimeout());
         }
-
-        private void FinishName(int token, string playerName)
-        {
-            if (token != nameToken || pendingName == null) return;
-            var callback = pendingName;
-            pendingName = null;
-            nameToken++;
-            callback.Invoke(playerName);
-        }
+        private IEnumerator NameTimeout(){yield return new WaitForSecondsRealtime(15);OnPlayerName("");}
+        [Preserve] public void OnPlayerName(string value){var callback=name;name=null;callback?.Invoke(value??"");}
     }
 }

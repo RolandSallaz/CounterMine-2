@@ -1,5 +1,9 @@
 {
   "entries": [
+    {"source": "Тяжёлый пятизарядный револьвер с сильной отдачей.", "ru": "Тяжёлый пятизарядный револьвер с сильной отдачей.", "en": "A heavy five-shot revolver with powerful recoil."},
+    {"source": "5 ПАТРОНОВ  /  РЕВОЛЬВЕР", "ru": "5 ПАТРОНОВ  /  РЕВОЛЬВЕР", "en": "5 ROUNDS  /  REVOLVER"},
+    {"source": "Помповый дробовик для ближнего боя. Восемь дробин за выстрел.", "ru": "Помповый дробовик для ближнего боя. Восемь дробин за выстрел.", "en": "A pump-action shotgun for close combat. Eight pellets per shot."},
+    {"source": "5 ПАТРОНОВ  /  ПОМПОВЫЙ", "ru": "5 ПАТРОНОВ  /  ПОМПОВЫЙ", "en": "5 ROUNDS  /  PUMP ACTION"},
     {"source": "Single player", "ru": "Одиночная игра", "en": "Single player"},
     {"source": "Multiplayer", "ru": "Мультиплеер", "en": "Multiplayer"},
 
@@ -964,14 +968,14 @@
       "en": "All rooms are full, try again later."
     },
     {
-      "source": "Лобби CounterMine",
-      "ru": "Лобби CounterMine",
-      "en": "CounterMine test lobby"
+      "source": "Лобби BlockField",
+      "ru": "Лобби BlockField",
+      "en": "BlockField test lobby"
     },
     {
-      "source": "CounterMine test lobby",
-      "ru": "Лобби CounterMine",
-      "en": "CounterMine test lobby"
+      "source": "BlockField test lobby",
+      "ru": "Лобби BlockField",
+      "en": "BlockField test lobby"
     },
     {
       "source": "Войти в команду 1",
@@ -1092,6 +1096,36 @@
       "source": "ПОДКЛЮЧИТЬСЯ",
       "ru": "ПОДКЛЮЧИТЬСЯ",
       "en": "CONNECT"
+    },
+    {
+      "source": "Тренировка с ботами",
+      "ru": "Тренировка с ботами",
+      "en": "Practice against bots"
+    },
+    {
+      "source": "Сражения с другими игроками",
+      "ru": "Сражения с другими игроками",
+      "en": "Battle other players"
+    },
+    {
+      "source": "Оружие и снаряжение",
+      "ru": "Оружие и снаряжение",
+      "en": "Weapons and equipment"
+    },
+    {
+      "source": "ТЕКУЩЕЕ ОРУЖИЕ",
+      "ru": "ТЕКУЩЕЕ ОРУЖИЕ",
+      "en": "CURRENT WEAPON"
+    },
+    {
+      "source": "Выберите режим и вступайте в бой",
+      "ru": "Выберите режим и вступайте в бой",
+      "en": "Choose a mode and join the fight"
+    },
+    {
+      "source": "Покупки навсегда. Снаряжение готово к следующему бою.",
+      "ru": "Покупки навсегда. Снаряжение готово к следующему бою.",
+      "en": "Permanent purchases. Your loadout is ready for the next battle."
     }
   ]
 }

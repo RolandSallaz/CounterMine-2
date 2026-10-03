@@ -48,12 +48,12 @@ public static class ValidatePiPScope
             Check(width6>8,"Scope render does not contain the scene target");
             Check(scope.GetComponentInChildren<Text>(true).text=="6?","Zoom label at 6x");
             InstallNewWeapons.Render(camera,"Documentation/NewWeapons/pip-6x.png");
-            scope.SetMagnification(99);Check(scope.Magnification==16,"Upper zoom clamp");Call(scope,"LateUpdate");
-            float fov16=scope.ScopeCamera.fieldOfView;int width16=SaveTexture(scope.ViewTexture,"scope-texture-16x.png");
-            Check(Mathf.Abs((float)width16/width6-16f/6)<.12f,"Actual rendered zoom ratio incorrect: "+width6+" / "+width16);
-            Check(scope.GetComponentInChildren<Text>(true).text=="16?","Zoom label at 16x");
-            Check(fov16<fov6&&Mathf.Abs(camera.fieldOfView-peripheralFov)<.001f,"Zoom camera separation");
-            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/pip-16x.png");
+            scope.SetMagnification(99);Check(scope.Magnification==24,"Upper zoom clamp");Call(scope,"LateUpdate");
+            float fov24=scope.ScopeCamera.fieldOfView;int width24=SaveTexture(scope.ViewTexture,"scope-texture-24x.png");
+            Check(Mathf.Abs((float)width24/width6-24f/6)<.12f,"Actual rendered zoom ratio incorrect: "+width6+" / "+width24);
+            Check(scope.GetComponentInChildren<Text>(true).text=="24?","Zoom label at 24x");
+            Check(fov24<fov6&&Mathf.Abs(camera.fieldOfView-peripheralFov)<.001f,"Zoom camera separation");
+            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/pip-24x.png");
             scope.SetMagnification(5);Check(scope.Magnification==6,"Lower zoom clamp");scope.SetMagnification(7);Check(scope.Magnification==7,"One-times zoom step");
             Check(player.GetComponentsInChildren<Renderer>(true).All(r=>!r.forceRenderingOff),"Player renderers were left hidden");
             Check(scope.lensRenderer.enabled,"PiP lens not visible");
@@ -63,8 +63,8 @@ public static class ValidatePiPScope
             Check(!scope.Visible&&!scope.lensRenderer.enabled,"Scope persists during reload");
             sync.RestartIdle();sync.EquipWeapon("ak74");Check(!scope.Visible,"Scope persists after weapon switch");
             Call(scope,"OnDisable");Check(!scope.ScopeCamera.enabled,"Inactive scope camera costs a render");Call(scope,"OnDestroy");Check(scope.ViewTexture==null,"RenderTexture not released");
-            report.AppendLine("PASS PiP scene rendering, shader, independent peripheral FOV, 6x/16x limits and 1x steps, zoom labels, render cleanup, ADS/reload/switch gates and texture release.");
-            report.AppendLine("Rendered red target widths: "+width6+" px at 6x; "+width16+" px at 16x. Camera FOVs: "+fov6.ToString("F3")+" / "+fov16.ToString("F3")+" degrees; peripheral "+peripheralFov+" degrees.");
+            report.AppendLine("PASS PiP scene rendering, shader, independent peripheral FOV, 6x/24x limits and 1x steps, zoom labels, render cleanup, ADS/reload/switch gates and texture release.");
+            report.AppendLine("Rendered red target widths: "+width6+" px at 6x; "+width24+" px at 24x. Camera FOVs: "+fov6.ToString("F3")+" / "+fov24.ToString("F3")+" degrees; peripheral "+peripheralFov+" degrees.");
             report.AppendLine("Editor URP rendering verified; WebGL performance and live mouse-wheel interaction were not exercised.");
         }
         catch(Exception e){report.AppendLine("FAIL "+e);Debug.LogException(e);}

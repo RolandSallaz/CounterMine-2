@@ -16,7 +16,7 @@ public sealed class MilkorSkill : MonoBehaviourPun
     private int localSequence, lastRequest, lastPresented;
     private MuzzleFlashEffect flash;
     private int round;
-    private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private static double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
     public bool Equipped => animationSource != null && animationSource.WeaponId == WeaponId;
     public int Remaining => ammo != null ? ammo.SavedAmmo(WeaponId) : 0;
     private void Awake()
@@ -96,7 +96,7 @@ public sealed class MilkorSkill : MonoBehaviourPun
     {
         if (info.Sender == null || !info.Sender.IsMasterClient) return;
         if (!photonView.IsMine) Present(start, direction, sequence);
-        GrenadeProjectile.Launch(start, direction * 32f, time, photonView.Owner, seed,
+        GrenadeProjectile.Launch(start, direction * 76f, time, photonView.Owner, seed,
             TeamSafeZone.AttackerTeam(photonView.Owner), true, transform);
     }
     private void Present(Vector3 start, Vector3 direction, int sequence)

@@ -17,7 +17,7 @@ public sealed class PlayerHitboxes : MonoBehaviour
     private int count, next;
     private struct Pose { public Vector3 center, end, size; public Quaternion rotation; public float radius; public Zone zone; }
     public bool Ready { get { Initialize(); return shapes != null && shapes.Length > 0; } }
-    private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private static double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
 
     private void Initialize()
     {

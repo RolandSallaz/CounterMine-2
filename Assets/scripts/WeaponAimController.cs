@@ -51,13 +51,13 @@ public sealed class WeaponAimController : MonoBehaviour
     }
     private void Update()
     {
-        bool canAim = playerCamera != null && playerCamera.isActiveAndEnabled &&
+        bool canAim = !PlatformLifecycle.InputBlocked && playerCamera != null && playerCamera.isActiveAndEnabled &&
             (weaponAnimation == null || weaponAnimation.IsIdlePlaying) &&
             cameraLook != null && cameraLook.isActiveAndEnabled &&
             (deathController == null || !deathController.IsDead) &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&
             Keyboard.current?.escapeKey.wasPressedThisFrame != true;
-        Step(canAim && Mouse.current?.rightButton.isPressed == true, Time.deltaTime);
+        Step(canAim && DesktopControls.AimHeld, Time.deltaTime);
     }
     private void Step(bool wantsAim, float deltaTime)
     {

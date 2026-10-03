@@ -22,7 +22,10 @@ body {
 #unity-container {
     width: 100%;
     height: 100%;
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #unity-canvas {
@@ -115,3 +118,6 @@ body {
         transform: rotate(360deg);
     }
 }
+/* Keep the active field 16:9 on every desktop window, with no page scrolling. */
+#unity-container { width: min(100vw, 177.777778vh); height: min(100vh, 56.25vw); }
+body { background: #10161b; }

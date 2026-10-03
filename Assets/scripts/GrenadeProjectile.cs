@@ -56,7 +56,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
 
     private void Update()
     {
-        double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+        double now = PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
         if (now >= throwTime + (impactRound ? 6f : Fuse)) { Explode(); return; }
         Simulate(Time.deltaTime);
     }
@@ -101,7 +101,7 @@ public sealed class GrenadeProjectile : MonoBehaviour
     {
         // The shared query handles saturated hit buffers without dropping nearby walls.
         var hit = impactRound
-            ? BulletHitUtility.Cast(origin, direction, distance, shooter, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0)
+            ? BulletHitUtility.Cast(origin, direction, distance, shooter, PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble, ~0)
             : BulletHitUtility.CastCover(origin, direction, distance, null, ~0, sourceTeam: sourceTeam);
         point = hit.point;
         normal = hit.normal;

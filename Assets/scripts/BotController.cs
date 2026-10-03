@@ -46,6 +46,17 @@ public sealed class BotController : MonoBehaviourPun
     [SerializeField, Min(0f)] private float botBaseSpread = 2f;
     [SerializeField, Min(0f)] private float botSpreadPerMeter = .05f;
     [SerializeField, Min(1f)] private float memorySeconds = 6f;
+    // Ease players into solo combat; reach the authored bot skill after five active minutes.
+    private float SoloEase
+    {
+        get
+        {
+            var state = ConquestMatch.Instance != null ? ConquestMatch.Instance.State : null;
+            if (!PhotonNetwork.OfflineMode || state == null) return 1f;
+            float progress = Mathf.Clamp01((float)(((state.Round - 1) * ConquestRules.Duration + ConquestMatch.Now - state.StartedAt) / 300d));
+            return Mathf.Lerp(1.6f, 1f, progress);
+        }
+    }
     // Distributed destinations: both flanks, cargo courts, bridge and roof exits.
     private static readonly Vector3[] Patrol = {
         new Vector3(-30,0,-11.8f), new Vector3(0,6,0), new Vector3(28,0,11.8f),
@@ -116,7 +127,7 @@ public sealed class BotController : MonoBehaviourPun
         // Close enemies can be noticed from any direction; farther ones must be in view.
         if (offset.sqrMagnitude > 6*6 && Vector3.Dot(transform.forward, offset.normalized) < -.1f) return false;
         return BulletHitUtility.Cast(aimCamera.transform.position, offset.normalized, offset.magnitude+.5f,
-            transform, PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == candidate;
+            transform, PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble, ~0).player == candidate;
     }
     private void Sense()
     {
@@ -132,7 +143,7 @@ public sealed class BotController : MonoBehaviourPun
         visible = bestTarget != null;
         if (visible)
         {
-            if (target != bestTarget) { fireAt = Time.time + Random.Range(.25f,.5f); burst = 0; planAt = 0; }
+            if (target != bestTarget) { fireAt = Time.time + Random.Range(.25f,.5f) * SoloEase; burst = 0; planAt = 0; }
             target = bestTarget; lastSeen = target.transform.position; seenAt = Time.time;
         }
         else if (Time.time-seenAt > memorySeconds || target == null || target.IsDead)
@@ -318,7 +329,7 @@ public sealed class BotController : MonoBehaviourPun
         Vector3 eye=aimCamera.transform.position, direction=(aim-eye).normalized;
         aimCamera.transform.rotation=Quaternion.LookRotation(direction);
         if (Time.time<fireAt || flat.magnitude>fireRange || Vector3.Dot(transform.forward,flat.normalized)<.96f || !CanSee(target)) return;
-        if (weapon.FireBotShot(eye,direction,botBaseSpread+botSpreadPerMeter*flat.magnitude))
+        if (weapon.FireBotShot(eye,direction,(botBaseSpread+botSpreadPerMeter*flat.magnitude) * SoloEase))
         {
             burst++;
             if (burst>=3) { burst=0;fireAt=Time.time+Random.Range(.35f,.65f); }

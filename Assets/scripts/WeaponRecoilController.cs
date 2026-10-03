@@ -150,13 +150,14 @@ public sealed class WeaponRecoilController : MonoBehaviour
     {
         if (!initialized) return;
         Heat = Mathf.MoveTowards(Heat, 0f, heatRecovery * Time.deltaTime);
-        bool allowed = (owner == null || (owner.IsMine && (!PhotonNetwork.InRoom || owner.OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber))) && cameraLook != null && cameraLook.isActiveAndEnabled &&
+        bool allowed = !PlatformLifecycle.InputBlocked && (owner == null || (owner.IsMine && (!PhotonNetwork.InRoom || owner.OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber))) && cameraLook != null && cameraLook.isActiveAndEnabled &&
+            !cameraLook.JustRelocked &&
             (weaponAnimation == null || weaponAnimation.CanFire) &&
             (deathController == null || !deathController.IsDead) &&
             (playerController == null || !playerController.IsSprinting) &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&
             Keyboard.current?.escapeKey.wasPressedThisFrame != true && Time.deltaTime > 0f;
-        bool trigger = Mouse.current != null && (automatic ? Mouse.current.leftButton.isPressed : Mouse.current.leftButton.wasPressedThisFrame);
+        bool trigger = automatic ? DesktopControls.FireHeld : DesktopControls.FirePressed;
         if (!allowed || !trigger) nextShotTime = System.Math.Max(nextShotTime, Time.timeAsDouble);
         if (allowed && trigger && ConsumeShotTime(Time.timeAsDouble)) FireShot();
     }

@@ -28,6 +28,7 @@ public class PlayerCameraLook : MonoBehaviourPun
     private float pitch;
     private float lean;
     private PlayerController movement;
+    private PlayerHealth health;
     private CharacterController capsule;
     private float movementRoll, rollVelocity, stridePhase;
     private float trauma, shakeTime;
@@ -41,12 +42,15 @@ public class PlayerCameraLook : MonoBehaviourPun
         : 0f;
 
     public Vector2 LookDeltaThisFrame { get; private set; }
+    /// <summary>True on the frame the cursor was recaptured: weapon must ignore this click, it only re-locks.</summary>
+    public bool JustRelocked { get; private set; }
 
     private void Awake()
     {
         noiseSeed = (GetInstanceID() & 1023) * .137f;
         weaponAnimation = GetComponentInChildren<WeaponIdleSynchronizer>(true);
         movement = GetComponent<PlayerController>();
+        health = GetComponent<PlayerHealth>();
         capsule = GetComponent<CharacterController>();
         aimController ??= GetComponentInChildren<WeaponAimController>(true);
         if (playerCamera == null)
@@ -74,7 +78,7 @@ public class PlayerCameraLook : MonoBehaviourPun
     private void Update()
     {
         LookDeltaThisFrame = Vector2.zero;
-        if (!photonView.IsMine || playerCamera == null)
+        if (!photonView.IsMine || playerCamera == null || PlatformLifecycle.InputBlocked)
         {
             return;
         }
@@ -86,13 +90,23 @@ public class PlayerCameraLook : MonoBehaviourPun
             return;
         }
 
-        if (Mouse.current == null || Cursor.lockState != CursorLockMode.Locked)
+        if (Cursor.lockState != CursorLockMode.Locked)
         {
+            // Esc (or the browser) released the cursor: click back into the game to recapture.
+            // Dead players keep a free cursor for the respawn/shop buttons.
+            if (DesktopControls.FirePressed &&
+                (UnityEngine.EventSystems.EventSystem.current == null || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) &&
+                (health == null || !health.IsDead))
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                JustRelocked = true;
+            }
             return;
         }
 
         float aimSensitivity = aimController != null && aimController.isActiveAndEnabled ? aimController.LookSensitivityMultiplier : 1f;
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue() * (sensitivity * aimSensitivity);
+        Vector2 mouseDelta = DesktopControls.Look(sensitivity) * aimSensitivity;
         float previousPitch = pitch;
         pitch = Mathf.Clamp(pitch - mouseDelta.y, minimumPitch, maximumPitch);
         LookDeltaThisFrame = new Vector2(mouseDelta.x, previousPitch - pitch);
@@ -140,6 +154,7 @@ public class PlayerCameraLook : MonoBehaviourPun
 
     private void LateUpdate()
     {
+        JustRelocked = false;
         if (!PhotonNetwork.InRoom || photonView.IsMine)
         {
             float dt = Time.deltaTime;
@@ -179,7 +194,6 @@ public class PlayerCameraLook : MonoBehaviourPun
             target = -Mathf.Clamp(lateral / 3.2f, -1f, 1f) * strafeRoll + sway * Mathf.Clamp01(speed / 3.2f);
             target *= Mathf.Lerp(1f, .2f, aimController != null ? aimController.AimAmount : 0f);
             if (movement.IsCrouching) target *= .5f;
-            if (weaponAnimation != null && weaponAnimation.IsPlayingAction) target *= .2f;
         }
         movementRoll = Mathf.SmoothDamp(movementRoll, target, ref rollVelocity, rollSmoothTime, Mathf.Infinity, Time.deltaTime);
     }

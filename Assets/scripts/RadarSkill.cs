@@ -82,7 +82,7 @@ public sealed class RadarSkill : MonoBehaviourPunCallbacks
     private void Update()
     {
         var keyboard = Keyboard.current;
-        if (Application.isFocused && Cursor.lockState == CursorLockMode.Locked && keyboard != null)
+        if (!PlatformLifecycle.InputBlocked && Application.isFocused && Cursor.lockState == CursorLockMode.Locked && keyboard != null)
         {
             if (keyboard.digit3Key.wasPressedThisFrame) TryActivateSlot(0);
             if (keyboard.digit4Key.wasPressedThisFrame) TryActivateSlot(1);

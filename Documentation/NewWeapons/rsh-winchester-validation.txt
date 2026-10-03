@@ -1,0 +1,6 @@
+PASS Assets/Resources/Player.prefab rsh12: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
+PASS Assets/Resources/Player.prefab winchester1897: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
+PASS Assets/Resources/Bot.prefab rsh12: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
+PASS Assets/Resources/Bot.prefab winchester1897: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
+PASS deterministic pellet cone, vertical aiming, separate impacts against partial cover, close/distant per-pellet falloff.
+PASS isolated shop purchase/save; real wallet unchanged. No player build or two-client network test.

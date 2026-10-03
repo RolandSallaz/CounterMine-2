@@ -91,10 +91,10 @@ public class PlayerController : MonoBehaviourPun
     {
         if (PhotonNetwork.InRoom && !photonView.IsMine) return;
 
-        Keyboard keyboard = Keyboard.current;
+        Keyboard keyboard = PlatformLifecycle.InputBlocked ? null : Keyboard.current;
         Vector3 input = ReadMovement(keyboard);
-        bool crouchHeld = keyboard?.cKey.isPressed == true || keyboard?.leftCtrlKey.isPressed == true || keyboard?.rightCtrlKey.isPressed == true;
-        if (keyboard?.cKey.wasPressedThisFrame == true || keyboard?.leftCtrlKey.wasPressedThisFrame == true || keyboard?.rightCtrlKey.wasPressedThisFrame == true) TryStartSlide();
+        bool crouchHeld = keyboard?.cKey.isPressed == true;
+        if (keyboard?.cKey.wasPressedThisFrame == true) TryStartSlide();
         if (IsSliding)
         {
             slideRemaining -= Time.deltaTime;

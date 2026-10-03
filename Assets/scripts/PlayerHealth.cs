@@ -128,7 +128,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         if (PhotonNetwork.InRoom)
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { PropertyKey, new object[] { nextRevision, CurrentHealth, Vector3.zero, Vector3.zero, -1 } } });
     }
-    private static double NetworkTime => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private static double NetworkTime => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
 
     private Sample CurrentCapsule(double time)
     {
@@ -204,6 +204,7 @@ public sealed class PlayerHealth : MonoBehaviourPunCallbacks
         if (taken > 0 && fresh)
         {
             LastDamage = new DamageInfo(this, taken, force, point, killerActorNr, killerBotViewId);
+            CombatHitAudio.OnDamage(LastDamage);
             try { Damaged?.Invoke(LastDamage); } catch (Exception e) { Debug.LogException(e); }
         }
         if (CurrentHealth == 0 && wasAlive)

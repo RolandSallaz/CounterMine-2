@@ -146,6 +146,7 @@ public static class InstallMilkor
             entry.FindPropertyRelative("weaponEquip").objectReferenceValue = null;
             entry.FindPropertyRelative("actions").arraySize = 0;
             so.ApplyModifiedPropertiesWithoutUndo();
+            TuneWeaponRecoil.Apply(player.GetComponentInChildren<WeaponIdleSynchronizer>(true).FindPreviewWeapon("milkor"));
             weapon.SetActive(false);
             PrefabUtility.SaveAsPrefabAsset(player, path);
         }

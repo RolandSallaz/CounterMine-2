@@ -3,6 +3,7 @@
 Controls: **1** AK-74, **2** UCP, **R** reload. UCP fires one shot per click.
 Prototype balance: 20-round magazine, 400 RPM limit, 28 base damage. Each weapon
 keeps its magazine when switching. Switching cancels reload without refilling.
+Ballistics: 260 m/s muzzle velocity, full damage to 25 m, down to 8 at 100 m.
 
 Six animation clips are exported from `Assets/Anims/UCP_Actions.blend` at 60 FPS:
 Idle (static pose), Equip (frames 0–70), Reload (frames 0–136). Character and weapon

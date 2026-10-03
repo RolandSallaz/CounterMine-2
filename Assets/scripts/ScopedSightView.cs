@@ -9,7 +9,7 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(1000)]
 public sealed class ScopedSightView : MonoBehaviour
 {
-    public const int MinimumMagnification = 6, MaximumMagnification = 16;
+    public const int MinimumMagnification = 6, MaximumMagnification = 24;
     public Renderer lensRenderer;
     [Min(.001f)] public float lensRadius = .0161f;
     [SerializeField, Range(256, 1024)] private int textureSize = 768;

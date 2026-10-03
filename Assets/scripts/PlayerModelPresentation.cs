@@ -12,6 +12,9 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
 {
     [SerializeField, Min(0f)] private float bodyBackOffset = .15f;
     [SerializeField] private string armsMeshName = "arms";
+    [SerializeField] private Vector3 thirdPersonWeaponOffset = new Vector3(0f, -.25f, .10f);
+    public Vector3 ThirdPersonWeaponOffset => thirdPersonWeaponOffset;
+    private Transform weaponPresentationPivot;
     private Transform worldModel, fpsModel;
     private Camera viewCamera;
     private WeaponIdleSynchronizer animationSource;
@@ -34,6 +37,7 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
             if (worldAnimation == null) return;
             worldModel = worldAnimation.transform;
             worldIK = worldModel.GetComponent<WeaponHandIK>();
+            if (worldIK != null) worldIK.SetThirdPersonFrame(transform);
             viewCamera = GetComponentInChildren<Camera>(true);
             worldRenderers = worldModel.GetComponentsInChildren<SkinnedMeshRenderer>(true);
             worldModel.SetParent(transform, true);
@@ -41,6 +45,7 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
             configured = true;
         }
         localView = local;
+        ConfigureWeaponPosition();
         worldModel.gameObject.SetActive(true);
         worldAnimation.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         if (local && fpsModel == null) CreateFirstPersonArms();
@@ -57,6 +62,22 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
             renderer.receiveShadows = true;
         }
         UpdateWeaponShadows();
+    }
+
+    private void ConfigureWeaponPosition()
+    {
+        if (weaponPresentationPivot == null)
+        {
+            var aim = GetComponentInChildren<WeaponAimController>(true);
+            if (aim == null || aim.transform.parent == null) return;
+            // Keep the authored/networked ADS, sway and recoil local poses intact.
+            // The extra parent moves the weapon and both grip targets together,
+            // before WeaponHandIK solves the third-person arms.
+            weaponPresentationPivot = new GameObject("WeaponPresentationPivot").transform;
+            weaponPresentationPivot.SetParent(aim.transform.parent, false);
+            aim.transform.SetParent(weaponPresentationPivot, false);
+        }
+        weaponPresentationPivot.localPosition = localView ? Vector3.zero : thirdPersonWeaponOffset;
     }
 
     private bool IsArms(SkinnedMeshRenderer renderer) =>

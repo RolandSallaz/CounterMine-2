@@ -5,7 +5,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    private const string GameVersion = "CounterMine-0.2-conquest";
+    private const string GameVersion = "CounterMine-0.3-pellets";
     private const string TeamProperty = "team";
 
     [SerializeField] private string roomPrefix = "CounterMine";
@@ -26,7 +26,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private bool singlePlayer;
     private GameObject pendingCorpse;
     private float deployAvailableAt;
-    public bool CanDeploy => !playerSpawned && PhotonNetwork.InRoom && YandexPlayerData.IsLoaded && Time.unscaledTime >= deployAvailableAt;
+    public bool CanDeploy => !YandexAds.Busy && !playerSpawned && PhotonNetwork.InRoom && YandexPlayerData.IsLoaded && Time.unscaledTime >= deployAvailableAt;
     public string ConnectionStatus => status();
 
     private void Start()
@@ -55,6 +55,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void StartGame(bool offline)
     {
         if (modeSelected) return;
+        if (YandexAds.Busy) return;
+        YandexAds.FirstEntry();
         modeSelected = true;
         singlePlayer = offline;
         if (startMenu != null) { startMenu.gameObject.SetActive(false); Destroy(startMenu.gameObject); }
@@ -303,7 +305,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void OnGUI()
     {
         if (!modeSelected || playerSpawned || autoJoinOnStart) return;
-        GUI.Box(new Rect(16f, 16f, 430f, 128f), GameLocalization.T("CounterMine test lobby"));
+        GUI.Box(new Rect(16f, 16f, 430f, 128f), GameLocalization.T("BlockField test lobby"));
         GUI.Label(new Rect(30f, 45f, 400f, 24f), status());
         GUI.Label(new Rect(30f, 70f, 400f, 24f), GameLocalization.Format("Регион: {0}", PhotonNetwork.CloudRegion));
 

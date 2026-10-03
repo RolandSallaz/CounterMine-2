@@ -32,6 +32,13 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public float roundsPerMinute = 600;
         public bool automatic = true;
         public int damage = 34;
+        [Range(1, 16)] public int pelletCount = 1;
+        [Range(0f, 15f)] public float pelletSpreadDegrees;
+        [Min(1f), InspectorName("Muzzle Velocity (m/s)")] public float muzzleVelocity = 900f;
+        [Min(0f), InspectorName("Bullet Gravity (m/s^2)")] public float bulletGravity = 9.81f;
+        [Min(1f)] public float fullDamageRange = 60f;
+        [Min(1f)] public float maximumRange = 200f;
+        [Range(.05f, 1f)] public float minimumDamageFraction = .5f;
         [Min(.1f)] public float recoilKick = 1f;
         public WeaponRecoilController.Tuning recoil;
         [Min(0f)] public float boltTravel = .065f;
@@ -55,6 +62,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     public AnimancerComponent CharacterAnimator => armsAnimancer;
     public AnimationClip PreviewCharacterIdle => armsIdleClip;
     public AnimationClip PreviewWeaponIdle => weaponIdleClip;
+    public WeaponEntry FindPreviewWeapon(string id) => Array.Find(weapons, entry => entry != null && entry.id == id);
     public void SetCharacterAnimator(AnimancerComponent animator)
     {
         if (animator == null || animator == armsAnimancer) return;
@@ -67,7 +75,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         EvaluatePair(elapsedSeconds);
     }
     public Transform WeaponRoot => weaponAnimancer != null ? weaponAnimancer.transform : null;
-    private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private static double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
     [SerializeField] private Quaternion cameraRestRotation = Quaternion.Euler(-90f, 0f, 0f);
     private Transform cameraBone, cameraSkeleton;
     public Quaternion CameraRotationOffset
@@ -93,8 +101,11 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
     private double boltShotAt = double.NegativeInfinity;
     public void PlayShotBolt()
     {
-        if (CanFire && bolt != null) boltShotAt = Now;
+        if (!CanFire) return;
+        boltShotAt = Now;
+        WeaponRoot.GetComponent<WeaponManualAction>()?.Shot();
     }
+    public float ShotAge => (float)(Now - boltShotAt);
     public static float BoltCycle(float age, float duration)
     {
         float phase = age / Mathf.Max(.02f, duration);
@@ -143,6 +154,7 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (entry.aimRig != null) root.GetComponentInChildren<WeaponAimController>(true)?.Equip(entry.aimRig);
         if (entry.muzzle != null) root.GetComponent<NetworkWeapon>()?.SetMuzzle(entry.muzzle, entry.maximumMuzzleReach);
         root.GetComponent<NetworkWeapon>()?.SetDamage(entry.damage);
+        root.GetComponent<NetworkWeapon>()?.SetBallistics(entry.muzzleVelocity, entry.bulletGravity, entry.fullDamageRange, entry.maximumRange, entry.minimumDamageFraction);
         root.GetComponent<WeaponAmmo>()?.SelectWeapon(entry.id, entry.magazineSize, entry.finiteReserve);
         root.GetComponentInChildren<WeaponRecoilController>(true)?.ConfigureFire(entry.roundsPerMinute, entry.automatic, entry.recoilKick, entry.recoil, entry.rightGrip);
         if (entry.leftGrip != null && entry.rightGrip != null)

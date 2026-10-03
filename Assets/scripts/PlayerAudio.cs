@@ -37,7 +37,7 @@ public sealed class PlayerAudio : MonoBehaviour
                 StopAction(); action = animationSource.ActionId; started = animationSource.StartedAt;
                 var profile = animationSource.AudioProfile;
                 actionClip = profile == null ? null : action == "reload" ? profile.reload : action == "equip" ? profile.equip : null;
-                double now = PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+                double now = PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
                 float elapsed = Mathf.Max(0f, (float)(now - started) * animationSource.PlaybackSpeed);
                 actionVoice = GameAudio.Play(actionClip, transform.position + Vector3.up, .5f, 18f, Local,
                     animationSource.PlaybackSpeed, elapsed);

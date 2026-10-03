@@ -101,6 +101,7 @@ public static class InstallNewWeapons
                 var sightSO=new SerializedObject(sight);sightSO.FindProperty("eyeRelief").floatValue=sniper?.08f:.10f;sightSO.FindProperty("aimedFieldOfView").floatValue=sniper?20:60;sightSO.ApplyModifiedPropertiesWithoutUndo();
                 var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);
                 weapon.transform.position+=rightHand.position-right.position;
+                if(!sniper) weapon.transform.position += player.transform.forward * .04f;
                 var magazine=weapon.AddComponent<WeaponMagazineMotion>();magazine.source=sync;magazine.magazine=model.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mag");magazine.leftGrip=left;
                 if(sniper)
                 {
@@ -116,10 +117,12 @@ public static class InstallNewWeapons
                 var entry=new WeaponIdleSynchronizer.WeaponEntry {
                     id=id,animator=animancer,aimRig=rig,audioProfile=audio,muzzle=muzzle,leftGrip=left,rightGrip=right,maximumMuzzleReach=sniper?1.6f:1f,
                     characterIdle=ak.characterIdle,weaponIdle=idle,magazineSize=sniper?5:30,roundsPerMinute=sniper?45:800,automatic=!sniper,damage=sniper?100:30,
+                    muzzleVelocity=sniper?880:880,bulletGravity=9.81f,fullDamageRange=sniper?150:60,maximumRange=sniper?400:200,minimumDamageFraction=.6f,
                     proceduralEquipSeconds=sniper?.72f:.48f,proceduralReloadSeconds=sniper?3.2f:2.45f,recoilKick=sniper?2.3f:.8f,
                     boltTravel=sniper?.1f:.035f,boltCycleSeconds=sniper?1.2f:.075f,boltBoneName=sniper?"boltmove":"bolt",
                     recoil=new WeaponRecoilController.Tuning{animation=recoilAnimation,cameraPitch=sniper?new Vector2(1.3f,1.7f):new Vector2(.24f,.38f),cameraYaw=.16f,heatPerShot=.1f,heatRecovery=.9f,sustainedFireMultiplier=1.3f,hipSpread=sniper?3.5f:1.1f,heatSpread=2,moveSpread=sniper?5:3,airSpread=4,crouchSpreadMultiplier=.6f}
                 };
+                TuneWeaponRecoil.Apply(entry);
                 int index=entries.FindIndex(e=>e.id==id);if(index<0)entries.Add(entry);else entries[index]=entry;
                 foreach(var t in weapon.GetComponentsInChildren<Transform>(true))t.gameObject.layer=parent.gameObject.layer;
                 weapon.SetActive(false);

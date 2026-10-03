@@ -22,12 +22,25 @@ public sealed class StartMenuScreen : MonoBehaviour
     private AnimationClip characterIdle, weaponIdle;
     private float elapsed;
     private int renderWidth, renderHeight;
+    private DeathShopUI shop;
+    private RectTransform modePanel;
+    private WeaponIdleSynchronizer previewSource;
+    private WeaponHandIK previewIK;
+    private readonly Dictionary<Transform, Transform> displayCopies = new();
+    private readonly HashSet<Transform> renderedWeapons = new();
+    private string displayedWeapon, equippedPrimary;
+    private Text wallet, weaponCaption;
+    private GameObject walletPanel, menuFooter;
+    private CanvasGroup menuGroup;
+    private float reveal;
+    private Vector3 portraitFocus, portraitDirection;
 
     public static StartMenuScreen Create(LobbyManager lobby, GameObject playerPrefab, Vector3 position)
     {
         var root = new GameObject("Start Menu", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         var canvas = root.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.pixelPerfect = true;
         canvas.sortingOrder = 210;
         var scaler = root.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -66,7 +79,7 @@ public sealed class StartMenuScreen : MonoBehaviour
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) ? hit.distance : 4.5f;
             if (distance > bestDistance) { bestDistance = distance; direction = candidate; }
         }
-        actor.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, -15, 0);
+        actor.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, -5, 0);
         backgroundCamera = MakeCamera("Map Camera", ~(1 << PreviewLayer), CameraClearFlags.Skybox);
         characterCamera = MakeCamera("Character Camera", 1 << PreviewLayer, CameraClearFlags.SolidColor);
         backgroundCamera.gameObject.AddComponent<AudioListener>();
@@ -76,6 +89,10 @@ public sealed class StartMenuScreen : MonoBehaviour
         rotation = Quaternion.LookRotation(focus - cameraPosition);
         backgroundCamera.transform.SetPositionAndRotation(cameraPosition, rotation);
         characterCamera.transform.SetPositionAndRotation(cameraPosition, rotation);
+        // Frame the transparent portrait independently of the map and UI.
+        portraitFocus = position + Vector3.up * 1.23f;
+        portraitDirection = direction;
+        characterCamera.fieldOfView = 30f;
 
         backgroundImage = Rect("Blurred Map", transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
         backgroundImage.raycastTarget = false;
@@ -93,14 +110,34 @@ public sealed class StartMenuScreen : MonoBehaviour
         }
         shadeTexture.Apply(); shade.texture = shadeTexture; shade.raycastTarget = false;
 
-        var panel = Rect("Mode Selection", transform, new Vector2(.075f, .25f), new Vector2(.40f, .76f));
-        var title = Label(panel, "COUNTERMINE", 38, new Vector2(0, .75f), Vector2.one);
+        var panel = Rect("Mode Selection", transform, new Vector2(.065f, .19f), new Vector2(.40f, .79f));
+        modePanel = panel;
+        menuGroup = panel.gameObject.AddComponent<CanvasGroup>();
+        var eyebrow = Label(panel, "TACTICAL OPERATIONS", 16, new Vector2(0, .92f), Vector2.one);
+        eyebrow.color = GameUIStyle.Accent;
+        var title = Label(panel, "BLOCKFIELD", 42, new Vector2(0, .77f), new Vector2(1, .93f));
         title.fontStyle = FontStyle.Bold;
         var line = Rect("Gold Accent", panel, new Vector2(0, .70f), new Vector2(.15f, .70f));
         line.sizeDelta = new Vector2(0, 2);
-        line.gameObject.AddComponent<Image>().color = new Color(.88f, .76f, .49f);
-        ModeButton(panel, "Single player", .37f, .56f, true, () => lobby.StartGame(true));
-        ModeButton(panel, "Multiplayer", .12f, .31f, false, () => lobby.StartGame(false));
+        line.gameObject.AddComponent<Image>().color = GameUIStyle.Accent;
+        ModeButton(panel, "Single player", .43f, .63f, true, () => lobby.StartGame(true), "Тренировка с ботами");
+        ModeButton(panel, "Multiplayer", .20f, .40f, false, () => lobby.StartGame(false), "Сражения с другими игроками");
+        ModeButton(panel, "МАГАЗИН", -.03f, .17f, false, OpenShop, "Оружие и снаряжение");
+        var account = Rect("Wallet", transform, new Vector2(.76f,.88f), new Vector2(.95f,.95f));
+        walletPanel = account.gameObject;
+        GameUIStyle.Surface(account.gameObject.AddComponent<Image>(), GameUIStyle.Panel);
+        wallet = Label(account, "", 20, new Vector2(.10f,0), new Vector2(.90f,1));
+        wallet.alignment = TextAnchor.MiddleRight; wallet.color = GameUIStyle.Accent;
+        var caption = Rect("Weapon Caption", transform, new Vector2(.66f,.055f), new Vector2(.94f,.155f));
+        GameUIStyle.Surface(caption.gameObject.AddComponent<Image>(), GameUIStyle.Panel);
+        var captionTitle = Label(caption, "ТЕКУЩЕЕ ОРУЖИЕ", 14, new Vector2(.07f,.55f), new Vector2(.93f,.90f));
+        captionTitle.color = GameUIStyle.Muted;
+        weaponCaption = Label(caption, "", 23, new Vector2(.07f,.08f), new Vector2(.93f,.57f));
+        var footer = Label(transform, "Выберите режим и вступайте в бой", 16, new Vector2(.065f,.05f), new Vector2(.55f,.10f));
+        menuFooter = footer.gameObject;
+        footer.color = GameUIStyle.Muted;
+        shop = DeathShopUI.Create(transform, null, null, () => isActiveAndEnabled, mainMenu: true);
+        shop.ItemEquipped += ShowEquippedItem;
         ResizeTargets();
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
     }
@@ -129,19 +166,34 @@ public sealed class StartMenuScreen : MonoBehaviour
         }
         // Copy only transforms and renderers. Instantiating the Player prefab would run
         // Photon ownership, health, weapon, ragdoll and HUD initialization in the menu.
-        var copies = new Dictionary<Transform, Transform>();
+        previewSource = source;
+        var copies = displayCopies;
         CopyTransforms(prefab.transform, root, copies);
         character = copies[source.CharacterAnimator.transform];
         characterIdle = source.PreviewCharacterIdle;
         CopyRenderers(source.CharacterAnimator.transform, copies);
-        if (source.WeaponRoot != null)
+        var aim = prefab.GetComponentInChildren<WeaponAimController>(true);
+        if (aim != null)
         {
-            weapon = copies[source.WeaponRoot];
-            weaponIdle = source.PreviewWeaponIdle;
-            CopyRenderers(source.WeaponRoot, copies);
+            var pivot = new GameObject("Third Person Weapon Offset").transform;
+            pivot.SetParent(copies[aim.transform].parent, false);
+            copies[aim.transform].SetParent(pivot, false);
+            var presentation = prefab.GetComponent<PlayerModelPresentation>();
+            pivot.localPosition = presentation != null ? presentation.ThirdPersonWeaponOffset : new Vector3(0, -.25f, .1f);
         }
+        var sourceIK = source.CharacterAnimator.GetComponent<WeaponHandIK>();
+        if (sourceIK != null)
+        {
+            previewIK = character.gameObject.AddComponent<WeaponHandIK>();
+            previewIK.enabled = false;
+            sourceIK.CopyConfigurationTo(previewIK, copies);
+            previewIK.SetThirdPersonFrame(root);
+        }
+        equippedPrimary = YandexPlayerData.Current.equippedWeapon;
+        ShowEquippedItem(equippedPrimary);
         SamplePose(0);
-        var renderers = root.GetComponentsInChildren<Renderer>();
+        // Center the body, not the combined bounds of body and a long rifle.
+        var renderers = character.GetComponentsInChildren<Renderer>();
         if (renderers.Length > 0)
         {
             Bounds bounds = renderers[0].bounds;
@@ -149,6 +201,30 @@ public sealed class StartMenuScreen : MonoBehaviour
             copies[prefab.transform].position -= new Vector3(bounds.center.x, bounds.min.y, bounds.center.z);
         }
         return root;
+    }
+
+    private void OpenShop()
+    {
+        shop.Open();
+        modePanel.gameObject.SetActive(!shop.IsOpen);
+    }
+
+    private void ShowEquippedItem(string id)
+    {
+        var entry = previewSource != null ? previewSource.FindPreviewWeapon(id) : null;
+        if (entry == null || entry.animator == null || entry.characterIdle == null || entry.weaponIdle == null ||
+            entry.leftGrip == null || entry.rightGrip == null || displayedWeapon == id) return;
+        if (weapon != null) weapon.gameObject.SetActive(false);
+        weapon = displayCopies[entry.animator.transform];
+        if (renderedWeapons.Add(weapon)) CopyRenderers(entry.animator.transform, displayCopies);
+        weapon.gameObject.SetActive(true);
+        characterIdle = entry.characterIdle; weaponIdle = entry.weaponIdle;
+        previewIK?.SetGrips(displayCopies[entry.leftGrip], displayCopies[entry.rightGrip]);
+        displayedWeapon = id;
+        // Keep a selected pistol visible until a different primary is selected.
+        equippedPrimary = YandexPlayerData.Current.equippedWeapon;
+        elapsed = 0;
+        SamplePose(0);
     }
 
     private static void CopyTransforms(Transform source, Transform parent, Dictionary<Transform, Transform> copies)
@@ -191,14 +267,40 @@ public sealed class StartMenuScreen : MonoBehaviour
     {
         if (character != null && characterIdle != null) characterIdle.SampleAnimation(character.gameObject, Mathf.Repeat(time, Mathf.Max(.01f, characterIdle.length)));
         if (weapon != null && weaponIdle != null) weaponIdle.SampleAnimation(weapon.gameObject, Mathf.Repeat(time, Mathf.Max(.01f, weaponIdle.length)));
+        if (weapon != null && previewIK != null)
+        {
+            previewIK.ApplyBreathing(time, Time.unscaledDeltaTime, true);
+            previewIK.Solve();
+        }
     }
 
     private void Update()
     {
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+        if (shop != null) modePanel.gameObject.SetActive(!shop.IsOpen);
+        if (walletPanel != null) walletPanel.SetActive(shop == null || !shop.IsOpen);
+        if (menuFooter != null) menuFooter.SetActive(shop == null || !shop.IsOpen);
+        reveal = Mathf.Min(1, reveal + Time.unscaledDeltaTime / .3f);
+        if (menuGroup != null) menuGroup.alpha = Mathf.SmoothStep(0, 1, reveal);
+        if (wallet != null) wallet.text = YandexPlayerData.IsLoaded ? YandexPlayerData.Current.money.ToString("N0") + "  $" : GameLocalization.T("ЗАГРУЗКА…");
+        if (weaponCaption != null) weaponCaption.text = GameLocalization.T(ShopCatalog.Find(displayedWeapon)?.title ?? "AK-74");
+        if (YandexPlayerData.IsLoaded && equippedPrimary != YandexPlayerData.Current.equippedWeapon)
+            ShowEquippedItem(YandexPlayerData.Current.equippedWeapon);
         elapsed += Time.unscaledDeltaTime;
         SamplePose(elapsed);
         ResizeTargets();
+    }
+
+    private void FramePortrait(float aspect)
+    {
+        // Waist-up on desktop. Pull back on narrow screens to keep the shoulders
+        // and weapon inside the frame rather than clipping the portrait sideways.
+        float distance = 2.7f * Mathf.Max(1f, 1.35f / aspect);
+        Quaternion rotation = Quaternion.LookRotation(-portraitDirection, Vector3.up);
+        float halfWidth = distance * Mathf.Tan(characterCamera.fieldOfView * .5f * Mathf.Deg2Rad) * aspect;
+        float horizontalOffset = halfWidth * .52f; // Center at 76% of the viewport.
+        characterCamera.transform.SetPositionAndRotation(
+            portraitFocus + portraitDirection * distance - rotation * Vector3.right * horizontalOffset, rotation);
     }
 
     private void ResizeTargets()
@@ -206,6 +308,7 @@ public sealed class StartMenuScreen : MonoBehaviour
         int width = Mathf.Max(1, Screen.width), height = Mathf.Max(1, Screen.height);
         if (width == renderWidth && height == renderHeight) return;
         renderWidth = width; renderHeight = height;
+        FramePortrait((float)width / height);
         ReleaseTargets();
         float scale = Mathf.Min(1, 1600f / width);
         characterTexture = new RenderTexture(Mathf.Max(1, Mathf.RoundToInt(width * scale)), Mathf.Max(1, Mathf.RoundToInt(height * scale)), 24, RenderTextureFormat.ARGB32);
@@ -251,24 +354,25 @@ public sealed class StartMenuScreen : MonoBehaviour
         var label = Rect(text, parent, min, max).gameObject.AddComponent<Text>();
         label.font = GameUIStyle.Font; label.fontSize = size; label.color = new Color(.94f, .95f, .91f);
         label.alignment = TextAnchor.MiddleLeft; label.raycastTarget = false;
-        label.resizeTextForBestFit = true; label.resizeTextMinSize = 12; label.resizeTextMaxSize = size;
+        label.resizeTextForBestFit = true; label.resizeTextMinSize = Mathf.Min(16, size); label.resizeTextMaxSize = size;
         GameLocalization.Bind(label, text); return label;
     }
 
-    private static void ModeButton(Transform parent, string title, float bottom, float top, bool primary, UnityEngine.Events.UnityAction action)
+    private static void ModeButton(Transform parent, string title, float bottom, float top, bool primary, UnityEngine.Events.UnityAction action, string description)
     {
         var rect = Rect(title, parent, new Vector2(0, bottom), new Vector2(1, top));
         var image = rect.gameObject.AddComponent<Image>(); image.color = Color.white;
         var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image;
         button.navigation = new Navigation { mode = Navigation.Mode.None };
-        var colors = button.colors;
-        colors.normalColor = primary ? new Color(.88f, .79f, .59f) : new Color(.09f, .12f, .14f, .92f);
-        colors.highlightedColor = primary ? new Color(1, .91f, .72f) : new Color(.18f, .23f, .26f);
-        colors.pressedColor = primary ? new Color(.70f, .60f, .41f) : new Color(.06f, .08f, .10f);
-        colors.selectedColor = colors.highlightedColor; colors.fadeDuration = .12f; button.colors = colors;
+        GameUIStyle.StyleButton(button, primary);
+        button.onClick.AddListener(() => GameAudio.Effect("UI/click", Vector3.zero, .5f, 1, true));
         button.onClick.AddListener(action);
-        var label = Label(rect, title, 23, new Vector2(.07f, 0), new Vector2(.93f, 1));
+        var label = Label(rect, title, 23, new Vector2(.07f, .40f), new Vector2(.88f, .89f));
         label.fontStyle = FontStyle.Bold;
         label.color = primary ? new Color(.04f, .055f, .065f) : new Color(.90f, .93f, .94f);
+        var hint = Label(rect, description, 16, new Vector2(.07f,.12f), new Vector2(.88f,.43f));
+        hint.color = primary ? new Color(.22f,.23f,.20f) : GameUIStyle.Muted;
+        var arrow = Label(rect, "›", 28, new Vector2(.89f,.1f), new Vector2(.97f,.9f));
+        arrow.color = label.color;
     }
 }

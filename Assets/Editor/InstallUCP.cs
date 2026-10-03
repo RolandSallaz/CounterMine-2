@@ -85,6 +85,11 @@ public static class InstallUCP
             ak.FindPropertyRelative("roundsPerMinute").floatValue=600;
             ak.FindPropertyRelative("automatic").boolValue=true;
             ak.FindPropertyRelative("damage").intValue=34;
+            ak.FindPropertyRelative("muzzleVelocity").floatValue=900;
+            ak.FindPropertyRelative("bulletGravity").floatValue=9.81f;
+            ak.FindPropertyRelative("fullDamageRange").floatValue=60;
+            ak.FindPropertyRelative("maximumRange").floatValue=200;
+            ak.FindPropertyRelative("minimumDamageFraction").floatValue=.6f;
             var akKick=ak.FindPropertyRelative("recoilKick"); if(akKick!=null) akKick.floatValue=1f;
             var parent=((AnimancerComponent)ak.FindPropertyRelative("animator").objectReferenceValue).transform.parent;
             var previous=parent.Find("UCP_Weapon");if(previous!=null)UnityEngine.Object.DestroyImmediate(previous.gameObject);
@@ -131,6 +136,11 @@ public static class InstallUCP
             entry.FindPropertyRelative("roundsPerMinute").floatValue=400;
             entry.FindPropertyRelative("automatic").boolValue=false;
             entry.FindPropertyRelative("damage").intValue=20;
+            entry.FindPropertyRelative("muzzleVelocity").floatValue=260;
+            entry.FindPropertyRelative("bulletGravity").floatValue=9.81f;
+            entry.FindPropertyRelative("fullDamageRange").floatValue=25;
+            entry.FindPropertyRelative("maximumRange").floatValue=100;
+            entry.FindPropertyRelative("minimumDamageFraction").floatValue=.4f;
             entry.FindPropertyRelative("boltTravel").floatValue=.035f;
             entry.FindPropertyRelative("boltCycleSeconds").floatValue=.105f;
             var recoil = entry.FindPropertyRelative("recoil");

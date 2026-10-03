@@ -45,6 +45,12 @@ public static class ValidateUCP
                     Check(!ucp.FindPropertyRelative("automatic").boolValue,"UCP must be semi-auto");
                     Check(ucp.FindPropertyRelative("damage").intValue==20,"UCP base damage must be 20");
                     Check(new SerializedObject(root.GetComponent<NetworkWeapon>()).FindProperty("damage").intValue==20,"UCP damage not applied");
+                    var ucpBallistics=new SerializedObject(root.GetComponent<NetworkWeapon>());
+                    Check(Mathf.Approximately(ucp.FindPropertyRelative("muzzleVelocity").floatValue,260),"UCP catalog velocity");
+                    Check(Mathf.Approximately(ucpBallistics.FindProperty("tracerSpeed").floatValue,260),"UCP muzzle velocity not applied");
+                    Check(Mathf.Approximately(ucpBallistics.FindProperty("fullDamageRange").floatValue,25),"UCP full-damage range not applied");
+                    Check(Mathf.Approximately(ucpBallistics.FindProperty("range").floatValue,100),"UCP maximum range not applied");
+                    Check(NetworkWeapon.DamageAtDistance(20,.4f,25,100,25)==20&&NetworkWeapon.DamageAtDistance(20,.4f,25,100,100)==8&&NetworkWeapon.DamageAtDistance(20,.4f,25,100,62.5f)==14,"UCP falloff curve");
                     var ucpProfile=AssetDatabase.LoadAssetAtPath<Kinemation.Recoilly.RecoilAnimData>("Assets/Anims/UCP/UCP_Recoil.asset");
                     var currentRecoil=new SerializedObject(recoilController);
                     Check(ucpProfile!=null&&ucpProfile!=akProfile&&currentRecoil.FindProperty("recoilProfile").objectReferenceValue==ucpProfile,"Independent UCP recoil not applied");
@@ -72,6 +78,10 @@ public static class ValidateUCP
                     var restored=new SerializedObject(recoilController);
                     Check(restored.FindProperty("recoilProfile").objectReferenceValue==akProfile&&restored.FindProperty("cameraPitch").vector2Value==akCamera&&Mathf.Approximately(restored.FindProperty("hipSpread").floatValue,akSpread),"AK recoil settings were not restored");
                     Check(new SerializedObject(root.GetComponent<NetworkWeapon>()).FindProperty("damage").intValue==34,"AK damage was not restored");
+                    var akBallistics=new SerializedObject(root.GetComponent<NetworkWeapon>());
+                    Check(Mathf.Approximately(akBallistics.FindProperty("tracerSpeed").floatValue,900),"AK muzzle velocity was not restored");
+                    Check(Mathf.Approximately(akBallistics.FindProperty("fullDamageRange").floatValue,60),"AK full-damage range was not restored");
+                    Check(Mathf.Approximately(akBallistics.FindProperty("range").floatValue,200),"AK maximum range was not restored");
                     Check(ammo.MagAmmo==28&&!ammo.IsReloading,"Switch incorrectly refills magazine");
                     Check(sync.EquipWeapon("ucp"),"Return to UCP failed");
                     Check(ammo.MagAmmo==19,"Interrupted reload incorrectly refills UCP");sync.RestartIdle();

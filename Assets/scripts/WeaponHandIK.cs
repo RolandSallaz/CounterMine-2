@@ -13,10 +13,45 @@ public sealed class WeaponHandIK : MonoBehaviour
     [SerializeField] private Transform rightGrip;
     [SerializeField, Range(0f, 1f)] private float leftHandWeight = 1f;
     [SerializeField, Range(0f, 1f)] private float rightHandWeight = 1f;
+    [SerializeField, Range(0f, 1f)] private float thirdPersonElbowWeight = .9f;
+    private Transform thirdPersonFrame;
+    [SerializeField, Range(0f, 2f)] private float breathingAmount = 1f;
+    private Transform breathingChest;
+    private bool searchedChest, hasBreathingPose, hasPreviousPosition;
+    private Vector3 chestPosition, posedChestPosition, previousPosition;
+    private Quaternion chestRotation, posedChestRotation;
+    private float breathingWeight;
     private IKSolverLimb leftSolver;
     private IKSolverLimb rightSolver;
     private GrenadeThrowIK grenadeThrow;
+    private Transform adjustedShoulder;
+    private Vector3 shoulderRestPosition, shoulderPosedPosition;
+    private void RestoreShoulder()
+    {
+        if (adjustedShoulder != null && adjustedShoulder.localPosition.Equals(shoulderPosedPosition))
+            adjustedShoulder.localPosition = shoulderRestPosition;
+        adjustedShoulder = null;
+    }
+
+    private void FitHK416LeftArm()
+    {
+        if (thirdPersonFrame == null || leftGrip.parent == null || leftGrip.parent.name != "HK416_Weapon") return;
+        var upperArm = leftHand.parent.parent;
+        float reach = (Vector3.Distance(upperArm.position, leftHand.parent.position) +
+            Vector3.Distance(leftHand.parent.position, leftHand.position)) * .99f;
+        Vector3 delta = leftGrip.position - upperArm.position;
+        Vector3 forward = thirdPersonFrame.forward;
+        float along = Vector3.Dot(delta, forward);
+        float lateralSquared = delta.sqrMagnitude - along * along;
+        if (delta.sqrMagnitude <= reach * reach || along <= 0f) return;
+        float shift = Mathf.Clamp(along - Mathf.Sqrt(Mathf.Max(0f, reach * reach - lateralSquared)), 0f, .25f);
+        adjustedShoulder = upperArm;
+        shoulderRestPosition = upperArm.localPosition;
+        upperArm.position += forward * shift;
+        shoulderPosedPosition = upperArm.localPosition;
+    }
     public Transform LeftHand => leftHand;
+    public void SetThirdPersonFrame(Transform frame) => thirdPersonFrame = frame;
 
     public void CopyConfigurationTo(WeaponHandIK target, System.Collections.Generic.Dictionary<Transform, Transform> bones)
     {
@@ -28,6 +63,7 @@ public sealed class WeaponHandIK : MonoBehaviour
 
     public void SetGrips(Transform left, Transform right)
     {
+        RestoreShoulder();
         leftGrip = left; rightGrip = right; leftSolver = rightSolver = null;
     }
 
@@ -35,11 +71,60 @@ public sealed class WeaponHandIK : MonoBehaviour
     {
         if (animationSource == null || !animationSource.isActiveAndEnabled ||
             animationSource.LastEvaluatedFrame != Time.frameCount || !animationSource.CanPoseHands) return;
+        ApplyBreathing(Time.time, Time.deltaTime, animationSource.IsIdlePlaying);
         Solve();
     }
 
-    private void Solve()
+    /// <summary>Small additive chest motion, after sampling and before hand IK. Never runs on FPS arms.</summary>
+    public void ApplyBreathing(float time, float deltaTime, bool idle)
     {
+        if (thirdPersonFrame == null) return;
+        RestoreBreathing();
+        if (!searchedChest)
+        {
+            searchedChest = true;
+            breathingChest = transform.Find("Root/root/Hips/Spine/Chest");
+            // Current exported character uses Chest; older rigs used Spine.002.
+            foreach (var bone in GetComponentsInChildren<Transform>(true))
+            {
+                if (breathingChest != null) break;
+                if (bone.name == "Chest") breathingChest = bone;
+            }
+            if (breathingChest == null)
+                foreach (var bone in GetComponentsInChildren<Transform>(true))
+                    if (bone.name == "Spine.002") { breathingChest = bone; break; }
+        }
+        if (breathingChest == null) return;
+        float speed = hasPreviousPosition && deltaTime > 0f
+            ? Vector3.Distance(thirdPersonFrame.position, previousPosition) / deltaTime : 0f;
+        previousPosition = thirdPersonFrame.position; hasPreviousPosition = true;
+        float target = idle ? 1f - Mathf.InverseLerp(.1f, 1.2f, speed) : 0f;
+        breathingWeight = Mathf.Lerp(breathingWeight, target, 1f - Mathf.Exp(-5f * deltaTime));
+        float phase = time * (2f * Mathf.PI / 4.2f) + (thirdPersonFrame.GetInstanceID() & 255) * .024f;
+        float breath = Mathf.Sin(phase) * breathingWeight * breathingAmount;
+        chestPosition = breathingChest.localPosition;
+        chestRotation = breathingChest.localRotation;
+        breathingChest.position += thirdPersonFrame.up * (.006f * breath) + thirdPersonFrame.forward * (.003f * breath);
+        breathingChest.rotation = Quaternion.AngleAxis(.65f * breath, thirdPersonFrame.right) * breathingChest.rotation;
+        posedChestPosition = breathingChest.localPosition;
+        posedChestRotation = breathingChest.localRotation;
+        hasBreathingPose = true;
+    }
+
+    private void RestoreBreathing()
+    {
+        if (!hasBreathingPose || breathingChest == null) return;
+        // Sparse clips may not rewrite the chest. Remove our previous addition
+        // only if animation hasn't already replaced that transform this frame.
+        if (breathingChest.localPosition.Equals(posedChestPosition)) breathingChest.localPosition = chestPosition;
+        if (breathingChest.localRotation.Equals(posedChestRotation)) breathingChest.localRotation = chestRotation;
+        hasBreathingPose = false;
+    }
+
+    // Menu display rigs sample clips manually and solve only their copied bones.
+    public void Solve()
+    {
+        RestoreShoulder();
         if (leftHand == null || rightHand == null || leftGrip == null || rightGrip == null) return;
         leftSolver ??= CreateSolver(leftHand, leftGrip, AvatarIKGoal.LeftHand);
         rightSolver ??= CreateSolver(rightHand, rightGrip, AvatarIKGoal.RightHand);
@@ -55,8 +140,12 @@ public sealed class WeaponHandIK : MonoBehaviour
             leftSolver.IKRotationWeight = leftHandWeight;
             leftSolver.Update();
         }
-        else UpdateSolver(leftSolver, leftGrip, leftHandWeight);
-        UpdateSolver(rightSolver, rightGrip, rightHandWeight);
+        else
+        {
+            FitHK416LeftArm();
+            UpdateSolver(leftSolver, leftGrip, leftHandWeight, -1f);
+        }
+        UpdateSolver(rightSolver, rightGrip, rightHandWeight, 1f);
     }
 
     private IKSolverLimb CreateSolver(Transform hand, Transform target, AvatarIKGoal goal)
@@ -68,17 +157,34 @@ public sealed class WeaponHandIK : MonoBehaviour
         return solver.SetChain(hand.parent.parent, hand.parent, hand, transform) ? solver : null;
     }
 
-    private static void UpdateSolver(IKSolverLimb solver, Transform grip, float weight)
+    private void UpdateSolver(IKSolverLimb solver, Transform grip, float weight, float side)
     {
         if (solver == null) return;
         solver.target = grip;
         solver.IKPosition = grip.position;
-        // This is still the animated elbow, before IK modifies the chain.
-        solver.SetBendGoalPosition(solver.bone2.transform.position, 1f);
+        Vector3 elbow = solver.bone2.transform.position;
+        if (thirdPersonFrame != null)
+        {
+            // FPS clips spread the elbows for the camera. A body-relative pole
+            // brings them down without moving the hands off the weapon grips.
+            // Scale by the actual arm length instead of assuming model units.
+            Vector3 shoulder = solver.bone1.transform.position;
+            float length = Vector3.Distance(shoulder, elbow) +
+                Vector3.Distance(elbow, solver.bone3.transform.position);
+            Vector3 relaxed = shoulder + thirdPersonFrame.TransformDirection(new Vector3(side * .35f, -1f, -.1f)) * length;
+            elbow = Vector3.Lerp(elbow, relaxed, thirdPersonElbowWeight);
+        }
+        solver.SetBendGoalPosition(elbow, 1f);
         solver.IKPositionWeight = weight;
         solver.IKRotationWeight = weight;
         solver.Update();
     }
 
-    private void OnDisable() { leftSolver = rightSolver = null; }
+    private void OnDisable()
+    {
+        RestoreBreathing();
+        RestoreShoulder();
+        breathingWeight = 0f; hasPreviousPosition = false;
+        leftSolver = rightSolver = null;
+    }
 }

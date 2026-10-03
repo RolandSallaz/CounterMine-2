@@ -21,7 +21,7 @@ public sealed class GrenadeThrower : MonoBehaviourPun
     private int grenades;
     private double nextRegenAt = double.PositiveInfinity;
     private static GameObject grenadeModel;
-    private static double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private static double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
     public int Grenades => grenades;
     public int MaxGrenades => maxGrenades;
     public bool HasGrenades => grenades > 0;
@@ -112,7 +112,7 @@ public sealed class GrenadeThrower : MonoBehaviourPun
         if (!ConquestMatch.CombatAllowed || !PhotonNetwork.IsMasterClient || info.Sender == null ||
             info.Sender.ActorNumber != photonView.OwnerActorNr) return;
         if (health == null || health.IsDead || TeamSafeZone.BlocksWeapons(health) || TeamSafeZone.ContainsAny(start)) return;
-        double now = PhotonNetwork.Time;
+        double now = Now;
         if (!BulletHitUtility.IsFinite(start) || !BulletHitUtility.IsFinite(velocity)) return;
         if (velocity.sqrMagnitude > 25f * 25f) return;
         if (Vector3.Distance(start, transform.position) > 4f) return;

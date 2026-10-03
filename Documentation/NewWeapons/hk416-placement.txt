@@ -1,0 +1,4 @@
+FpsChar arm length=0,6046113 target distance=0,7922301
+Left grip error=1,286709E-07
+ADS front post original=(0.500000, 0.487704, 0.501850) shifted=(0.500000, 0.487704, 0.501850)
+PASS: third-person hand reach and unchanged ADS alignment. No player build.

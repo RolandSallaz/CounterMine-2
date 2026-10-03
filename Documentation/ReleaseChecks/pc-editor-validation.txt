@@ -1,0 +1,1 @@
+PASS: menu starts offline; help opens/closes; text fits; help and blur pause local input/audio/simulation; music attribution present; editor profile loads; solo Photon room clock stays frozen while paused. Focus restoration checked when editor is focused. No player build or external network connection.

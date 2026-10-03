@@ -52,7 +52,7 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
     private void Update()
     {
         BindLoadout();
-        if (IsBot ||
+        if (IsBot || PlatformLifecycle.InputBlocked ||
             (PhotonNetwork.InRoom && !photonView.IsMine) || !Application.isFocused ||
             Cursor.lockState != CursorLockMode.Locked || animationSource == null ||
             (ragdoll != null && ragdoll.IsRagdoll)) return;

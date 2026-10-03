@@ -28,6 +28,13 @@ public static class ValidateNewWeapons
                 var entry=InstallNewWeapons.Entries(sync).Single(e=>e.id==id);
                 Check(sync.EquipWeapon(id),id+" equip");Check(sync.ProceduralEquip&&!sync.CanFire,id+" draw gate");sync.RestartIdle();
                 Check(ammo.MagAmmo==entry.magazineSize&&!ammo.FiniteReserve,id+" magazine");
+                bool sniper=id=="l115a3";
+                Check(Mathf.Approximately(entry.muzzleVelocity,880)&&Mathf.Approximately(entry.bulletGravity,9.81f),id+" muzzle velocity");
+                Check(Mathf.Approximately(entry.fullDamageRange,sniper?150:60)&&Mathf.Approximately(entry.maximumRange,sniper?400:200),id+" damage ranges");
+                var ballistics=new SerializedObject(player.GetComponent<NetworkWeapon>());
+                Check(Mathf.Approximately(ballistics.FindProperty("tracerSpeed").floatValue,880),id+" velocity not applied");
+                Check(Mathf.Approximately(ballistics.FindProperty("range").floatValue,sniper?400:200),id+" range not applied");
+                Check(NetworkWeapon.DamageAtDistance(100,.6f,150,400,100)==100&&NetworkWeapon.DamageAtDistance(100,.6f,150,400,400)==60&&NetworkWeapon.DamageAtDistance(100,.6f,150,400,275)==80,"damage falloff curve");
                 Check(sync.WeaponRoot.GetComponentsInChildren<Renderer>(true).All(r=>r.sharedMaterials.All(m=>m!=null&&m.shader.isSupported)),id+" materials");
                 var motion=sync.WeaponRoot.GetComponent<WeaponMagazineMotion>();Call(motion,"OnEnable");
                 foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");

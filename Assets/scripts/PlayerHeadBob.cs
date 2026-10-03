@@ -15,7 +15,6 @@ public class PlayerHeadBob : MonoBehaviourPun
     private float bobTime;
     private float currentAmplitude;
     private WeaponAimController aim;
-    private WeaponIdleSynchronizer weaponAnimation;
 
     private void Awake()
     {
@@ -23,7 +22,6 @@ public class PlayerHeadBob : MonoBehaviourPun
         characterController = GetComponent<CharacterController>();
         playerCamera ??= GetComponentInChildren<Camera>(true);
         aim = GetComponentInChildren<WeaponAimController>(true);
-        weaponAnimation = GetComponentInChildren<WeaponIdleSynchronizer>(true);
     }
 
     private void LateUpdate()
@@ -44,7 +42,8 @@ public class PlayerHeadBob : MonoBehaviourPun
         // shared, subtle bob without pulling the hands away from their grips.
         float amplitude = (playerController.IsSprinting ? sprintAmplitude : walkAmplitude) * .28f;
         amplitude *= Mathf.InverseLerp(.05f, 1f, horizontalVelocity.magnitude);
-        if (!playerController.IsGrounded || playerController.IsSliding || (weaponAnimation != null && weaponAnimation.IsPlayingAction)) amplitude = 0;
+        // Movement bob stays additive during reload, equip and other weapon actions.
+        if (!playerController.IsGrounded || playerController.IsSliding) amplitude = 0;
         amplitude *= Mathf.Lerp(1f, .15f, aimAmount);
         if (playerController.IsCrouching)
         {

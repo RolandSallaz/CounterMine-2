@@ -16,7 +16,7 @@ public sealed class GrenadeThrowIK : MonoBehaviourPun
     private double lastStart = double.NegativeInfinity;
     private bool playing, released;
     public event Action Released;
-    private double Now => PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
+    private double Now => PhotonNetwork.InRoom && !PhotonNetwork.OfflineMode ? PhotonNetwork.Time : Time.timeAsDouble;
     public bool IsPlaying => playing;
 
     private void Awake()
@@ -43,7 +43,7 @@ public sealed class GrenadeThrowIK : MonoBehaviourPun
             if (phase >= 1f) playing = false;
         }
         if (!BotController.IsBot(this) && (!PhotonNetwork.InRoom || photonView.IsMine) &&
-            Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&
+            !PlatformLifecycle.InputBlocked && Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&
             Keyboard.current?.gKey.wasPressedThisFrame == true) TryThrow();
     }
 

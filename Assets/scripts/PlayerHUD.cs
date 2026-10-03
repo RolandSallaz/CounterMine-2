@@ -488,6 +488,7 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private bool IsRespawnHoldHeld()
     {
+        if (PlatformLifecycle.InputBlocked) return false;
         // New Input System path (project uses activeInputHandler = Input System).
         try
         {
@@ -510,6 +511,7 @@ public sealed class PlayerHUD : MonoBehaviour
 
     private bool WasRespawnQuickPressed()
     {
+        if (PlatformLifecycle.InputBlocked) return false;
         try
         {
             if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) return true;
