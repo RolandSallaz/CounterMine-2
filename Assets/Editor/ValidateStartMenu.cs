@@ -72,6 +72,25 @@ public static class ValidateStartMenu
                 }
                 Check(maxChest - minChest > .005f && maxChest - minChest < .025f,
                     "Menu breathing missing or excessive: chest travel " + (maxChest - minChest));
+                menu.ShowRoomBrowser(true);
+                var browser = menu.GetComponentInChildren<RoomBrowserScreen>();
+                Check(browser != null && browser.gameObject.activeSelf, "Room browser did not open");
+                Check(browser.GetComponentsInChildren<InputField>().Length == 2, "Room search or name field missing");
+                Check(browser.GetComponentsInChildren<Button>().Any(b => b.name == "БЫСТРЫЙ ВХОД"), "Quick play button missing");
+                Check(browser.GetComponentsInChildren<Button>().Any(b => b.name == "ОБНОВИТЬ"), "Refresh button missing");
+                Check(browser.GetComponentsInChildren<Button>().Any(b => b.name == "СОЗДАТЬ"), "Create room button missing");
+                step = 10; return;
+            }
+            if (step == 10)
+            {
+                ScreenCapture.CaptureScreenshot(Folder + "/room-browser.png");
+                step = 11; return;
+            }
+            if (step == 11)
+            {
+                Check(File.Exists(Folder + "/room-browser.png"), "Room browser screenshot missing");
+                var menu = UnityEngine.Object.FindFirstObjectByType<StartMenuScreen>();
+                menu.ShowRoomBrowser(false);
                 menu.GetComponentsInChildren<Button>().Single(b => b.name == "МАГАЗИН").onClick.Invoke();
                 var shop = menu.GetComponentInChildren<DeathShopUI>();
                 Check(shop != null && shop.IsOpen, "Main-menu shop did not open");
@@ -176,7 +195,7 @@ public static class ValidateStartMenu
                 lobby.Deploy(); step = 6; return;
             }
             Check(PlayerHealth.ActivePlayers.Count(p => p != null && !BotController.IsBot(p) && !p.IsDead) == 1, "Solo respawn failed");
-            File.WriteAllText(Folder + "/validation.txt", "PASS: disconnected startup, mode/shop buttons, main-menu shop open/close, display-only rig with manual hand IK, blur shader, screenshot, offline room, bot spawning, duplicate-deploy guard, death screen and respawn.\nOnline matchmaking and WebGL need separate live checks.\n");
+            File.WriteAllText(Folder + "/validation.txt", "PASS: disconnected startup, localized room browser with search, refresh, create and quick play controls, room-browser screenshot, mode/shop buttons, main-menu shop open/close, display-only rig with manual hand IK, blur shader, screenshot, offline room, bot spawning, duplicate-deploy guard, death screen and respawn.\nOnline matchmaking and WebGL need separate live checks.\n");
             Finish();
         }
         catch (Exception e)

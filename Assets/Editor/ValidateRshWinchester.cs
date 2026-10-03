@@ -53,6 +53,7 @@ using UnityEngine;
                 {
                     var sync=player.GetComponentInChildren<WeaponIdleSynchronizer>(true);var ammo=player.GetComponent<WeaponAmmo>();var aim=player.GetComponentInChildren<WeaponAimController>(true);
                     Call(player.GetComponent<PlayerHealth>(),"Awake");Call(ammo,"Awake");Call(aim,"Awake");
+                    var cameraLook=player.GetComponent<PlayerCameraLook>();if(cameraLook!=null)Call(cameraLook,"Awake");
                     var camera=player.GetComponentInChildren<Camera>(true);if(camera!=null)camera.scene=player.scene;
                     var presentation=player.GetComponent<PlayerModelPresentation>();presentation?.ConfigureView(true);
                     var light=new GameObject("Validation light");UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(light,player.scene);light.AddComponent<Light>().type=LightType.Directional;light.GetComponent<Light>().intensity=3;light.transform.eulerAngles=new Vector3(35,-30,0);
@@ -60,9 +61,23 @@ using UnityEngine;
                     foreach(string id in new[]{"rsh12","winchester1897"})
                     {
                         bool revolver=id=="rsh12";var e=sync.FindPreviewWeapon(id);Check(e!=null,id+" catalog");
-                        Check(sync.EquipWeapon(id)&&!sync.CanFire,id+" equip gate");e.characterIdle.SampleAnimation(sync.CharacterAnimator.gameObject,0);sync.RestartIdle();
+                        Check(sync.EquipWeapon(id)&&!sync.CanFire,id+" equip gate");
+                        if(camera!=null&&path.Contains("Player"))
+                        {
+                            double equipTime=e.proceduralEquipSeconds*.2f;
+                            Field(sync,"elapsedSeconds",equipTime);Call(sync,"EvaluatePair",equipTime);
+                            if(cameraLook!=null)Call(cameraLook,"ApplyRotation");
+                            var equipSight=camera.WorldToViewportPoint(e.aimRig.ActiveSight.AimPoint.position);
+                            var equipMuzzle=camera.WorldToViewportPoint(e.muzzle.position);
+                            bool InFrame(Vector3 point)=>point.z>camera.nearClipPlane&&point.x>.05f&&point.x<.95f&&point.y>.05f&&point.y<.95f;
+                            Check(InFrame(equipSight)||InFrame(equipMuzzle),id+" disappears under the camera while drawing");
+                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-equip.png");
+                        }
+                        e.characterIdle.SampleAnimation(sync.CharacterAnimator.gameObject,0);sync.RestartIdle();
+                        if(cameraLook!=null)Call(cameraLook,"ApplyRotation");
                         Check(ammo.MagAmmo==5&&!e.automatic&&e.pelletCount==(revolver?1:8),id+" ammo/fire mode");
                         var mechanism=e.animator.GetComponent<WeaponManualAction>();Call(mechanism,"OnEnable");
+                        if(presentation!=null)Call(presentation,"LateUpdate");
                         foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
                         if(camera!=null&&path.Contains("Player"))
                         {
@@ -77,14 +92,25 @@ using UnityEngine;
                         }
                         var pumpRest=mechanism.pump!=null?mechanism.pump.localPosition:Vector3.zero;
                         var cylinderRest=mechanism.cylinder!=null?mechanism.cylinder.localRotation:Quaternion.identity;
+                        var armRest=mechanism.cylinderArm!=null?mechanism.cylinderArm.localRotation:Quaternion.identity;
                         sync.PlayShotBolt();Field(sync,"boltShotAt",Time.timeAsDouble-.2);Call(mechanism,"LateUpdate");
                         Check(revolver?Quaternion.Angle(cylinderRest,mechanism.cylinder.localRotation)>60:Vector3.Distance(pumpRest,mechanism.pump.localPosition)>.0001f,id+" mechanical shot motion");
                         var grip=e.leftGrip.localPosition;
                         ammo.Consume();Check(ammo.MagAmmo==4,id+" one round per shot");Check(ammo.TryStartReload()&&!sync.CanFire,id+" reload gate");
                         Field(sync,"elapsedSeconds",(double)(e.proceduralReloadSeconds*.45f));Call(sync,"EvaluatePair",(double)(e.proceduralReloadSeconds*.45f));Call(mechanism,"LateUpdate");
+                        if(cameraLook!=null)Call(cameraLook,"ApplyRotation");
                         Check(Vector3.Distance(grip,e.leftGrip.localPosition)>.005f,id+" reload hand motion");
+                        if(revolver)Check(Quaternion.Angle(mechanism.cylinderArm.localRotation,armRest)>30f,id+" cylinder does not open during reload");
+                        if(presentation!=null)Call(presentation,"LateUpdate");
                         foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
-                        if(camera!=null&&path.Contains("Player"))InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-reload.png");
+                        if(camera!=null&&path.Contains("Player"))
+                        {
+                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-reload.png");
+                            var reloadSight=camera.WorldToViewportPoint(e.aimRig.ActiveSight.AimPoint.position);
+                            var reloadMuzzle=camera.WorldToViewportPoint(e.muzzle.position);
+                            bool InFrame(Vector3 point)=>point.z>camera.nearClipPlane&&point.x>.05f&&point.x<.95f&&point.y>.05f&&point.y<.95f;
+                            Check(InFrame(reloadSight)||InFrame(reloadMuzzle),id+" disappears below the camera during reload: "+reloadSight+" / "+reloadMuzzle);
+                        }
                         sync.EquipWeapon("ak74");sync.RestartIdle();sync.EquipWeapon(id);sync.RestartIdle();Check(ammo.MagAmmo==4,id+" interruption must preserve rounds");
                         Check(ammo.TryStartReload(),id+" reload again");sync.RestartIdle();Call(ammo,"Update");Check(ammo.MagAmmo==5&&!ammo.IsReloading,id+" reload completion");
                         Check(sync.ApplyNetworkState(id,"reload",0,0),id+" remote action");sync.RestartIdle();

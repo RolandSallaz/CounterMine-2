@@ -7,8 +7,16 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+[InitializeOnLoad]
 public static class ValidatePiPScope
 {
+    static ValidatePiPScope() => EditorApplication.update += Poll;
+    static void Poll()
+    {
+        const string request="Temp/validate-pip-scope.request";
+        if(!File.Exists(request)||EditorApplication.isCompiling||EditorApplication.isPlayingOrWillChangePlaymode)return;
+        File.Delete(request);Run();
+    }
     static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
     static object Call(object target,string method,params object[] args)=>target.GetType().GetMethod(method,BindingFlags.NonPublic|BindingFlags.Instance).Invoke(target,args);
     [MenuItem("Tools/CounterMine/Validate PiP Scope")]
@@ -22,11 +30,55 @@ public static class ValidatePiPScope
             var health=player.GetComponent<PlayerHealth>();var ammo=player.GetComponent<WeaponAmmo>();var sync=player.GetComponentInChildren<WeaponIdleSynchronizer>(true);
             var aim=player.GetComponentInChildren<WeaponAimController>(true);var camera=player.GetComponentInChildren<Camera>(true);camera.scene=player.scene;camera.aspect=1280f/720;
             Call(health,"Awake");Call(ammo,"Awake");Call(aim,"Awake");float peripheralFov=camera.fieldOfView;
-            Check(sync.EquipWeapon("l115a3"),"L115A3 not installed");sync.RestartIdle();player.GetComponent<PlayerModelPresentation>().ConfigureView(true);
+            Check(sync.EquipWeapon("l115a3"),"L115A3 not installed (active="+sync.isActiveAndEnabled+
+                ", room="+Photon.Pun.PhotonNetwork.InRoom+", entry="+(sync.FindPreviewWeapon("l115a3")!=null)+")");
+            sync.RestartIdle();player.GetComponent<PlayerModelPresentation>().ConfigureView(true);
+            foreach(var entry in InstallNewWeapons.Entries(sync).Where(e=>e!=null&&e.proceduralEquipSeconds>0))
+            {
+                Check(WeaponIdleSynchronizer.ProceduralCameraEuler("equip",0,entry.cameraActionScale)==Vector3.zero&&
+                    WeaponIdleSynchronizer.ProceduralCameraEuler("equip",1,entry.cameraActionScale).sqrMagnitude<.000001f&&
+                    WeaponIdleSynchronizer.ProceduralCameraEuler("equip",.5f,entry.cameraActionScale).sqrMagnitude>.01f,
+                    entry.id+" equip camera motion");
+                if(entry.proceduralReloadSeconds>0)Check(WeaponIdleSynchronizer.ProceduralCameraEuler("reload",.25f,entry.cameraActionScale).sqrMagnitude>.01f&&
+                    WeaponIdleSynchronizer.ProceduralCameraEuler("reload",1,entry.cameraActionScale).sqrMagnitude<.000001f,
+                    entry.id+" reload camera motion");
+            }
+            scope=sync.WeaponRoot.GetComponent<ScopedSightView>();Call(scope,"OnEnable");Call(scope,"LateUpdate");
+            Check(!scope.Visible&&scope.lensRenderer.enabled,"Eyepiece glass is missing outside ADS");
+            var glass=new MaterialPropertyBlock();scope.lensRenderer.GetPropertyBlock(glass);
+            Check(glass.GetFloat("_ScopeActive")<.5f,"Hip lens incorrectly shows the magnified view");
+            var light=new GameObject("PiP preview light");UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(light,player.scene);
+            light.AddComponent<Light>().type=LightType.Directional;light.GetComponent<Light>().intensity=2.5f;light.transform.rotation=Quaternion.Euler(30,-30,0);
+            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/l115a3-hip.png");
+            var grip=InstallNewWeapons.Entries(sync).Single(e=>e.id=="l115a3");
+            foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))
+            {
+                ik.Solve();
+                var right=(Transform)typeof(WeaponHandIK).GetField("rightHand",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(ik);
+                report.AppendLine(ik.name+" grip distances: left="+Vector3.Distance(ik.LeftHand.position,grip.leftGrip.position).ToString("F4")+
+                    "m, right="+Vector3.Distance(right.position,grip.rightGrip.position).ToString("F4")+"m.");
+            }
+            var presentation=player.GetComponent<PlayerModelPresentation>();presentation.ConfigureView(false);sync.RestartIdle();
+            var worldIK=(WeaponHandIK)typeof(PlayerModelPresentation).GetField("worldIK",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(presentation);
+            Check(worldIK!=null,"Third-person hand solver is missing");
+            worldIK.Solve();
+            var worldRight=(Transform)typeof(WeaponHandIK).GetField("rightHand",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(worldIK);
+            float leftGap=Vector3.Distance(worldIK.LeftHand.position,grip.leftGrip.position);
+            float rightGap=Vector3.Distance(worldRight.position,grip.rightGrip.position);
+            report.AppendLine("Third-person grip distances: left="+leftGap.ToString("F4")+"m, right="+rightGap.ToString("F4")+"m.");
+            Check(leftGap<.025f&&rightGap<.025f,"L115A3 third-person hands miss the grips");
+            var poseCamera=new GameObject("L115A3 grip preview camera").AddComponent<Camera>();
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(poseCamera.gameObject,player.scene);
+            poseCamera.transform.position=player.transform.TransformPoint(new Vector3(1.4f,1.65f,1.5f));
+            poseCamera.transform.LookAt(player.transform.TransformPoint(new Vector3(0,1.4f,.5f)));
+            poseCamera.fieldOfView=48;poseCamera.scene=player.scene;
+            InstallNewWeapons.Render(poseCamera,"Documentation/NewWeapons/l115a3-grip.png");
+            UnityEngine.Object.DestroyImmediate(poseCamera.gameObject);
+            presentation.ConfigureView(true);sync.RestartIdle();
             Call(aim,"Step",true,1f);Call(aim,"ApplyPose",1f);
             foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
             Check(Mathf.Abs(camera.fieldOfView-peripheralFov)<.001f,"PiP zoom changed peripheral FOV");
-            scope=sync.WeaponRoot.GetComponent<ScopedSightView>();Call(scope,"OnEnable");Check(scope.Visible,"Scope should be visible in ADS");
+            Check(scope.Visible,"Scope should be visible in ADS");
             Check(scope.Magnification==6,"Default magnification");
             var shader=scope.lensRenderer.sharedMaterial.shader;Check(shader.isSupported&&!ShaderUtil.ShaderHasError(shader),"PiP shader failed compilation");
             void Cube(string name,Vector3 position,Vector3 size,Color color)
@@ -40,7 +92,6 @@ public static class ValidatePiPScope
                 if((x+y)%2==0)Cube("Grid",new Vector3(x*.8f,y*.8f,41.8f),new Vector3(.79f,.79f,.1f),new Color(.22f,.29f,.31f));
             Cube("Red measurement target",new Vector3(.35f,.25f,40),new Vector3(.35f,.35f,.08f),new Color(.95f,.025f,.012f));
             Cube("Blue peripheral landmark",new Vector3(-6,2,38),new Vector3(1,1,.2f),new Color(.05f,.2f,.95f));
-            var light=new GameObject("PiP preview light");UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(light,player.scene);light.AddComponent<Light>().type=LightType.Directional;light.GetComponent<Light>().intensity=2.5f;light.transform.rotation=Quaternion.Euler(30,-30,0);
             camera.backgroundColor=new Color(.22f,.28f,.34f);
             Call(scope,"LateUpdate");
             Check(scope.ViewTexture!=null&&scope.ViewTexture.IsCreated()&&scope.ScopeCamera!=null&&!scope.ScopeCamera.enabled,"PiP camera/texture not initialized or renders automatically");
@@ -58,9 +109,10 @@ public static class ValidatePiPScope
             Check(player.GetComponentsInChildren<Renderer>(true).All(r=>!r.forceRenderingOff),"Player renderers were left hidden");
             Check(scope.lensRenderer.enabled,"PiP lens not visible");
             Call(aim,"Step",false,1f);Call(aim,"ApplyPose",1f);Call(scope,"LateUpdate");
-            Check(!scope.Visible&&!scope.lensRenderer.enabled&&!scope.GetComponentInChildren<Canvas>(true).gameObject.activeSelf,"Scope persists outside ADS");
+            Check(!scope.Visible&&scope.lensRenderer.enabled&&!scope.GetComponentInChildren<Canvas>(true).gameObject.activeSelf,"Hip glass or ADS label has the wrong visibility");
+            scope.lensRenderer.GetPropertyBlock(glass);Check(glass.GetFloat("_ScopeActive")<.5f,"Magnified view persists outside ADS");
             Call(aim,"Step",true,1f);Call(aim,"ApplyPose",1f);ammo.Consume();Check(ammo.TryStartReload(),"Reload setup");Call(aim,"ApplyPose",1f);Call(scope,"LateUpdate");
-            Check(!scope.Visible&&!scope.lensRenderer.enabled,"Scope persists during reload");
+            Check(!scope.Visible&&scope.lensRenderer.enabled,"Eyepiece glass is missing during reload");
             sync.RestartIdle();sync.EquipWeapon("ak74");Check(!scope.Visible,"Scope persists after weapon switch");
             Call(scope,"OnDisable");Check(!scope.ScopeCamera.enabled,"Inactive scope camera costs a render");Call(scope,"OnDestroy");Check(scope.ViewTexture==null,"RenderTexture not released");
             report.AppendLine("PASS PiP scene rendering, shader, independent peripheral FOV, 6x/24x limits and 1x steps, zoom labels, render cleanup, ADS/reload/switch gates and texture release.");

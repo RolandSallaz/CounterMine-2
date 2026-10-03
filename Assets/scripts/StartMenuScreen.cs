@@ -32,6 +32,7 @@ public sealed class StartMenuScreen : MonoBehaviour
     private Text wallet, weaponCaption;
     private GameObject walletPanel, menuFooter;
     private CanvasGroup menuGroup;
+    private RoomBrowserScreen roomBrowser;
     private float reveal;
     private Vector3 portraitFocus, portraitDirection;
 
@@ -121,7 +122,7 @@ public sealed class StartMenuScreen : MonoBehaviour
         line.sizeDelta = new Vector2(0, 2);
         line.gameObject.AddComponent<Image>().color = GameUIStyle.Accent;
         ModeButton(panel, "Single player", .43f, .63f, true, () => lobby.StartGame(true), "Тренировка с ботами");
-        ModeButton(panel, "Multiplayer", .20f, .40f, false, () => lobby.StartGame(false), "Сражения с другими игроками");
+        ModeButton(panel, "Multiplayer", .20f, .40f, false, lobby.BrowseRooms, "Сражения с другими игроками");
         ModeButton(panel, "МАГАЗИН", -.03f, .17f, false, OpenShop, "Оружие и снаряжение");
         var account = Rect("Wallet", transform, new Vector2(.76f,.88f), new Vector2(.95f,.95f));
         walletPanel = account.gameObject;
@@ -138,6 +139,7 @@ public sealed class StartMenuScreen : MonoBehaviour
         footer.color = GameUIStyle.Muted;
         shop = DeathShopUI.Create(transform, null, null, () => isActiveAndEnabled, mainMenu: true);
         shop.ItemEquipped += ShowEquippedItem;
+        roomBrowser = RoomBrowserScreen.Create(transform, lobby);
         ResizeTargets();
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
     }
@@ -209,6 +211,12 @@ public sealed class StartMenuScreen : MonoBehaviour
         modePanel.gameObject.SetActive(!shop.IsOpen);
     }
 
+    public void ShowRoomBrowser(bool visible)
+    {
+        if (roomBrowser != null) roomBrowser.gameObject.SetActive(visible);
+        if (modePanel != null) modePanel.gameObject.SetActive(!visible && (shop == null || !shop.IsOpen));
+    }
+
     private void ShowEquippedItem(string id)
     {
         var entry = previewSource != null ? previewSource.FindPreviewWeapon(id) : null;
@@ -277,9 +285,11 @@ public sealed class StartMenuScreen : MonoBehaviour
     private void Update()
     {
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
-        if (shop != null) modePanel.gameObject.SetActive(!shop.IsOpen);
+        bool browsing = roomBrowser != null && roomBrowser.gameObject.activeSelf;
+        if (shop != null) modePanel.gameObject.SetActive(!shop.IsOpen && !browsing);
         if (walletPanel != null) walletPanel.SetActive(shop == null || !shop.IsOpen);
-        if (menuFooter != null) menuFooter.SetActive(shop == null || !shop.IsOpen);
+        if (menuFooter != null) menuFooter.SetActive((shop == null || !shop.IsOpen) && !browsing);
+        if (weaponCaption != null) weaponCaption.transform.parent.gameObject.SetActive(!browsing);
         reveal = Mathf.Min(1, reveal + Time.unscaledDeltaTime / .3f);
         if (menuGroup != null) menuGroup.alpha = Mathf.SmoothStep(0, 1, reveal);
         if (wallet != null) wallet.text = YandexPlayerData.IsLoaded ? YandexPlayerData.Current.money.ToString("N0") + "  $" : GameLocalization.T("ЗАГРУЗКА…");

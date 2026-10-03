@@ -135,6 +135,7 @@ public static class InstallMilkor
             entry.FindPropertyRelative("magazineSize").intValue = 6;
             entry.FindPropertyRelative("finiteReserve").boolValue = true;
             entry.FindPropertyRelative("proceduralEquipSeconds").floatValue = .72f;
+            entry.FindPropertyRelative("cameraActionScale").floatValue = 1.25f;
             entry.FindPropertyRelative("roundsPerMinute").floatValue = 60f / MilkorSkill.ShotInterval;
             entry.FindPropertyRelative("automatic").boolValue = false;
             entry.FindPropertyRelative("damage").intValue = 110;

@@ -1,3 +1,2 @@
-FAIL at step 1
-System.Exception: Display model missing
-  at ValidateStartMenu.Poll () [0x001d8] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateStartMenu.cs:60 
+PASS: disconnected startup, localized room browser with search, refresh, create and quick play controls, room-browser screenshot, mode/shop buttons, main-menu shop open/close, display-only rig with manual hand IK, blur shader, screenshot, offline room, bot spawning, duplicate-deploy guard, death screen and respawn.
+Online matchmaking and WebGL need separate live checks.

@@ -105,6 +105,8 @@ public static class InstallNewWeapons
                 var magazine=weapon.AddComponent<WeaponMagazineMotion>();magazine.source=sync;magazine.magazine=model.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mag");magazine.leftGrip=left;
                 if(sniper)
                 {
+                    magazine.boltAction=true;
+                    magazine.bolt=model.GetComponentsInChildren<Transform>(true).First(t=>t.name=="boltmove");
                     InstallPiPScope.Configure(weapon,model.transform,sight);
                 }
                 var audioPath="Assets/Resources/Audio/Weapons/"+id+".asset";var audio=AssetDatabase.LoadAssetAtPath<WeaponAudioProfile>(audioPath);
@@ -118,7 +120,9 @@ public static class InstallNewWeapons
                     id=id,animator=animancer,aimRig=rig,audioProfile=audio,muzzle=muzzle,leftGrip=left,rightGrip=right,maximumMuzzleReach=sniper?1.6f:1f,
                     characterIdle=ak.characterIdle,weaponIdle=idle,magazineSize=sniper?5:30,roundsPerMinute=sniper?45:800,automatic=!sniper,damage=sniper?100:30,
                     muzzleVelocity=sniper?880:880,bulletGravity=9.81f,fullDamageRange=sniper?150:60,maximumRange=sniper?400:200,minimumDamageFraction=.6f,
-                    proceduralEquipSeconds=sniper?.72f:.48f,proceduralReloadSeconds=sniper?3.2f:2.45f,recoilKick=sniper?2.3f:.8f,
+                    proceduralEquipSeconds=sniper?.72f:.48f,proceduralReloadSeconds=sniper?3.2f:2.45f,cameraActionScale=sniper?1.1f:.85f,
+                    reloadPositionOffset=sniper?new Vector3(.01f,.025f,.03f):new Vector3(-.025f,.03f,.04f),
+                    reloadRotationEuler=sniper?new Vector3(-5f,-9f,-15f):new Vector3(-4f,8f,-12f),recoilKick=sniper?2.3f:.8f,
                     boltTravel=sniper?.1f:.035f,boltCycleSeconds=sniper?1.2f:.075f,boltBoneName=sniper?"boltmove":"bolt",
                     recoil=new WeaponRecoilController.Tuning{animation=recoilAnimation,cameraPitch=sniper?new Vector2(1.3f,1.7f):new Vector2(.24f,.38f),cameraYaw=.16f,heatPerShot=.1f,heatRecovery=.9f,sustainedFireMultiplier=1.3f,hipSpread=sniper?3.5f:1.1f,heatSpread=2,moveSpread=sniper?5:3,airSpread=4,crouchSpreadMultiplier=.6f}
                 };

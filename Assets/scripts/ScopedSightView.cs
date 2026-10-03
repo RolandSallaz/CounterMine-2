@@ -29,6 +29,7 @@ public sealed class ScopedSightView : MonoBehaviour
     private bool[] previous;
     private readonly UniversalRenderPipeline.SingleCameraRequest request = new UniversalRenderPipeline.SingleCameraRequest();
     private static readonly int ScopeTexture = Shader.PropertyToID("_ScopeTex");
+    private static readonly int ScopeActive = Shader.PropertyToID("_ScopeActive");
     public bool Visible => isActiveAndEnabled && lensRenderer != null && aim != null && aim.AimAmount > .9f &&
         aim.CurrentWeapon != null && aim.CurrentWeapon.transform == transform && health != null && !health.IsDead &&
         viewCamera != null && viewCamera.isActiveAndEnabled && !BotController.IsBot(health) &&
@@ -41,7 +42,7 @@ public sealed class ScopedSightView : MonoBehaviour
         aim = owner.GetComponentInChildren<WeaponAimController>(true);
         if (viewCamera == null) viewCamera = owner.GetComponentInChildren<Camera>(true);
         health = owner.GetComponent<PlayerHealth>();
-        if (lensRenderer != null) lensRenderer.enabled = false;
+        ShowLens(false);
     }
     public void SetMagnification(int value) => Magnification = Mathf.Clamp(value, MinimumMagnification, MaximumMagnification);
     private void Update()
@@ -61,7 +62,7 @@ public sealed class ScopedSightView : MonoBehaviour
     {
         if (!Visible)
         {
-            if (lensRenderer != null) lensRenderer.enabled = false;
+            ShowLens(false);
             if (labelCanvas != null) labelCanvas.gameObject.SetActive(false);
             return;
         }
@@ -79,7 +80,7 @@ public sealed class ScopedSightView : MonoBehaviour
         scopeCamera.scene = viewCamera.scene;
 #endif
         RenderScope();
-        lensRenderer.enabled = true;
+        ShowLens(true);
         zoomLabel.text = Magnification + "?";
         labelCanvas.gameObject.SetActive(true);
         var position = viewCamera.WorldToScreenPoint(lens.position - lens.up * (lensRadius + .007f));
@@ -113,6 +114,15 @@ public sealed class ScopedSightView : MonoBehaviour
             zoomLabel.color = Color.white; zoomLabel.raycastTarget = false; zoomLabel.rectTransform.sizeDelta = new Vector2(100, 30);
             go.GetComponent<Outline>().effectColor = new Color(0, 0, 0, .85f);
         }
+    }
+    private void ShowLens(bool magnified)
+    {
+        if (lensRenderer == null) return;
+        lensRenderer.enabled = isActiveAndEnabled;
+        properties ??= new MaterialPropertyBlock();
+        lensRenderer.GetPropertyBlock(properties);
+        properties.SetFloat(ScopeActive, magnified ? 1f : 0f);
+        lensRenderer.SetPropertyBlock(properties);
     }
     private void RenderScope()
     {

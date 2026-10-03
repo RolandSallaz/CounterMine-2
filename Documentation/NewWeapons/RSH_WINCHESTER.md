@@ -19,7 +19,7 @@ Both weapons are installed in `Player.prefab` and `Bot.prefab`. Buy and equip th
 
 These are game-balance settings, not a claim of measured real-world ballistics. Both weapons use gravity and the existing swept collision simulation. Shotgun pellets independently hit cover and players and receive distance and hit-zone damage modifiers. Ammo, recoil and shot audio trigger once per round.
 
-The supplied FBXs have no gameplay animation clips. `WeaponManualAction` supplies cylinder indexing/opening and pump/hand motion; the existing synchronized action clock supplies draw and reload poses. Reload currently completes the entire magazine at the end of the animation. Interrupting it preserves the previous ammo count; individual shell insertion is not implemented. Shot/reload sounds are variations made from the project's existing audio.
+The supplied FBXs have no gameplay animation clips. `WeaponManualAction` supplies staged cylinder opening, ejection and loading gestures for RSH-12, and pump cycles plus repeated loading-hand motion for Winchester. The synchronized action clock also drives the weapon pose and a subtle camera sway while the weapon stays in view. Reload completes the entire magazine at the end of the action. Interrupting it preserves the previous ammo count; individual shell insertion is not implemented. Shot/reload sounds are variations made from the project's existing audio.
 
 `ConfirmShot` now carries the weapon and damage snapshot. Pellet trajectories use deterministic shot seeds and separate projectile IDs. The master reads ballistics from its weapon catalog. `LobbyManager` uses protocol version `CounterMine-0.3-pellets`, separating this implementation from older incompatible clients.
 

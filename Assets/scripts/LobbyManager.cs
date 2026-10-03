@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -10,7 +12,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private string roomPrefix = "CounterMine";
     [SerializeField] private byte maxPlayers = 16;
-    [SerializeField, Min(1)] private int maxRoomsToTry = 50;
     [SerializeField] private string playerPrefabResourceName = "Player";
     [SerializeField] private Vector3 fallbackSpawnPosition = new Vector3(0f, 2f, 0f);
     [SerializeField] private Vector3 mapCenter = Vector3.zero;
@@ -19,7 +20,18 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private System.Func<string> status = () => GameLocalization.T("Choose a team.");
     private bool playerSpawned;
     private int selectedTeam;
-    private int matchmakingIndex = 1;
+    private readonly Dictionary<string, RoomInfo> rooms = new Dictionary<string, RoomInfo>(StringComparer.Ordinal);
+    private enum OnlineAction { None, QuickJoin, JoinRoom, CreateRoom }
+    private OnlineAction pendingAction;
+    private string pendingRoomName;
+    private bool generatedRoomName;
+    private int quickJoinRetries;
+    private int createRetries;
+    private bool browsingRooms;
+    private int roomListRevision;
+    public int RoomListRevision => roomListRevision;
+    public bool RoomsReady => PhotonNetwork.InLobby;
+    public IEnumerable<RoomInfo> Rooms => rooms.Values;
     private DeploymentScreen deploymentScreen;
     private StartMenuScreen startMenu;
     private bool modeSelected;
@@ -28,6 +40,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private float deployAvailableAt;
     public bool CanDeploy => !YandexAds.Busy && !playerSpawned && PhotonNetwork.InRoom && YandexPlayerData.IsLoaded && Time.unscaledTime >= deployAvailableAt;
     public string ConnectionStatus => status();
+
+    private void Awake() => PhotonNetwork.EnsureInitialized();
 
     private void Start()
     {
@@ -56,6 +70,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (modeSelected) return;
         if (YandexAds.Busy) return;
+        if (!offline) { QuickJoin(); return; }
         YandexAds.FirstEntry();
         modeSelected = true;
         singlePlayer = offline;
@@ -75,21 +90,25 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void Connect()
     {
-        if (!modeSelected) return;
+        if (!modeSelected && !browsingRooms) return;
         if (singlePlayer)
         {
             // OfflineMode invokes OnConnectedToMaster synchronously. Bots and match rules
             // then use the same room lifecycle without contacting Photon servers.
+            if (!PhotonNetwork.OfflineMode && PhotonNetwork.NetworkClientState != ClientState.Disconnected &&
+                PhotonNetwork.NetworkClientState != ClientState.PeerCreated)
+            { PhotonNetwork.Disconnect(); return; }
             if (!PhotonNetwork.OfflineMode) PhotonNetwork.OfflineMode = true;
             else if (!PhotonNetwork.InRoom) PhotonNetwork.CreateRoom("Solo");
             return;
         }
         if (PhotonNetwork.IsConnected)
         {
-            matchmakingIndex = 1;
-            JoinFirstAvailableRoom();
+            if (PhotonNetwork.InLobby) RunPendingAction();
+            else if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.JoinLobby(TypedLobby.Default);
             return;
         }
+        if (PhotonNetwork.NetworkClientState != ClientState.Disconnected && PhotonNetwork.NetworkClientState != ClientState.PeerCreated) return;
 
         status = () => GameLocalization.T("Connecting to Photon...");
         PhotonNetwork.GameVersion = GameVersion;
@@ -98,15 +117,157 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        if (!modeSelected) return;
-        if (singlePlayer) { PhotonNetwork.CreateRoom("Solo"); return; }
-        status = () => GameLocalization.T("Connected. Joining room...");
-        matchmakingIndex = 1;
-        JoinFirstAvailableRoom();
+        if (!modeSelected && !browsingRooms) return;
+        if (singlePlayer) { if (!PhotonNetwork.OfflineMode) Connect(); else PhotonNetwork.CreateRoom("Solo"); return; }
+        status = () => GameLocalization.T("Loading rooms...");
+        if (!PhotonNetwork.InLobby) PhotonNetwork.JoinLobby(TypedLobby.Default);
+        else RunPendingAction();
+    }
+
+    public void BrowseRooms()
+    {
+        if (modeSelected || YandexAds.Busy) return;
+        browsingRooms = true;
+        pendingAction = OnlineAction.None;
+        startMenu?.ShowRoomBrowser(true);
+        Connect();
+    }
+
+    public void LeaveRoomBrowser()
+    {
+        if (modeSelected) return;
+        browsingRooms = false;
+        pendingAction = OnlineAction.None;
+        startMenu?.ShowRoomBrowser(false);
+        rooms.Clear(); roomListRevision++;
+        if (PhotonNetwork.NetworkClientState != ClientState.Disconnected && PhotonNetwork.NetworkClientState != ClientState.PeerCreated)
+            PhotonNetwork.Disconnect();
+    }
+
+    public void RefreshRooms()
+    {
+        if (!browsingRooms || pendingAction != OnlineAction.None) return;
+        rooms.Clear(); roomListRevision++;
+        status = () => GameLocalization.T("Loading rooms...");
+        if (!PhotonNetwork.IsConnected) { Connect(); return; }
+        if (PhotonNetwork.InLobby) PhotonNetwork.LeaveLobby();
+        else if (PhotonNetwork.IsConnectedAndReady) PhotonNetwork.JoinLobby(TypedLobby.Default);
+    }
+
+    public override void OnLeftLobby()
+    {
+        if (browsingRooms && PhotonNetwork.IsConnectedAndReady) PhotonNetwork.JoinLobby(TypedLobby.Default);
+    }
+
+    public override void OnJoinedLobby()
+    {
+        if (!browsingRooms) return;
+        status = () => GameLocalization.T("Finding available rooms...");
+        roomListRevision++;
+        RunPendingAction();
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        if (!browsingRooms) return;
+        foreach (RoomInfo room in roomList)
+        {
+            if (room.RemovedFromList) rooms.Remove(room.Name);
+            else rooms[room.Name] = room;
+        }
+        roomListRevision++;
+        if (pendingAction == OnlineAction.None)
+            status = () => GameLocalization.Format("Rooms found: {0}", rooms.Count);
+    }
+
+    public void QuickJoin()
+    {
+        if (modeSelected || YandexAds.Busy) return;
+        browsingRooms = true;
+        pendingRoomName = null;
+        generatedRoomName = false;
+        quickJoinRetries = 0;
+        pendingAction = OnlineAction.QuickJoin;
+        status = () => GameLocalization.T("Finding a match...");
+        Connect();
+    }
+
+    public void JoinSelectedRoom(string roomName)
+    {
+        if (!browsingRooms || string.IsNullOrEmpty(roomName) || pendingAction != OnlineAction.None) return;
+        if (!rooms.TryGetValue(roomName, out var room) || !room.IsOpen || (room.MaxPlayers > 0 && room.PlayerCount >= room.MaxPlayers)) return;
+        pendingRoomName = roomName;
+        pendingAction = OnlineAction.JoinRoom;
+        status = () => GameLocalization.Format("Joining {0}...", roomName);
+        Connect();
+    }
+
+    public void CreateNamedRoom(string roomName)
+    {
+        if (!browsingRooms || pendingAction != OnlineAction.None) return;
+        pendingRoomName = string.IsNullOrWhiteSpace(roomName) ? NewRoomName() : roomName.Trim();
+        generatedRoomName = string.IsNullOrWhiteSpace(roomName);
+        createRetries = 0;
+        if (pendingRoomName.Length > 32) pendingRoomName = pendingRoomName.Substring(0, 32);
+        pendingAction = OnlineAction.CreateRoom;
+        status = () => GameLocalization.Format("Creating {0}...", pendingRoomName);
+        Connect();
+    }
+
+    private string NewRoomName() => $"{roomPrefix}-{Guid.NewGuid():N}".Substring(0, Mathf.Min(24, roomPrefix.Length + 9));
+
+    private void RunPendingAction()
+    {
+        // Photon returns to the master server after a failed random join, outside the lobby.
+        // Creating the fallback room is valid there and must not wait for OnJoinedLobby.
+        if (!PhotonNetwork.IsConnectedAndReady) return;
+        bool started = true;
+        switch (pendingAction)
+        {
+            case OnlineAction.QuickJoin:
+                started = PhotonNetwork.JoinRandomRoom(null, 0, MatchmakingMode.FillRoom, TypedLobby.Default, null); break;
+            case OnlineAction.JoinRoom:
+                started = PhotonNetwork.JoinRoom(pendingRoomName); break;
+            case OnlineAction.CreateRoom:
+                started = PhotonNetwork.CreateRoom(pendingRoomName,
+                    new RoomOptions { MaxPlayers = maxPlayers, IsOpen = true, IsVisible = true }, TypedLobby.Default); break;
+        }
+        if (!started) { pendingAction = OnlineAction.None; status = () => GameLocalization.T("Room request failed. Try again."); }
+    }
+
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        if (pendingAction != OnlineAction.QuickJoin) return;
+        pendingRoomName = NewRoomName();
+        generatedRoomName = true;
+        createRetries = 0;
+        pendingAction = OnlineAction.CreateRoom;
+        status = () => GameLocalization.T("Creating a new match...");
+        RunPendingAction();
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        // A generated name can collide; retry without changing a player's chosen name.
+        if (pendingAction == OnlineAction.CreateRoom && generatedRoomName &&
+            returnCode == ErrorCode.GameIdAlreadyExists && createRetries++ < 3)
+        { pendingRoomName = NewRoomName(); RunPendingAction(); return; }
+        pendingAction = OnlineAction.None;
+        status = () => GameLocalization.Format("Could not create room ({0}): {1}", returnCode, message);
     }
 
     public override void OnJoinedRoom()
     {
+        if (!modeSelected && !browsingRooms) { PhotonNetwork.LeaveRoom(); return; }
+        pendingAction = OnlineAction.None;
+        browsingRooms = false;
+        if (!modeSelected)
+        {
+            YandexAds.FirstEntry();
+            modeSelected = true;
+            singlePlayer = PhotonNetwork.OfflineMode;
+            if (startMenu != null) { startMenu.gameObject.SetActive(false); Destroy(startMenu.gameObject); startMenu = null; }
+        }
         status = () => GameLocalization.Format("Комната {0} ({1}/{2})", PhotonNetwork.CurrentRoom.Name, PhotonNetwork.CurrentRoom.PlayerCount, maxPlayers);
         if (selectedTeam == 0) AutoPickTeam();
         ShowDeploymentScreen();
@@ -125,7 +286,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             if (bot == null) continue;
             if (bot.Team == 2) team2++; else team1++;
         }
-        int team = team1 == team2 ? Random.Range(1, 3) : team2 < team1 ? 2 : 1;
+        int team = team1 == team2 ? UnityEngine.Random.Range(1, 3) : team2 < team1 ? 2 : 1;
         selectedTeam = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { TeamProperty, team } });
         status = () => GameLocalization.Format("Вы автоматически вступили в команду {0}.", team);
@@ -143,34 +304,29 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        // Bucket matchmaking: full room -> next bucket, missing room -> create it.
-        if (returnCode == ErrorCode.GameFull)
+        if (pendingAction == OnlineAction.QuickJoin && quickJoinRetries++ < 2 &&
+            (returnCode == ErrorCode.GameFull || returnCode == ErrorCode.GameClosed || returnCode == ErrorCode.GameDoesNotExist))
         {
-            matchmakingIndex++;
-            if (matchmakingIndex > Mathf.Max(1, maxRoomsToTry))
-            {
-                status = () => GameLocalization.T("All rooms are full, try again later.");
-                Debug.LogError(status());
-                return;
-            }
-            JoinFirstAvailableRoom();
+            status = () => GameLocalization.T("Finding another match...");
+            RunPendingAction();
             return;
         }
-        if (returnCode == ErrorCode.GameDoesNotExist)
-        {
-            RoomOptions options = new RoomOptions { MaxPlayers = maxPlayers };
-            PhotonNetwork.JoinOrCreateRoom(BucketName(matchmakingIndex), options, TypedLobby.Default);
-            return;
-        }
-        status = () => GameLocalization.Format("Ошибка входа ({0}): {1}", returnCode, message);
-        Debug.LogError(status());
+        pendingAction = OnlineAction.None;
+        if (pendingRoomName != null) rooms.Remove(pendingRoomName);
+        roomListRevision++;
+        status = () => GameLocalization.Format("Could not join room ({0}): {1}", returnCode, message);
+        if (browsingRooms && PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InLobby)
+            PhotonNetwork.JoinLobby(TypedLobby.Default);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         playerSpawned = false;
+        pendingAction = OnlineAction.None;
+        rooms.Clear(); roomListRevision++;
+        if (modeSelected && singlePlayer) { PhotonNetwork.OfflineMode = true; return; }
         status = () => GameLocalization.Format("Соединение потеряно: {0}", cause);
-        ShowDeploymentScreen();
+        if (modeSelected) ShowDeploymentScreen();
     }
 
     private void ShowDeploymentScreen()
@@ -205,20 +361,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         if (startMenu != null) Destroy(startMenu.gameObject);
         if (deploymentScreen != null) Destroy(deploymentScreen.gameObject);
-    }
-
-    private string BucketName(int index) => $"{roomPrefix}-{index}";
-
-    private void JoinFirstAvailableRoom()
-    {
-        if (PhotonNetwork.InRoom)
-        {
-            return;
-        }
-
-        matchmakingIndex = Mathf.Max(1, matchmakingIndex);
-        status = () => GameLocalization.Format("Поиск комнаты ({0})...", BucketName(matchmakingIndex));
-        PhotonNetwork.JoinRoom(BucketName(matchmakingIndex));
     }
 
     private void SpawnPlayer()

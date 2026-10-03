@@ -29,6 +29,9 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         public bool finiteReserve;
         public float proceduralEquipSeconds;
         public float proceduralReloadSeconds;
+        [Range(0f, 2f)] public float cameraActionScale = 1f;
+        public Vector3 reloadPositionOffset = new Vector3(-.1f, .08f, .08f);
+        public Vector3 reloadRotationEuler = new Vector3(-5f, 10f, -15f);
         public float roundsPerMinute = 600;
         public bool automatic = true;
         public int damage = 34;
@@ -90,9 +93,26 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
             }
             if (cameraBone == null) return Quaternion.identity;
             var relative = Quaternion.Inverse(cameraSkeleton.rotation) * cameraBone.rotation;
-            return relative * Quaternion.Inverse(cameraRestRotation);
+            return relative * Quaternion.Inverse(cameraRestRotation) *
+                Quaternion.Euler(ProceduralCameraEuler(ActionId, ActionProgress, currentWeapon != null ? currentWeapon.cameraActionScale : 0f));
         }
     }
+    public static Vector3 ProceduralCameraEuler(string action, float progress, float scale)
+    {
+        if (scale <= 0f || (action != "equip" && action != "reload")) return Vector3.zero;
+        float t = Mathf.Clamp01(progress);
+        float envelope = Mathf.Sin(t * Mathf.PI);
+        if (action == "equip")
+            return new Vector3(-1.05f * envelope + .24f * Mathf.Sin(t * Mathf.PI * 2f) * envelope,
+                .18f * Mathf.Sin(t * Mathf.PI * 2f) * envelope,
+                .42f * Mathf.Sin(t * Mathf.PI * 2f) * envelope) * scale;
+        return new Vector3((-2.8f - .38f * Mathf.Sin(t * Mathf.PI * 2f) + .16f * Mathf.Sin(t * Mathf.PI * 6f)) * envelope,
+            .22f * Mathf.Sin(t * Mathf.PI * 4f) * envelope,
+            .48f * Mathf.Sin(t * Mathf.PI * 2f) * envelope) * scale;
+    }
+    public static float SmoothWindow(float t, float riseStart, float riseEnd, float fallStart, float fallEnd) =>
+        Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(riseStart, riseEnd, t)) *
+        (1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(fallStart, fallEnd, t)));
     private bool applyingNetwork;
     private WeaponEntry currentWeapon;
     private Transform bolt;
@@ -349,17 +369,26 @@ public sealed class WeaponIdleSynchronizer : MonoBehaviour
         if (CanPoseHands && activeArmsClip.length == 0f && idleBones == null) CaptureIdlePose();
         if (currentWeapon != null && currentWeapon.proceduralEquipSeconds > 0)
         {
-            float t = ProceduralEquip ? Mathf.Clamp01((float)(seconds / ActionDuration)) : 1f;
-            float lift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / .82f));
-            float settle = Mathf.Sin(Mathf.Clamp01((t - .65f) / .35f) * Mathf.PI) * .018f;
-            WeaponRoot.localPosition = weaponRestPosition + new Vector3(.08f, -.32f, -.14f) * (1f - lift) + Vector3.up * settle;
-            WeaponRoot.localRotation = weaponRestRotation * Quaternion.Euler(new Vector3(32f, -18f, 24f) * (1f - lift));
-            if (ProceduralReload)
+            Vector3 offset = Vector3.zero, euler = Vector3.zero;
+            if (ProceduralEquip)
             {
-                float tilt = Mathf.Sin(Mathf.Clamp01((float)(seconds / ActionDuration)) * Mathf.PI);
-                WeaponRoot.localPosition += new Vector3(.025f, -.065f, -.035f) * tilt;
-                WeaponRoot.localRotation = weaponRestRotation * Quaternion.Euler(-8f * tilt, 12f * tilt, -18f * tilt);
+                float t = Mathf.Clamp01((float)(seconds / ActionDuration));
+                float enter = 1f - Mathf.SmoothStep(0f, 1f, t);
+                float settle = Mathf.Sin(Mathf.PI * Mathf.Clamp01((t - .72f) / .28f)) * .012f;
+                offset = new Vector3(.025f, .015f, .055f) * enter + Vector3.up * settle;
+                euler = new Vector3(6f, -8f, 10f) * enter;
             }
+            else if (ProceduralReload)
+            {
+                float t = Mathf.Clamp01((float)(seconds / ActionDuration));
+                float inspect = SmoothWindow(t, .04f, .2f, .78f, .97f);
+                float extract = SmoothWindow(t, .23f, .36f, .58f, .72f);
+                float seat = Mathf.Sin(Mathf.PI * Mathf.InverseLerp(.73f, .86f, t)) * SmoothWindow(t, .72f, .77f, .84f, .89f);
+                offset = currentWeapon.reloadPositionOffset * inspect + new Vector3(-.008f, -.006f, -.012f) * extract + Vector3.up * (.009f * seat);
+                euler = currentWeapon.reloadRotationEuler * inspect + new Vector3(-1.2f, 0f, 1.4f) * seat;
+            }
+            WeaponRoot.localPosition = weaponRestPosition + offset;
+            WeaponRoot.localRotation = weaponRestRotation * Quaternion.Euler(euler);
         }
         LastEvaluatedFrame = Time.frameCount;
     }

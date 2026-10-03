@@ -1,2 +1,4 @@
-FAIL System.Exception: HK front sight is not on the aim axis
-  at ValidateNewWeapons.Run () [0x007ad] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateNewWeapons.cs:61 
+PASS hk416: equipment, ammo, procedural draw/reload, interrupted reload, network reload state, materials and ADS preview.
+PASS l115a3: equipment, ammo, procedural draw/reload, interrupted reload, network reload state, materials and ADS preview.
+PASS permanent purchases, free reselection, primary slot, preserved starter loadout and save round trip. Real wallet unchanged.
+Editor checks only; live multiplayer and WebGL were not run.

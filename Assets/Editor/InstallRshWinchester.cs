@@ -88,7 +88,7 @@ public static class InstallRshWinchester
                     handling.sprintBobFrequency=pistolHandling.sprintBobFrequency;
                     EditorUtility.SetDirty(handling);
                 }
-                var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);weapon.transform.position+=rh.position-right.position+player.transform.TransformDirection(revolver?new Vector3(.05f,-.02f,.025f):new Vector3(.10f,-.015f,.10f));
+                var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);weapon.transform.position+=rh.position-right.position+player.transform.TransformDirection(revolver?new Vector3(.05f,-.02f,.025f):new Vector3(.04f,.035f,.20f));
                 var motion=weapon.AddComponent<WeaponManualAction>();motion.source=sync;motion.revolver=revolver;motion.leftGrip=left;
                 Transform Bone(string n)=>model.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name==n);
                 motion.cylinder=Bone("cylinder");motion.cylinderArm=Bone("cylinderarm");motion.pump=revolver?null:Bone("bolt");
@@ -100,7 +100,9 @@ public static class InstallRshWinchester
                 var entry=new WeaponIdleSynchronizer.WeaponEntry{id=id,animator=animancer,aimRig=rig,audioProfile=audio,muzzle=muzzle,leftGrip=left,rightGrip=right,maximumMuzzleReach=1.6f,
                     characterIdle=template.characterIdle,weaponIdle=idle,magazineSize=5,roundsPerMinute=revolver?150:80,automatic=false,damage=revolver?65:13,
                     pelletCount=revolver?1:8,pelletSpreadDegrees=revolver?0:3.2f,muzzleVelocity=revolver?300:380,bulletGravity=9.81f,fullDamageRange=revolver?30:10,maximumRange=revolver?150:70,minimumDamageFraction=revolver?.5f:.15f,
-                    proceduralEquipSeconds=revolver?.55f:.65f,proceduralReloadSeconds=revolver?3.4f:4.2f,recoilKick=revolver?2f:1.8f,boltBoneName="__manual_action__",boltTravel=0,
+                    proceduralEquipSeconds=revolver?.55f:.65f,proceduralReloadSeconds=revolver?3.4f:4.2f,cameraActionScale=revolver?.8f:1f,
+                    reloadPositionOffset=revolver?new Vector3(-.02f,.03f,.02f):new Vector3(-.03f,.04f,.04f),
+                    reloadRotationEuler=revolver?new Vector3(-4f,7f,-10f):new Vector3(-5f,9f,-12f),recoilKick=revolver?2f:1.8f,boltBoneName="__manual_action__",boltTravel=0,
                     recoil=new WeaponRecoilController.Tuning{animation=recoilAnimation,rotateAroundGrip=revolver,cameraPitch=revolver?new Vector2(1.1f,1.5f):new Vector2(.9f,1.3f),cameraYaw=.2f,heatPerShot=.2f,heatRecovery=.9f,sustainedFireMultiplier=1.3f,hipSpread=revolver?1.5f:1,heatSpread=1,moveSpread=2,airSpread=3,crouchSpreadMultiplier=.7f}};
                 TuneWeaponRecoil.Apply(entry);
                 int index=entries.FindIndex(e=>e.id==id);if(index<0)entries.Add(entry);else entries[index]=entry;

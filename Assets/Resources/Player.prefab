@@ -1982,6 +1982,8 @@ MonoBehaviour:
   source: {fileID: 2096819707738401901}
   magazine: {fileID: 1271782615248039942}
   leftGrip: {fileID: 6655712691399224474}
+  bolt: {fileID: 0}
+  boltAction: 0
 --- !u!1 &2744892036241773446
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,7 +2353,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2937364171611922765}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -2471,7 +2473,7 @@ Transform:
   m_GameObject: {fileID: 3051521938934524819}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15071338, y: 1.4483961, z: 0.36054862}
+  m_LocalPosition: {x: 0.09071338, y: 1.4983961, z: 0.46054862}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5967,6 +5969,8 @@ MonoBehaviour:
   source: {fileID: 2096819707738401901}
   magazine: {fileID: 6772270523767266648}
   leftGrip: {fileID: 6773945726350308580}
+  bolt: {fileID: 3797762489108611394}
+  boltAction: 1
 --- !u!114 &1125529392588281049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7294,6 +7298,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0
     proceduralReloadSeconds: 0
+    cameraActionScale: 0
+    reloadPositionOffset: {x: 0, y: 0, z: 0}
+    reloadRotationEuler: {x: 0, y: 0, z: 0}
     roundsPerMinute: 600
     automatic: 1
     damage: 34
@@ -7341,6 +7348,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0
     proceduralReloadSeconds: 0
+    cameraActionScale: 0
+    reloadPositionOffset: {x: 0, y: 0, z: 0}
+    reloadRotationEuler: {x: 0, y: 0, z: 0}
     roundsPerMinute: 400
     automatic: 0
     damage: 20
@@ -7388,6 +7398,9 @@ MonoBehaviour:
     finiteReserve: 1
     proceduralEquipSeconds: 0.72
     proceduralReloadSeconds: 0
+    cameraActionScale: 1.25
+    reloadPositionOffset: {x: 0, y: 0, z: 0}
+    reloadRotationEuler: {x: 0, y: 0, z: 0}
     roundsPerMinute: 109.090904
     automatic: 0
     damage: 110
@@ -7432,6 +7445,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0.48
     proceduralReloadSeconds: 2.45
+    cameraActionScale: 0.85
+    reloadPositionOffset: {x: -0.025, y: 0.03, z: 0.04}
+    reloadRotationEuler: {x: -4, y: 8, z: -12}
     roundsPerMinute: 800
     automatic: 1
     damage: 30
@@ -7476,6 +7492,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0.72
     proceduralReloadSeconds: 3.2
+    cameraActionScale: 1.1
+    reloadPositionOffset: {x: 0.01, y: 0.025, z: 0.03}
+    reloadRotationEuler: {x: -5, y: -9, z: -15}
     roundsPerMinute: 45
     automatic: 0
     damage: 100
@@ -7520,6 +7539,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0.55
     proceduralReloadSeconds: 3.4
+    cameraActionScale: 0.8
+    reloadPositionOffset: {x: -0.02, y: 0.03, z: 0.02}
+    reloadRotationEuler: {x: -4, y: 7, z: -10}
     roundsPerMinute: 150
     automatic: 0
     damage: 65
@@ -7564,6 +7586,9 @@ MonoBehaviour:
     finiteReserve: 0
     proceduralEquipSeconds: 0.65
     proceduralReloadSeconds: 4.2
+    cameraActionScale: 1
+    reloadPositionOffset: {x: -0.03, y: 0.04, z: 0.04}
+    reloadRotationEuler: {x: -5, y: 9, z: -12}
     roundsPerMinute: 80
     automatic: 0
     damage: 13

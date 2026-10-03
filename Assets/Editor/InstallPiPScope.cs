@@ -59,7 +59,7 @@ public static class InstallPiPScope
         lens.gameObject.layer = weapon.layer; lens.GetComponent<MeshFilter>().sharedMesh = mesh;
         var renderer = lens.GetComponent<MeshRenderer>(); renderer.sharedMaterial = material;
         renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
-        renderer.lightProbeUsage = LightProbeUsage.Off; renderer.reflectionProbeUsage = ReflectionProbeUsage.Off; renderer.enabled = false;
+        renderer.lightProbeUsage = LightProbeUsage.Off; renderer.reflectionProbeUsage = ReflectionProbeUsage.Off; renderer.enabled = true;
         var scope = weapon.GetComponent<ScopedSightView>() ?? weapon.AddComponent<ScopedSightView>(); scope.lensRenderer = renderer; scope.lensRadius = .0161f;
         var settings = new SerializedObject(sight);
         settings.FindProperty("preservePeripheralFieldOfView").boolValue = true;

@@ -1037,13 +1037,22 @@ namespace Photon.Pun
             #endif
         }
 
+        public static void EnsureInitialized()
+        {
+            if (NetworkingClient == null) StaticReset(true);
+        }
+
         #if UNITY_EDITOR && UNITY_2019_4_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        private static void EarlyEditorReset() => StaticReset();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void ResetBeforeSceneLoad() => StaticReset(true);
         #endif
-        private static void StaticReset()
+        private static void StaticReset(bool force = false)
         {
             #if UNITY_EDITOR
-            if (!EditorApplication.isPlayingOrWillChangePlaymode)
+            if (!force && !Application.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 return;
             }

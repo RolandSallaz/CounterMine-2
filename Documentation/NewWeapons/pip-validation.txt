@@ -1,3 +1,6 @@
-PASS PiP scene rendering, shader, independent peripheral FOV, 6x/16x limits and 1x steps, zoom labels, render cleanup, ADS/reload/switch gates and texture release.
-Rendered red target widths: 63 px at 6x; 168 px at 16x. Camera FOVs: 6,144 / 2,306 degrees; peripheral 75 degrees.
+FPSArms grip distances: left=0,0000m, right=0,0000m.
+FpsChar grip distances: left=0,0000m, right=0,0000m.
+Third-person grip distances: left=0,0000m, right=0,0000m.
+PASS PiP scene rendering, shader, independent peripheral FOV, 6x/24x limits and 1x steps, zoom labels, render cleanup, ADS/reload/switch gates and texture release.
+Rendered red target widths: 57 px at 6x; 228 px at 24x. Camera FOVs: 6,774 / 1,695 degrees; peripheral 75 degrees.
 Editor URP rendering verified; WebGL performance and live mouse-wheel interaction were not exercised.

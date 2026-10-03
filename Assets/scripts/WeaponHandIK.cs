@@ -33,9 +33,11 @@ public sealed class WeaponHandIK : MonoBehaviour
         adjustedShoulder = null;
     }
 
-    private void FitHK416LeftArm()
+    private void FitLongGunLeftArm()
     {
-        if (thirdPersonFrame == null || leftGrip.parent == null || leftGrip.parent.name != "HK416_Weapon") return;
+        if (thirdPersonFrame == null || leftGrip.parent == null) return;
+        string weaponName = leftGrip.parent.name;
+        if (weaponName != "HK416_Weapon" && weaponName != "L115A3_Weapon" && weaponName != "winchester1897_Weapon") return;
         var upperArm = leftHand.parent.parent;
         float reach = (Vector3.Distance(upperArm.position, leftHand.parent.position) +
             Vector3.Distance(leftHand.parent.position, leftHand.position)) * .99f;
@@ -142,7 +144,7 @@ public sealed class WeaponHandIK : MonoBehaviour
         }
         else
         {
-            FitHK416LeftArm();
+            FitLongGunLeftArm();
             UpdateSolver(leftSolver, leftGrip, leftHandWeight, -1f);
         }
         UpdateSolver(rightSolver, rightGrip, rightHandWeight, 1f);
