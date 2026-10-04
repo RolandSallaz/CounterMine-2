@@ -13,6 +13,7 @@ public sealed class WeaponAimController : MonoBehaviour
     [SerializeField] private WeaponIdleSynchronizer weaponAnimation;
     [SerializeField, Range(0f, 15f)] private float sprintFovBoost = 8f;
     private PlayerController movement;
+    private PlayerModelPresentation presentation;
     private float sprintFov;
     private Vector3 restPosition, alignmentPosition, switchPosition;
     private Quaternion restRotation, alignmentRotation, switchRotation;
@@ -35,6 +36,7 @@ public sealed class WeaponAimController : MonoBehaviour
     private void Awake()
     {
         movement = GetComponentInParent<PlayerController>();
+        presentation = GetComponentInParent<PlayerModelPresentation>();
         restPosition = transform.localPosition;
         restRotation = transform.localRotation;
         if (playerCamera != null) restFieldOfView = playerCamera.fieldOfView;
@@ -73,6 +75,7 @@ public sealed class WeaponAimController : MonoBehaviour
     private void ApplyPose(float deltaTime)
     {
         if (!initialized || deltaTime <= 0f) return;
+        presentation?.PrepareWeaponPose();
         // Reload/equip may start after our Update. Clear ADS before rendering that frame.
         if (weaponAnimation != null && weaponAnimation.IsPlayingAction)
         {

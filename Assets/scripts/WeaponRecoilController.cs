@@ -72,6 +72,7 @@ public sealed class WeaponRecoilController : MonoBehaviour
     }
 
     private PhotonView owner;
+    private WeaponAmmo ammo;
     private Vector3 restPosition;
     private Quaternion restRotation;
     private double nextShotTime;
@@ -123,6 +124,7 @@ public sealed class WeaponRecoilController : MonoBehaviour
     private void Awake()
     {
         owner = GetComponentInParent<PhotonView>();
+        ammo = GetComponentInParent<WeaponAmmo>();
         networkWeapon ??= GetComponentInParent<NetworkWeapon>();
         restPosition = transform.localPosition;
         restRotation = transform.localRotation;
@@ -152,7 +154,7 @@ public sealed class WeaponRecoilController : MonoBehaviour
         Heat = Mathf.MoveTowards(Heat, 0f, heatRecovery * Time.deltaTime);
         bool allowed = !PlatformLifecycle.InputBlocked && (owner == null || (owner.IsMine && (!PhotonNetwork.InRoom || owner.OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber))) && cameraLook != null && cameraLook.isActiveAndEnabled &&
             !cameraLook.JustRelocked &&
-            (weaponAnimation == null || weaponAnimation.CanFire) &&
+            (weaponAnimation == null || weaponAnimation.CanFire || (ammo != null && ammo.CanInterruptReload)) &&
             (deathController == null || !deathController.IsDead) &&
             (playerController == null || !playerController.IsSprinting) &&
             Application.isFocused && Cursor.lockState == CursorLockMode.Locked &&

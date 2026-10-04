@@ -1,0 +1,3 @@
+equip: 52 frames, 60 fps, 0,8666667 seconds; weapon position peak=(0.15, 0.46, 0.12); rotation peak=(44.90, 20.29, 23.91); camera peak=(2.59, 0.12, 2.23)
+reload: 173 frames, 60 fps, 2,883333 seconds; weapon position peak=(0.04, 0.02, 0.01); rotation peak=(23.92, 12.18, 49.37); camera peak=(7.24, 3.85, 0.27)
+Catalog: ak74, ucp, milkor, hk416, l115a3, rsh12, winchester1897

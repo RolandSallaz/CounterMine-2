@@ -39,9 +39,59 @@ using UnityEngine;
     static void Check(bool ok,string text){if(!ok)throw new Exception(text);}
     static object Call(object o,string name,params object[] args)=>o.GetType().GetMethod(name,BindingFlags.Instance|BindingFlags.NonPublic).Invoke(o,args);
     static void Field(object o,string name,object value)=>o.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(o,value);
+    static void ValidateFirstPersonGrip(GameObject player, WeaponIdleSynchronizer.WeaponEntry entry, string pose)
+    {
+        var ik = player.GetComponentsInChildren<WeaponHandIK>(true).Single(component => component.name == "FPSArms");
+        var right = (Transform)typeof(WeaponHandIK).GetField("rightHand", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(ik);
+        Check(Vector3.Distance(ik.LeftHand.position, entry.leftGrip.position) < .025f &&
+            Vector3.Distance(right.position, entry.rightGrip.position) < .025f, "Winchester FPS grip misses in " + pose);
+        Vector3 shoulder = ik.LeftHand.parent.parent.position;
+        Vector3 hand = ik.LeftHand.position;
+        ik.Solve();
+        Check(Vector3.Distance(shoulder, ik.LeftHand.parent.parent.position) < .001f &&
+            Vector3.Distance(hand, ik.LeftHand.position) < .001f, "Winchester FPS IK drifts in " + pose);
+    }
+    // Camera.Render in Edit Mode can reuse the skin from before this frame's IK.
+    // Bake the current bones for pose screenshots, then restore every renderer.
+    static void RenderPose(Camera camera, string path)
+    {
+        var baked = new System.Collections.Generic.List<(SkinnedMeshRenderer skin, GameObject copy, Mesh mesh)>();
+        try
+        {
+            foreach (var root in camera.scene.GetRootGameObjects())
+            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>())
+            {
+                if (!skin.enabled || skin.forceRenderingOff || skin.GetComponentInParent<WeaponAimRig>() != null || (camera.cullingMask & (1 << skin.gameObject.layer)) == 0) continue;
+                var mesh = new Mesh();
+                skin.BakeMesh(mesh);
+                var copy = new GameObject("Baked pose preview");
+                copy.layer = skin.gameObject.layer;
+                copy.transform.SetParent(skin.transform, false);
+                copy.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = copy.AddComponent<MeshRenderer>();
+                renderer.sharedMaterials = skin.sharedMaterials;
+                renderer.shadowCastingMode = skin.shadowCastingMode;
+                skin.enabled = false;
+                baked.Add((skin, copy, mesh));
+            }
+            InstallNewWeapons.Render(camera, path);
+        }
+        finally
+        {
+            foreach (var item in baked)
+            {
+                item.skin.enabled = true;
+                UnityEngine.Object.DestroyImmediate(item.copy);
+                UnityEngine.Object.DestroyImmediate(item.mesh);
+            }
+        }
+    }
     [MenuItem("Tools/CounterMine/Validate RSH-12 and Winchester")]
     public static void Run()
     {
+        // Photon can retain a Joined editor state after Play Mode stops; the prefab
+        // inspection needs the same local ownership as a fresh offline session.
+        if (Photon.Pun.PhotonNetwork.InRoom) Photon.Pun.PhotonNetwork.Disconnect();
         var report=new StringBuilder();
         var previousTrails=UnityEngine.Object.FindObjectsByType<BulletTrail>(FindObjectsInactive.Include,FindObjectsSortMode.None).ToHashSet();
         try
@@ -60,8 +110,10 @@ using UnityEngine;
                     
                     foreach(string id in new[]{"rsh12","winchester1897"})
                     {
+                        Field(sync,"playbackSpeed",1f);
                         bool revolver=id=="rsh12";var e=sync.FindPreviewWeapon(id);Check(e!=null,id+" catalog");
-                        Check(sync.EquipWeapon(id)&&!sync.CanFire,id+" equip gate");
+                        bool equipped=sync.EquipWeapon(id);
+                        Check(equipped&&!sync.CanFire,id+" equip gate: equipped="+equipped+", active="+sync.isActiveAndEnabled+", inRoom="+Photon.Pun.PhotonNetwork.InRoom+", canFire="+sync.CanFire);
                         if(camera!=null&&path.Contains("Player"))
                         {
                             double equipTime=e.proceduralEquipSeconds*.2f;
@@ -71,24 +123,70 @@ using UnityEngine;
                             var equipMuzzle=camera.WorldToViewportPoint(e.muzzle.position);
                             bool InFrame(Vector3 point)=>point.z>camera.nearClipPlane&&point.x>.05f&&point.x<.95f&&point.y>.05f&&point.y<.95f;
                             Check(InFrame(equipSight)||InFrame(equipMuzzle),id+" disappears under the camera while drawing");
-                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-equip.png");
+                            RenderPose(camera,"Documentation/NewWeapons/"+id+"-equip.png");
                         }
                         e.characterIdle.SampleAnimation(sync.CharacterAnimator.gameObject,0);sync.RestartIdle();
                         if(cameraLook!=null)Call(cameraLook,"ApplyRotation");
                         Check(ammo.MagAmmo==5&&!e.automatic&&e.pelletCount==(revolver?1:8),id+" ammo/fire mode");
+                        if (!revolver) Check(e.damage==19&&Mathf.Abs(e.pelletSpreadDegrees-2.4f)<.001f&&
+                            Mathf.Abs(e.fullDamageRange-12f)<.001f&&Mathf.Abs(e.minimumDamageFraction-.2f)<.001f,
+                            "Winchester balance differs from the configured damage profile");
                         var mechanism=e.animator.GetComponent<WeaponManualAction>();Call(mechanism,"OnEnable");
                         if(presentation!=null)Call(presentation,"LateUpdate");
                         foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
                         if(camera!=null&&path.Contains("Player"))
                         {
                             
-                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-hip.png");
+                            if (!revolver) ValidateFirstPersonGrip(player, e, "hip");
+                            RenderPose(camera,"Documentation/NewWeapons/"+id+"-hip.png");
                             Check(Vector3.Distance(camera.transform.position,e.muzzle.position)<=e.maximumMuzzleReach,id+" muzzle reach");
+                            if(!revolver&&presentation!=null)
+                            {
+                                presentation.ConfigureView(false);sync.RestartIdle();
+                                Call(presentation,"LateUpdate");
+                                var worldIK=(WeaponHandIK)typeof(PlayerModelPresentation).GetField("worldIK",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(presentation);
+                                Check(worldIK!=null,"Winchester third-person hand solver missing");
+                                worldIK.Solve();
+                                var rightHand=(Transform)typeof(WeaponHandIK).GetField("rightHand",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(worldIK);
+                                float leftGap=Vector3.Distance(worldIK.LeftHand.position,e.leftGrip.position);
+                                float rightGap=Vector3.Distance(rightHand.position,e.rightGrip.position);
+                                var elbow=worldIK.LeftHand.parent;
+                                float leftElbowAngle=Vector3.Angle(elbow.parent.position-elbow.position,worldIK.LeftHand.position-elbow.position);
+                                Vector3 shoulderPosition=elbow.parent.position, leftHandPosition=worldIK.LeftHand.position;
+                                worldIK.Solve();
+                                Check(Vector3.Distance(shoulderPosition,elbow.parent.position)<.001f&&
+                                    Vector3.Distance(leftHandPosition,worldIK.LeftHand.position)<.001f,
+                                    "Winchester third-person IK drifts between repeated solves");
+                                var poseCamera=new GameObject("Winchester grip preview camera").AddComponent<Camera>();
+                                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(poseCamera.gameObject,player.scene);
+                                poseCamera.transform.position=player.transform.TransformPoint(new Vector3(1.4f,1.65f,1.5f));
+                                poseCamera.transform.LookAt(player.transform.TransformPoint(new Vector3(0,1.4f,.5f)));
+                                poseCamera.fieldOfView=48;poseCamera.scene=player.scene;
+                                RenderPose(poseCamera,"Documentation/NewWeapons/winchester1897-grip.png");
+                                UnityEngine.Object.DestroyImmediate(poseCamera.gameObject);
+                                Check(leftGap<.025f&&rightGap<.025f,"Winchester third-person grip gaps: "+leftGap+" / "+rightGap+
+                                    ", left grip="+e.leftGrip.position+", left grip local="+e.leftGrip.localPosition+
+                                    ", left hand="+worldIK.LeftHand.position+
+                                    ", right grip="+e.rightGrip.position+", right hand="+rightHand.position);
+                                Check(leftElbowAngle<155f,"Winchester third-person left elbow is overextended: "+leftElbowAngle);
+                                presentation.ConfigureView(true);sync.RestartIdle();
+                                report.AppendLine("PASS Winchester third-person grip: left="+leftGap.ToString("F4")+"m, right="+rightGap.ToString("F4")+"m, elbow="+leftElbowAngle.ToString("F1")+"°.");
+                            }
                             Call(aim,"Step",true,1f);Call(aim,"ApplyPose",1f);
+                            if(presentation!=null)Call(presentation,"LateUpdate");
                             foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
                             var point=camera.WorldToViewportPoint(e.aimRig.ActiveSight.AimPoint.position);Check(Mathf.Abs(point.x-.5f)<.001f&&Mathf.Abs(point.y-.5f)<.001f,id+" ADS axis");
-                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-ads.png");
+                            if(!revolver)
+                            {
+                                Check(Mathf.Abs(point.z-.32f)<.002f,"Winchester ADS eye relief changed by IK");
+                                var model=e.animator.transform.Find("Model");
+                                var bead=camera.WorldToViewportPoint(model.TransformPoint(InstallRshWinchester.WinchesterBead(model)));
+                                Check(Mathf.Abs(bead.x-.5f)<.002f&&Mathf.Abs(bead.y-.5f)<.002f,"Winchester bead does not match sight line");
+                            }
+                            if (!revolver) ValidateFirstPersonGrip(player, e, "ADS");
+                            RenderPose(camera,"Documentation/NewWeapons/"+id+"-ads.png");
                             Call(aim,"Step",false,1f);Call(aim,"ApplyPose",1f);
+                            if(presentation!=null)Call(presentation,"LateUpdate");
                         }
                         var pumpRest=mechanism.pump!=null?mechanism.pump.localPosition:Vector3.zero;
                         var cylinderRest=mechanism.cylinder!=null?mechanism.cylinder.localRotation:Quaternion.identity;
@@ -97,7 +195,7 @@ using UnityEngine;
                         Check(revolver?Quaternion.Angle(cylinderRest,mechanism.cylinder.localRotation)>60:Vector3.Distance(pumpRest,mechanism.pump.localPosition)>.0001f,id+" mechanical shot motion");
                         var grip=e.leftGrip.localPosition;
                         ammo.Consume();Check(ammo.MagAmmo==4,id+" one round per shot");Check(ammo.TryStartReload()&&!sync.CanFire,id+" reload gate");
-                        Field(sync,"elapsedSeconds",(double)(e.proceduralReloadSeconds*.45f));Call(sync,"EvaluatePair",(double)(e.proceduralReloadSeconds*.45f));Call(mechanism,"LateUpdate");
+                        Field(sync,"elapsedSeconds",(double)(e.proceduralReloadSeconds / e.magazineSize * .45f));Call(sync,"EvaluatePair",(double)(e.proceduralReloadSeconds / e.magazineSize * .45f));Call(mechanism,"LateUpdate");
                         if(cameraLook!=null)Call(cameraLook,"ApplyRotation");
                         Check(Vector3.Distance(grip,e.leftGrip.localPosition)>.005f,id+" reload hand motion");
                         if(revolver)Check(Quaternion.Angle(mechanism.cylinderArm.localRotation,armRest)>30f,id+" cylinder does not open during reload");
@@ -105,14 +203,18 @@ using UnityEngine;
                         foreach(var ik in player.GetComponentsInChildren<WeaponHandIK>(true))Call(ik,"LateUpdate");
                         if(camera!=null&&path.Contains("Player"))
                         {
-                            InstallNewWeapons.Render(camera,"Documentation/NewWeapons/"+id+"-reload.png");
+                            if (!revolver) ValidateFirstPersonGrip(player, e, "reload");
+                            RenderPose(camera,"Documentation/NewWeapons/"+id+"-reload.png");
                             var reloadSight=camera.WorldToViewportPoint(e.aimRig.ActiveSight.AimPoint.position);
                             var reloadMuzzle=camera.WorldToViewportPoint(e.muzzle.position);
                             bool InFrame(Vector3 point)=>point.z>camera.nearClipPlane&&point.x>.05f&&point.x<.95f&&point.y>.05f&&point.y<.95f;
                             Check(InFrame(reloadSight)||InFrame(reloadMuzzle),id+" disappears below the camera during reload: "+reloadSight+" / "+reloadMuzzle);
                         }
                         sync.EquipWeapon("ak74");sync.RestartIdle();sync.EquipWeapon(id);sync.RestartIdle();Check(ammo.MagAmmo==4,id+" interruption must preserve rounds");
-                        Check(ammo.TryStartReload(),id+" reload again");sync.RestartIdle();Call(ammo,"Update");Check(ammo.MagAmmo==5&&!ammo.IsReloading,id+" reload completion");
+                        Check(ammo.TryStartReload(),id+" reload again");
+                        double reloadDuration=(float)typeof(WeaponIdleSynchronizer).GetProperty("ActionDuration",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(sync);
+                        typeof(WeaponIdleSynchronizer).GetProperty("StartedAt").SetValue(sync,Time.timeAsDouble-reloadDuration-.01);
+                        Call(sync,"Update");Call(ammo,"Update");Check(ammo.MagAmmo==5&&!ammo.IsReloading,id+" reload completion");
                         Check(sync.ApplyNetworkState(id,"reload",0,0),id+" remote action");sync.RestartIdle();
                         Check(e.animator.GetComponentsInChildren<Renderer>(true).All(r=>r.sharedMaterials.All(m=>m!=null&&m.shader.isSupported)),id+" materials");
                         var network=player.GetComponent<NetworkWeapon>();var so=new SerializedObject(network);so.FindProperty("muzzleFlashEnabled").boolValue=false;so.ApplyModifiedPropertiesWithoutUndo();
@@ -149,15 +251,28 @@ using UnityEngine;
             Physics.SyncTransforms();int near=0,far=0;
             for(int i=0;i<8;i++)
             {
-                var v=NetworkWeapon.PelletVelocity(Vector3.forward*380,123,i,8,3.2f);
-                Check(v==NetworkWeapon.PelletVelocity(Vector3.forward*380,123,i,8,3.2f),"pellets differ for same shot");
-                Check(v!=NetworkWeapon.PelletVelocity(Vector3.forward*380,124,i,8,3.2f),"successive shot patterns identical");
-                var vertical=NetworkWeapon.PelletVelocity(Vector3.up*380,123,i,8,3.2f);Check(BulletHitUtility.IsFinite(vertical)&&Mathf.Abs(vertical.magnitude-380)<.01f,"vertical pellet basis");
+                var v=NetworkWeapon.PelletVelocity(Vector3.forward*380,123,i,8,2.4f);
+                Check(v==NetworkWeapon.PelletVelocity(Vector3.forward*380,123,i,8,2.4f),"pellets differ for same shot");
+                Check(v!=NetworkWeapon.PelletVelocity(Vector3.forward*380,124,i,8,2.4f),"successive shot patterns identical");
+                var vertical=NetworkWeapon.PelletVelocity(Vector3.up*380,123,i,8,2.4f);Check(BulletHitUtility.IsFinite(vertical)&&Mathf.Abs(vertical.magnitude-380)<.01f,"vertical pellet basis");
                 var hit=BulletHitUtility.Cast(origin,v.normalized,20,null,0,1<<29);Check(hit.didHit,"pellet passed cover");
                 float distance=hit.point.z-origin.z;if(distance<6)near++;else far++;
             }
             Check(near>0&&far>0&&near+far==8,"partial cover did not split pellet impacts");
-            Check(NetworkWeapon.DamageAtDistance(13,.15f,10,70,5)==13&&NetworkWeapon.DamageAtDistance(13,.15f,10,70,70)==2,"shotgun falloff");
+            Check(NetworkWeapon.DamageAtDistance(19,.2f,12,70,5)==19&&NetworkWeapon.DamageAtDistance(19,.2f,12,70,70)==4,"shotgun falloff");
+            for(int sequence=1;sequence<=100;sequence++)
+            {
+                int hitsAtTenMetres=0, hitsAtTwentyMetres=0;
+                for(int pellet=0;pellet<8;pellet++)
+                {
+                    var direction=NetworkWeapon.PelletVelocity(Vector3.forward*380,sequence,pellet,8,2.4f);
+                    float horizontal=direction.x/direction.z, verticalOffset=direction.y/direction.z;
+                    if(Mathf.Abs(horizontal*10f)<=.275f&&Mathf.Abs(verticalOffset*10f)<=.85f)hitsAtTenMetres++;
+                    if(Mathf.Abs(horizontal*20f)<=.275f&&Mathf.Abs(verticalOffset*20f)<=.85f)hitsAtTwentyMetres++;
+                }
+                Check(hitsAtTenMetres*NetworkWeapon.DamageAtDistance(19,.2f,12,70,10)>=100,"centered shotgun burst too weak at 10 m");
+                Check(hitsAtTwentyMetres*NetworkWeapon.DamageAtDistance(19,.2f,12,70,20)<100,"shotgun burst too strong at 20 m");
+            }
         }
         finally{UnityEngine.Object.DestroyImmediate(wall);UnityEngine.Object.DestroyImmediate(backing);}
     }

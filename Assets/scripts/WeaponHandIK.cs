@@ -26,18 +26,81 @@ public sealed class WeaponHandIK : MonoBehaviour
     private GrenadeThrowIK grenadeThrow;
     private Transform adjustedShoulder;
     private Vector3 shoulderRestPosition, shoulderPosedPosition;
+    private Transform adjustedRightShoulder;
+    private Vector3 rightShoulderRestPosition, rightShoulderPosedPosition;
+    private Transform fittedWeapon;
+    private Vector3 weaponRestPosition, weaponPosedPosition;
+    private void RestoreWeaponReach()
+    {
+        if (fittedWeapon != null && fittedWeapon.localPosition.Equals(weaponPosedPosition))
+            fittedWeapon.localPosition = weaponRestPosition;
+        fittedWeapon = null;
+    }
+
+    private bool IsWinchester => leftGrip != null && leftGrip.parent != null &&
+        leftGrip.parent.name == "winchester1897_Weapon";
+
+    private void FitWinchesterReach()
+    {
+        // This rig has no clavicles. Moving an upper arm detaches the shoulder
+        // from the chest. Bring the gun towards the body along the view axis
+        // instead, retaining the sight line and both physical grip locations.
+        var weapon = leftGrip.parent;
+        Vector3 forward = animationSource != null ? animationSource.transform.forward : transform.forward;
+        float retreat = GetWeaponRetreat(forward);
+        if (retreat <= 0f) return;
+        fittedWeapon = weapon;
+        weaponRestPosition = weapon.localPosition;
+        weapon.position -= forward * Mathf.Min(retreat, .35f);
+        weaponPosedPosition = weapon.localPosition;
+    }
+
+    public float GetWeaponRetreat(Vector3 forward) => IsWinchester && leftHand != null && rightHand != null && rightGrip != null
+        ? Mathf.Max(RequiredRetreat(leftHand, leftGrip, forward), RequiredRetreat(rightHand, rightGrip, forward)) : 0f;
+
+    private static float RequiredRetreat(Transform hand, Transform grip, Vector3 forward)
+    {
+        if (hand.parent == null || hand.parent.parent == null) return 0f;
+        var shoulder = hand.parent.parent;
+        float reach = (Vector3.Distance(shoulder.position, hand.parent.position) +
+            Vector3.Distance(hand.parent.position, hand.position)) * .96f;
+        Vector3 delta = grip.position - shoulder.position;
+        if (delta.sqrMagnitude <= reach * reach) return 0f;
+        float along = Vector3.Dot(delta, forward);
+        return Mathf.Max(0f, along - Mathf.Sqrt(Mathf.Max(0f,
+            reach * reach - (delta.sqrMagnitude - along * along))));
+    }
     private void RestoreShoulder()
     {
         if (adjustedShoulder != null && adjustedShoulder.localPosition.Equals(shoulderPosedPosition))
             adjustedShoulder.localPosition = shoulderRestPosition;
         adjustedShoulder = null;
+        if (adjustedRightShoulder != null && adjustedRightShoulder.localPosition.Equals(rightShoulderPosedPosition))
+            adjustedRightShoulder.localPosition = rightShoulderRestPosition;
+        adjustedRightShoulder = null;
+    }
+
+    private void FitProceduralArm(Transform hand, Transform grip, bool right)
+    {
+        if (hand.parent == null || hand.parent.parent == null) return;
+        var shoulder = hand.parent.parent;
+        float length = Vector3.Distance(shoulder.position,hand.parent.position)+Vector3.Distance(hand.parent.position,hand.position);
+        float bend = right ? .98f : thirdPersonFrame != null ? .86f : .94f;
+        Vector3 delta = grip.position-shoulder.position;
+        float advance = Mathf.Clamp(delta.magnitude-length*bend,0f,right?.12f:.20f);
+        if (advance <= 0f) return;
+        Vector3 rest=shoulder.localPosition;
+        shoulder.position+=delta.normalized*advance;
+        if(right){adjustedRightShoulder=shoulder;rightShoulderRestPosition=rest;rightShoulderPosedPosition=shoulder.localPosition;}
+        else {adjustedShoulder=shoulder;shoulderRestPosition=rest;shoulderPosedPosition=shoulder.localPosition;}
     }
 
     private void FitLongGunLeftArm()
     {
-        if (thirdPersonFrame == null || leftGrip.parent == null) return;
+        if (leftGrip.parent == null) return;
         string weaponName = leftGrip.parent.name;
-        if (weaponName != "HK416_Weapon" && weaponName != "L115A3_Weapon" && weaponName != "winchester1897_Weapon") return;
+        if (thirdPersonFrame == null) return;
+        if (weaponName != "HK416_Weapon" && weaponName != "L115A3_Weapon") return;
         var upperArm = leftHand.parent.parent;
         float reach = (Vector3.Distance(upperArm.position, leftHand.parent.position) +
             Vector3.Distance(leftHand.parent.position, leftHand.position)) * .99f;
@@ -65,6 +128,7 @@ public sealed class WeaponHandIK : MonoBehaviour
 
     public void SetGrips(Transform left, Transform right)
     {
+        RestoreWeaponReach();
         RestoreShoulder();
         leftGrip = left; rightGrip = right; leftSolver = rightSolver = null;
     }
@@ -127,7 +191,10 @@ public sealed class WeaponHandIK : MonoBehaviour
     public void Solve()
     {
         RestoreShoulder();
+        RestoreWeaponReach();
         if (leftHand == null || rightHand == null || leftGrip == null || rightGrip == null) return;
+        bool winchester = IsWinchester;
+        if (winchester && GetComponentInParent<PlayerModelPresentation>() == null) FitWinchesterReach();
         leftSolver ??= CreateSolver(leftHand, leftGrip, AvatarIKGoal.LeftHand);
         rightSolver ??= CreateSolver(rightHand, rightGrip, AvatarIKGoal.RightHand);
         grenadeThrow ??= GetComponentInParent<GrenadeThrowIK>();
@@ -144,9 +211,13 @@ public sealed class WeaponHandIK : MonoBehaviour
         }
         else
         {
-            FitLongGunLeftArm();
+            if (!winchester && animationSource != null && WeaponProceduralMotion.Supports(animationSource.WeaponId))
+                FitProceduralArm(leftHand,leftGrip,false);
+            else if (!winchester) FitLongGunLeftArm();
             UpdateSolver(leftSolver, leftGrip, leftHandWeight, -1f);
         }
+        if (!winchester && animationSource != null && WeaponProceduralMotion.Supports(animationSource.WeaponId))
+            FitProceduralArm(rightHand,rightGrip,true);
         UpdateSolver(rightSolver, rightGrip, rightHandWeight, 1f);
     }
 
@@ -184,6 +255,7 @@ public sealed class WeaponHandIK : MonoBehaviour
 
     private void OnDisable()
     {
+        RestoreWeaponReach();
         RestoreBreathing();
         RestoreShoulder();
         breathingWeight = 0f; hasPreviousPosition = false;

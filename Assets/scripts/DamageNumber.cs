@@ -65,6 +65,7 @@ public sealed class DamageNumber : MonoBehaviour
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
+        GameLocalization.PrepareDynamic(text);
         var outline = go.AddComponent<Outline>();
         outline.effectColor = new Color(0f, 0f, 0f, .85f);
         outline.effectDistance = new Vector2(3f, -3f);

@@ -65,6 +65,9 @@ public static class ValidateUCP
                         clip.SampleAnimation(target.gameObject,clip.length*.5f);
                     }
                     sync.RestartIdle();
+                    // Procedural UCP uses the idle clip plus the same IK pass as
+                    // gameplay; measure the solved wrists rather than raw clip bones.
+                    foreach(var hands in root.GetComponentsInChildren<WeaponHandIK>(true))hands.Solve();
                     var ik=new SerializedObject(root.GetComponentInChildren<WeaponHandIK>(true));
                     foreach(var side in new[]{"left","right"})
                     {

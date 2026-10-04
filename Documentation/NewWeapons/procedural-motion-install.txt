@@ -1,0 +1,1 @@
+PASS reference and both prefab catalogs installed

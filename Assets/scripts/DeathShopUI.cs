@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>Death-screen shop. Purchases persist; selections are applied to the next player life.</summary>
@@ -58,6 +59,7 @@ public sealed class DeathShopUI : MonoBehaviour
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         GameLocalization.Bind(message, mainMenu ? "Покупки навсегда. Снаряжение готово к следующему бою." : "Покупки остаются навсегда. Выбор применяется после возрождения.");
         ShowCategory(category);
+        if(tabs.Count>0)EventSystem.current?.SetSelectedGameObject(tabs[(int)category].gameObject);
     }
     public void Close() => gameObject.SetActive(false);
     public void ShowPreview(YandexPlayerData data, ShopCategory tab)
@@ -78,7 +80,7 @@ public sealed class DeathShopUI : MonoBehaviour
     {
         var panel = Rect("Shop Panel", transform, Vector2.zero, Vector2.one);
         shopPanel = panel; visibility = GetComponent<CanvasGroup>();
-        GameUIStyle.Surface(panel.gameObject.AddComponent<Image>(), Panel);
+        GameUIStyle.PanelSurface(panel.gameObject.AddComponent<Image>());
         // The model is the full-screen background; all shop controls sit above it.
         BuildInspector(panel);
         var title = Label(panel, "Title", "МАГАЗИН / СНАРЯЖЕНИЕ", 20, Muted);
@@ -92,14 +94,14 @@ public sealed class DeathShopUI : MonoBehaviour
         {
             int index = i;
             var tab = Button(panel, titles[i], titles[i], () => { Click(); ShowCategory((ShopCategory)index); }); tabs.Add(tab);
-            Place(tab.GetComponent<RectTransform>(), new Vector2(.30f+i*.15f,0), new Vector2(.45f+i*.15f,0), new Vector2(5,12), new Vector2(-5,48));
+            Place(tab.GetComponent<RectTransform>(), new Vector2(.30f+i*.15f,0), new Vector2(.45f+i*.15f,0), new Vector2(5,16), new Vector2(-5,60));
             var underline = Rect("Active underline", tab.transform, Vector2.zero, new Vector2(1,0));
             underline.sizeDelta = new Vector2(0,2);
             var line = underline.gameObject.AddComponent<Image>(); line.color = Accent; line.raycastTarget = false;
         }
         var scrollRoot = Rect("Items", panel, Vector2.zero, Vector2.one);
         scrollRoot.anchorMax = new Vector2(.18f,1);
-        scrollRoot.offsetMin = new Vector2(16,65); scrollRoot.offsetMax = new Vector2(-4,-90);
+        scrollRoot.offsetMin = new Vector2(16,80); scrollRoot.offsetMax = new Vector2(-4,-90);
         var scroll = scrollRoot.gameObject.AddComponent<ScrollRect>(); scroll.horizontal = false; scroll.movementType = ScrollRect.MovementType.Clamped;
         var viewport = Rect("Viewport", scrollRoot, Vector2.zero, Vector2.one);
         viewport.offsetMax = new Vector2(-12, 0);
@@ -123,9 +125,8 @@ public sealed class DeathShopUI : MonoBehaviour
         message = Label(panel, "Message", "", 13, Muted);
         Place(message.rectTransform, new Vector2(.48f,0), new Vector2(.97f,0), new Vector2(0,61), new Vector2(0,99));
         var done = Button(panel, "Return to death screen", "НАЗАД", () => { Click(); Close(); });
-        done.GetComponent<Image>().color = new Color(.86f,.87f,.85f);
-        done.GetComponentInChildren<Text>().color = Color.black;
-        Place(done.GetComponent<RectTransform>(), Vector2.zero, new Vector2(.13f,0), new Vector2(16,17), new Vector2(0,43));
+        done.GetComponentInChildren<Text>().color = GameUIStyle.Text;
+        Place(done.GetComponent<RectTransform>(), Vector2.zero, new Vector2(.16f,0), new Vector2(16,17), new Vector2(0,60));
     }
     private void ShowCategory(ShopCategory next)
     {
@@ -153,8 +154,10 @@ public sealed class DeathShopUI : MonoBehaviour
         var card = Rect(item.id, content, Vector2.zero, Vector2.one);
         var surface = card.gameObject.AddComponent<Image>(); surface.color = new Color(.075f,.078f,.08f,.85f);
         var button = card.gameObject.AddComponent<Button>(); button.targetGraphic = surface;
+        GameUIStyle.StyleButton(button);
+        var colors=button.colors;colors.normalColor=colors.selectedColor=Color.white;colors.highlightedColor=new Color(.94f,.98f,1f);button.colors=colors;
         button.onClick.AddListener(() => { Click(); Inspect(item); });
-        var layout = card.gameObject.AddComponent<LayoutElement>(); layout.preferredHeight = layout.minHeight = 86;
+        var layout = card.gameObject.AddComponent<LayoutElement>(); layout.preferredHeight = layout.minHeight = 96;
         var marker = Rect("Equipped Marker", card, Vector2.zero, new Vector2(0,1));
         marker.offsetMin = new Vector2(0,10); marker.offsetMax = new Vector2(3,-10);
         var markerImage = marker.gameObject.AddComponent<Image>(); markerImage.color = Accent;
@@ -169,7 +172,6 @@ public sealed class DeathShopUI : MonoBehaviour
         Place(row.badge.rectTransform,new Vector2(.04f,.01f),new Vector2(.96f,.24f),Vector2.zero,Vector2.zero);
         rows.Add(row);
     }
-    private static string L(string ru, string en) => GameLocalization.Language == "ru" ? ru : en;
     private void BuildInspector(RectTransform panel)
     {
         var root = Rect("Weapon inspector", panel, Vector2.zero, Vector2.one);
@@ -198,10 +200,10 @@ public sealed class DeathShopUI : MonoBehaviour
         itemDescription.alignment = TextAnchor.UpperCenter;
         Place(itemDescription.rectTransform,new Vector2(.30f,.74f),new Vector2(.85f,.80f),Vector2.zero,Vector2.zero);
         rotateHint = Label(root,"Rotate hint","",13,Muted);
-        Place(rotateHint.rectTransform,new Vector2(.48f,.26f),new Vector2(.87f,.30f),Vector2.zero,Vector2.zero);
+        Place(rotateHint.rectTransform,new Vector2(.48f,.28f),new Vector2(.87f,.32f),Vector2.zero,Vector2.zero);
         var reset = Button(root,"Reset view","",() => weaponPreview.ResetView());
-        GameLocalization.Bind(reset.GetComponentInChildren<Text>(), () => L("СБРОС","RESET"));
-        Place(reset.GetComponent<RectTransform>(),new Vector2(.88f,.26f),new Vector2(.97f,.30f),Vector2.zero,Vector2.zero);
+        GameLocalization.Bind(reset.GetComponentInChildren<Text>(), () => GameLocalization.T("СБРОС"));
+        Place(reset.GetComponent<RectTransform>(),new Vector2(.88f,.28f),new Vector2(.97f,.32f),Vector2.zero,Vector2.zero);
         var details = Rect("Weapon statistics", root, new Vector2(.19f,.14f), new Vector2(.43f,.39f));
         itemStats = Label(details,"Stat labels","",14,GameUIStyle.Text);
         statValues = Label(details,"Stat values","",14,GameUIStyle.Text);
@@ -219,10 +221,10 @@ public sealed class DeathShopUI : MonoBehaviour
         }
         itemPrice = Label(root,"Weapon price","",18,GameUIStyle.Text);
         itemPrice.alignment = TextAnchor.MiddleRight;
-        Place(itemPrice.rectTransform,new Vector2(.76f,.19f),new Vector2(.97f,.24f),Vector2.zero,Vector2.zero);
+        Place(itemPrice.rectTransform,new Vector2(.76f,.22f),new Vector2(.97f,.27f),Vector2.zero,Vector2.zero);
         itemButton = Button(root,"Purchase or equip","",() => { if(inspected != null) Use(inspected); });
-        Place(itemButton.GetComponent<RectTransform>(),new Vector2(.76f,.14f),new Vector2(.97f,.19f),Vector2.zero,Vector2.zero);
-        itemButton.GetComponent<Image>().color = new Color(.86f,.87f,.85f);
+        Place(itemButton.GetComponent<RectTransform>(),new Vector2(.76f,.135f),new Vector2(.97f,.21f),Vector2.zero,Vector2.zero);
+        GameUIStyle.StyleButton(itemButton,true);
         itemAction = itemButton.GetComponentInChildren<Text>(); itemAction.color = Color.black;
     }
     private void Inspect(ShopCatalog.Item item)
@@ -241,18 +243,17 @@ public sealed class DeathShopUI : MonoBehaviour
         itemDescription.text = GameLocalization.T(inspected.description);
         var entry = weaponPreview.Entry;
         itemStats.text = entry == null ? GameLocalization.T(inspected.detail) :
-            L("Урон\nМагазин\nТемп, выстр./мин\nСкорость пули, м/с\nПолный урон, м\nДальность, м\nРежим огня",
-              "Damage\nMagazine\nFire rate, RPM\nVelocity, m/s\nFull damage, m\nRange, m\nFire mode");
+            GameLocalization.T("Урон\nМагазин\nТемп, выстр./мин\nСкорость пули, м/с\nПолный урон, м\nДальность, м\nРежим огня");
         statValues.text = entry == null ? "" : entry.damage + (entry.pelletCount > 1 ? " × " + entry.pelletCount : "") +
             "\n" + entry.magazineSize + "\n" + Mathf.RoundToInt(entry.roundsPerMinute) + "\n" + Mathf.RoundToInt(entry.muzzleVelocity) +
             "\n" + entry.fullDamageRange.ToString("0") + "\n" + entry.maximumRange.ToString("0") + "\n" +
-            (entry.automatic ? L("АВТО", "AUTO") : L("ОДИН.", "SEMI"));
-        rotateHint.text = weaponPreview.HasModel ? L("ЛКМ — вращать · Колесо — масштаб", "DRAG — rotate · SCROLL — zoom") : L("БОЕВАЯ СПОСОБНОСТЬ", "COMBAT ABILITY");
+            (entry.automatic ? GameLocalization.T("АВТО") : GameLocalization.T("ОДИН."));
+        rotateHint.text = weaponPreview.HasModel ? GameLocalization.T("ЛКМ — вращать · Колесо — масштаб") : GameLocalization.T("БОЕВАЯ СПОСОБНОСТЬ");
         bool owned = Data.Owns(inspected.id), equipped = Data.IsEquipped(inspected.id);
-        itemPrice.text = !Loaded ? L("ЗАГРУЗКА…","LOADING…") : owned ? L("В АРСЕНАЛЕ","OWNED") : inspected.price.ToString("N0") + " $";
-        itemAction.text = !Loaded ? L("ЗАГРУЗКА…","LOADING…") : !owned ? Data.money >= inspected.price ?
-            L("КУПИТЬ И ВЫБРАТЬ","BUY & EQUIP") : L("НЕ ХВАТАЕТ ДЕНЕГ","NOT ENOUGH FUNDS") : equipped ?
-            inspected.category == ShopCategory.Skill ? L("УБРАТЬ","UNEQUIP") : L("ВЫБРАНО","EQUIPPED") : L("ВЫБРАТЬ","EQUIP");
+        itemPrice.text = !Loaded ? GameLocalization.T("ЗАГРУЗКА…") : owned ? GameLocalization.T("В АРСЕНАЛЕ") : inspected.price.ToString("N0") + " $";
+        itemAction.text = !Loaded ? GameLocalization.T("ЗАГРУЗКА…") : !owned ? Data.money >= inspected.price ?
+            GameLocalization.T("КУПИТЬ И ВЫБРАТЬ") : GameLocalization.T("НЕ ХВАТАЕТ ДЕНЕГ") : equipped ?
+            inspected.category == ShopCategory.Skill ? GameLocalization.T("УБРАТЬ") : GameLocalization.T("ВЫБРАНО") : GameLocalization.T("ВЫБРАТЬ");
         itemButton.interactable = !preview && Loaded && (owned || Data.money >= inspected.price) && (!equipped || inspected.category == ShopCategory.Skill);
         itemAction.color = itemButton.interactable ? new Color(.06f,.075f,.08f) : Muted;
     }
@@ -275,8 +276,8 @@ public sealed class DeathShopUI : MonoBehaviour
         {
             bool owned = Data.Owns(row.item.id), selected = Data.IsEquipped(row.item.id);
             row.marker.enabled = selected;
-            row.surface.color = row.item == inspected ? new Color(.20f,.21f,.21f,.95f) : new Color(.075f,.078f,.08f,.85f);
-            row.badge.text = !Loaded ? L("ЗАГРУЗКА…","LOADING…") : selected ? L("В СНАРЯЖЕНИИ","EQUIPPED") : owned ? L("КУПЛЕНО","OWNED") : row.item.price.ToString("N0") + " $";
+            row.surface.color = row.item == inspected ? new Color(.13f,.19f,.25f,.98f) : Card;
+            row.badge.text = !Loaded ? GameLocalization.T("ЗАГРУЗКА…") : selected ? GameLocalization.T("В СНАРЯЖЕНИИ") : owned ? GameLocalization.T("КУПЛЕНО") : row.item.price.ToString("N0") + " $";
             row.badge.color = selected ? Accent : Muted;
             row.button.interactable = true; // Browsing never purchases or changes the loadout.
 
@@ -307,7 +308,7 @@ public sealed class DeathShopUI : MonoBehaviour
     {
         var rect = Rect(name, parent, Vector2.zero, Vector2.one); var image = rect.gameObject.AddComponent<Image>(); image.color = new Color(.10f,.24f,.31f);
         var button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image; button.navigation = new Navigation { mode = Navigation.Mode.None };
-        image.color = new Color(.09f,.095f,.10f,.65f);
+        GameUIStyle.StyleButton(button);
         button.onClick.AddListener(action); var text = Label(rect, "Label", label, 16, Color.white); text.alignment = TextAnchor.MiddleCenter;
         text.rectTransform.offsetMin = new Vector2(8,4); text.rectTransform.offsetMax = new Vector2(-8,-4); return button;
     }

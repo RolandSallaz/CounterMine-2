@@ -47,11 +47,11 @@ public sealed class DeploymentScreen : MonoBehaviour
         backdrop.gameObject.AddComponent<Image>().color = new Color(.012f, .018f, .022f, .42f);
 
         preparation = Rect("Preparation", transform, Vector2.one * .5f, Vector2.one * .5f);
-        preparation.sizeDelta = new Vector2(480, 360);
-        GameUIStyle.Surface(preparation.gameObject.AddComponent<Image>(), GameUIStyle.Panel);
-        var shadow = preparation.gameObject.AddComponent<Shadow>();
+        preparation.sizeDelta = new Vector2(520, 392);
+        GameUIStyle.PanelSurface(preparation.gameObject.AddComponent<Image>(),true);
+        var shadow = System.Array.Find(preparation.gameObject.GetComponents<Shadow>(),s=>!(s is Outline));
         shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(0, -8);
-        var border = preparation.gameObject.AddComponent<Outline>();
+        var border = preparation.gameObject.GetComponent<Outline>();
         border.effectColor = new Color(.72f, .8f, .83f, .12f); border.effectDistance = new Vector2(1, -1);
         preparationGroup = preparation.gameObject.AddComponent<CanvasGroup>();
         preparationGroup.alpha = 0;
@@ -59,11 +59,11 @@ public sealed class DeploymentScreen : MonoBehaviour
         var accent = Rect("Accent", preparation, new Vector2(.43f, 1), new Vector2(.57f, 1));
         accent.sizeDelta = new Vector2(0, 2);
         var accentImage = accent.gameObject.AddComponent<Image>();
-        accentImage.color = new Color(.88f, .76f, .49f); accentImage.raycastTarget = false;
+        accentImage.color = GameUIStyle.Accent; accentImage.raycastTarget = false;
         var title = Label(preparation, "BLOCKFIELD", 34, .69f, .88f);
         title.fontStyle = FontStyle.Bold;
         title.color = new Color(.94f, .95f, .91f);
-        var subtitle = Label(preparation, "Подготовка к бою", 14, .60f, .70f);
+        var subtitle = Label(preparation, "Подготовка к бою", 17, .60f, .70f);
         subtitle.color = GameUIStyle.Muted;
 
         shop = DeathShopUI.Create(transform, null, lobby.Deploy, () => gameObject.activeInHierarchy);
@@ -159,7 +159,7 @@ public sealed class DeploymentScreen : MonoBehaviour
         reveal = Mathf.Min(1f, reveal + Time.unscaledDeltaTime / .22f);
         preparationGroup.alpha = Mathf.SmoothStep(0, 1, reveal);
         var canvasRect = (RectTransform)transform;
-        float scale = Mathf.Min(1f, Mathf.Min((canvasRect.rect.width - 40) / 480f, (canvasRect.rect.height - 40) / 360f));
+        float scale = Mathf.Min(1f, Mathf.Min((canvasRect.rect.width - 40) / preparation.sizeDelta.x, (canvasRect.rect.height - 40) / preparation.sizeDelta.y));
         preparation.localScale = Vector3.one * Mathf.Max(.1f, scale);
         if (!PlatformLifecycle.InputBlocked && Time.frameCount > openedFrame && !shop.IsOpen && lobby.CanDeploy && Keyboard.current?.spaceKey.wasPressedThisFrame == true) lobby.Deploy();
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>Room list in the opening menu, driven by Photon lobby updates.</summary>
 public sealed class RoomBrowserScreen : MonoBehaviour
@@ -13,6 +14,11 @@ public sealed class RoomBrowserScreen : MonoBehaviour
     private RectTransform content;
     private int lastRevision = -1;
     private string lastSearch;
+    private void OnEnable()
+    {
+        lastRevision=-1;
+        if(search!=null)EventSystem.current?.SetSelectedGameObject(search.gameObject);
+    }
 
     public static RoomBrowserScreen Create(Transform parent, LobbyManager lobby)
     {
@@ -20,7 +26,7 @@ public sealed class RoomBrowserScreen : MonoBehaviour
         var browser = root.gameObject.AddComponent<RoomBrowserScreen>();
         browser.lobby = lobby;
         var background = root.gameObject.AddComponent<Image>();
-        GameUIStyle.Surface(background, new Color(.025f, .037f, .046f, .96f));
+        GameUIStyle.PanelSurface(background,true);
 
         var heading = Label(root, "КОМНАТЫ", 32, new Vector2(.035f,.88f), new Vector2(.65f,.98f));
         heading.fontStyle = FontStyle.Bold; heading.color = GameUIStyle.Accent;
@@ -32,7 +38,7 @@ public sealed class RoomBrowserScreen : MonoBehaviour
         browser.count.color = GameUIStyle.Muted;
 
         var viewport = Rect("Rooms Viewport", root, new Vector2(.035f,.30f), new Vector2(.965f,.73f));
-        viewport.gameObject.AddComponent<Image>().color = new Color(.015f,.025f,.032f,.95f);
+        GameUIStyle.Surface(viewport.gameObject.AddComponent<Image>(),new Color(.018f,.028f,.042f,.96f));
         viewport.gameObject.AddComponent<Mask>().showMaskGraphic = true;
         var scroll = viewport.gameObject.AddComponent<ScrollRect>();
         scroll.horizontal = false;
@@ -40,7 +46,7 @@ public sealed class RoomBrowserScreen : MonoBehaviour
         browser.content = Rect("Room Rows", viewport, new Vector2(0,1), new Vector2(1,1));
         browser.content.pivot = new Vector2(.5f,1);
         var layout = browser.content.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 3; layout.padding = new RectOffset(5,5,5,5);
+        layout.spacing = 8; layout.padding = new RectOffset(8,8,8,8);
         layout.childControlWidth = true; layout.childForceExpandWidth = true; layout.childForceExpandHeight = false;
         browser.content.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         scroll.content = browser.content; scroll.viewport = viewport;
@@ -84,11 +90,12 @@ public sealed class RoomBrowserScreen : MonoBehaviour
             bool joinable = room.IsOpen && (room.MaxPlayers == 0 || room.PlayerCount < room.MaxPlayers);
             var row = new GameObject("Room: " + room.Name, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             row.transform.SetParent(content, false);
-            row.GetComponent<LayoutElement>().preferredHeight = 54;
+            row.GetComponent<LayoutElement>().preferredHeight = 62;
             row.GetComponent<Image>().color = joinable ? new Color(.10f,.15f,.18f,.97f) : new Color(.07f,.09f,.10f,.9f);
             var button = row.GetComponent<Button>(); button.targetGraphic = row.GetComponent<Image>();
+            GameUIStyle.StyleButton(button);
             button.interactable = joinable;
-            button.navigation = new Navigation { mode = Navigation.Mode.None };
+            button.navigation = new Navigation { mode = Navigation.Mode.Automatic };
             string name = room.Name;
             button.onClick.AddListener(() => lobby.JoinSelectedRoom(name));
             Label(row.transform, room.Name, 18, new Vector2(.025f,.08f), new Vector2(.68f,.92f));
@@ -154,6 +161,7 @@ public sealed class RoomBrowserScreen : MonoBehaviour
         field.placeholder = placeholder;
         field.characterLimit = 32;
         field.lineType = InputField.LineType.SingleLine;
+        GameUIStyle.StyleInput(field);
         return field;
     }
 }

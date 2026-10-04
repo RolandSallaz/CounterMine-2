@@ -74,8 +74,27 @@ public sealed class PlayerHUD : MonoBehaviour
         // (and respawn button) works even before Bind() in all builds.
         if (transform.localScale.x == 0f) transform.localScale = Vector3.one;
         GameLocalization.BindHUD(transform);
+        ApplyVisualStyle();
         hudCanvas = GetComponent<Canvas>();
         UpdateSafeArea();
+    }
+
+    private void ApplyVisualStyle()
+    {
+        foreach(var image in GetComponentsInChildren<Image>(true))
+        {
+            if(image.name=="Vitals"||image.name=="Weapon"||image.name=="Identity"||image.name=="Weapon Action")
+            {
+                GameUIStyle.PanelSurface(image);
+                image.color=new Color(GameUIStyle.Panel.r,GameUIStyle.Panel.g,GameUIStyle.Panel.b,.88f);
+                image.raycastTarget=false;
+            }
+        }
+        foreach(var text in new[]{healthValue,ammoLabel,weaponName})
+            if(text!=null){text.fontStyle=FontStyle.Bold;text.color=GameUIStyle.Text;}
+        if(actionFill!=null)actionFill.color=GameUIStyle.Accent;
+        if(actionLabel!=null)actionLabel.color=GameUIStyle.Text;
+        if(staminaFill!=null)staminaFill.color=new Color(.42f,.78f,.93f);
     }
 
     private void UpdateSafeArea()
@@ -303,6 +322,7 @@ public sealed class PlayerHUD : MonoBehaviour
         var go = new GameObject("Label");
         go.transform.SetParent(parent, false);
         var label = go.AddComponent<Text>();
+        GameLocalization.PrepareDynamic(label);
         label.font = killfeedFont;
         label.fontSize = killfeedFontSize;
         label.fontStyle = FontStyle.Normal;
@@ -623,6 +643,7 @@ public sealed class PlayerHUD : MonoBehaviour
         labelRect.pivot = new Vector2(.5f, .5f);
         labelRect.sizeDelta = Vector2.zero;
         respawnLabel = labelGo.AddComponent<Text>();
+        GameLocalization.PrepareDynamic(respawnLabel);
         respawnLabel.font = font;
         respawnLabel.fontSize = 22;
         respawnLabel.fontStyle = FontStyle.Bold;

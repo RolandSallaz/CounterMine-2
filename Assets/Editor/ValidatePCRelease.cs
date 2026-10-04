@@ -44,6 +44,10 @@ public static class ValidatePCRelease
                 Check(DesktopControls.ModalOpen, "Help did not open");
                 Check(PlatformLifecycle.InputBlocked && AudioListener.pause && Time.timeScale == 0, "Offline help must pause input, audio and simulation");
                 var body = controls.GetComponentsInChildren<Text>().Single(t => t.name == "Instructions");
+                Check(controls.GetComponentsInChildren<Text>(true).All(t => t.GetComponent<YG.LanguageLegacy.LanguageYG>() != null), "Controls text lacks YGames translator");
+                YG.YG2.SwitchLanguage("en"); controls.SendMessage("Update");
+                Check(body.text.StartsWith("CONTROLS"), "Controls did not translate through YGames");
+                YG.YG2.SwitchLanguage("ru"); controls.SendMessage("Update");
                 Check(body.preferredHeight <= body.rectTransform.rect.height + 1, "Controls text overflows vertically");
                 Directory.CreateDirectory(folder); ScreenCapture.CaptureScreenshot(folder + "/pc-controls.png");
                 step++; return;

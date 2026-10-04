@@ -1,4 +1,5 @@
 PASS Assets/Resources/Player.prefab rsh12: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
+PASS Winchester third-person grip: left=0,0000m, right=0,0000m, elbow=147,5°.
 PASS Assets/Resources/Player.prefab winchester1897: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
 PASS Assets/Resources/Bot.prefab rsh12: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.
 PASS Assets/Resources/Bot.prefab winchester1897: equip, ADS, materials, ammo, reload interruption/completion, network action, projectile count/cone/speed, duplicate confirmation.

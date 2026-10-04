@@ -10,6 +10,26 @@ using UnityEngine;
 public static class InstallRshWinchester
 {
     const string Folder="Assets/Resources/NewWeapons/";
+    public static Vector3 WinchesterBead(Transform model)
+    {
+        // The weapon uses its native skin renderer. BakeMesh in prefab edit
+        // scenes changes the armature pose, so use the imported rest geometry.
+        var vertices=model.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+            .SelectMany(skin=>skin.sharedMesh.vertices.Select(v=>model.InverseTransformPoint(skin.transform.TransformPoint(v))))
+            .Where(v=>v.x< -4.1f&&Mathf.Abs(v.z)<.02f).ToArray();
+        float top=vertices.Max(v=>v.y);
+        var bead=vertices.Where(v=>v.y>top-.0001f).ToArray();
+        return new Vector3(bead.Average(v=>v.x),top,0f);
+    }
+    public static void ConfigureWinchesterSight(Transform model, WeaponSight sight)
+    {
+        Vector3 rear = new Vector3(.90f,.90f,0f);
+        sight.transform.SetPositionAndRotation(model.TransformPoint(rear),
+            Quaternion.LookRotation(model.TransformDirection(WinchesterBead(model)-rear),model.up));
+        var so=new SerializedObject(sight);
+        so.FindProperty("eyeRelief").floatValue=.32f;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
     static InstallRshWinchester()=>EditorApplication.update+=Poll;
     static void Poll()
     {
@@ -72,11 +92,12 @@ public static class InstallRshWinchester
                 new GameObject("IdleClock").transform.SetParent(weapon.transform,false);
                 var animator=weapon.AddComponent<Animator>();animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;var animancer=weapon.AddComponent<AnimancerComponent>();animancer.Animator=animator;
                 Transform Marker(string label,Vector3 raw,Quaternion rotation){var t=new GameObject(label).transform;t.SetParent(weapon.transform,false);t.SetPositionAndRotation(model.transform.TransformPoint(raw),rotation);return t;}
-                var right=Marker("RightGrip",revolver?new Vector3(.12f,-.026f,0):new Vector3(1.12f,.15f,0),rh.rotation);
-                var left=Marker("LeftGrip",revolver?new Vector3(.10f,-.043f,.025f):new Vector3(-1.95f,-.16f,0),lh.rotation);
+                var right=Marker("RightGrip",revolver?new Vector3(.12f,-.026f,0):new Vector3(1.69f,.15f,0),rh.rotation);
+                var left=Marker("LeftGrip",revolver?new Vector3(.10f,-.043f,.025f):new Vector3(-1.95f,-.35f,-.12f),lh.rotation);
                 var muzzle=Marker("Muzzle",revolver?new Vector3(-.223f,.0447f,0):new Vector3(-4.87f,.55f,0),player.transform.rotation);
-                var sight=Marker("Sight",revolver?new Vector3(.10f,.095f,0):new Vector3(.90f,.90f,0),player.transform.rotation*Quaternion.Euler(revolver?0:1.72f,0,0)).gameObject.AddComponent<WeaponSight>();
-                var sightSO=new SerializedObject(sight);sightSO.FindProperty("eyeRelief").floatValue=revolver?.24f:.13f;sightSO.FindProperty("aimedFieldOfView").floatValue=60;sightSO.ApplyModifiedPropertiesWithoutUndo();
+                var sight=Marker("Sight",revolver?new Vector3(.10f,.095f,0):new Vector3(.90f,.80f,0),player.transform.rotation).gameObject.AddComponent<WeaponSight>();
+                var sightSO=new SerializedObject(sight);sightSO.FindProperty("eyeRelief").floatValue=revolver?.24f:.22f;sightSO.FindProperty("aimedFieldOfView").floatValue=60;sightSO.ApplyModifiedPropertiesWithoutUndo();
+                if(!revolver)ConfigureWinchesterSight(model.transform,sight);
                 string hp=Folder+id+" Handling.asset";var handling=AssetDatabase.LoadAssetAtPath<WeaponHandlingProfile>(hp);if(handling==null){handling=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<WeaponHandlingProfile>("Assets/Anims/Ak74/AK74_Handling.asset"));handling.ergonomics=revolver?55:40;handling.aimedSensitivity=.65f;AssetDatabase.CreateAsset(handling,hp);}
                 if(revolver)
                 {
@@ -88,7 +109,7 @@ public static class InstallRshWinchester
                     handling.sprintBobFrequency=pistolHandling.sprintBobFrequency;
                     EditorUtility.SetDirty(handling);
                 }
-                var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);weapon.transform.position+=rh.position-right.position+player.transform.TransformDirection(revolver?new Vector3(.05f,-.02f,.025f):new Vector3(.04f,.035f,.20f));
+                var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);weapon.transform.position+=rh.position-right.position+player.transform.TransformDirection(revolver?new Vector3(.05f,-.02f,.025f):new Vector3(.095f,-.015f,.08f));
                 var motion=weapon.AddComponent<WeaponManualAction>();motion.source=sync;motion.revolver=revolver;motion.leftGrip=left;
                 Transform Bone(string n)=>model.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name==n);
                 motion.cylinder=Bone("cylinder");motion.cylinderArm=Bone("cylinderarm");motion.pump=revolver?null:Bone("bolt");
@@ -98,8 +119,8 @@ public static class InstallRshWinchester
                 string cp=Folder+id+" Idle.anim";var idle=AssetDatabase.LoadAssetAtPath<AnimationClip>(cp);if(idle==null){idle=new AnimationClip{name=id+" Idle"};idle.SetCurve("IdleClock",typeof(Transform),"localPosition.x",AnimationCurve.Constant(0,1,0));AssetDatabase.CreateAsset(idle,cp);}
                 var recoilAnimation=template.recoil?.animation;if(recoilAnimation==null)recoilAnimation=(Kinemation.Recoilly.RecoilAnimData)new SerializedObject(player.GetComponentInChildren<WeaponRecoilController>(true)).FindProperty("recoilProfile").objectReferenceValue;
                 var entry=new WeaponIdleSynchronizer.WeaponEntry{id=id,animator=animancer,aimRig=rig,audioProfile=audio,muzzle=muzzle,leftGrip=left,rightGrip=right,maximumMuzzleReach=1.6f,
-                    characterIdle=template.characterIdle,weaponIdle=idle,magazineSize=5,roundsPerMinute=revolver?150:80,automatic=false,damage=revolver?65:13,
-                    pelletCount=revolver?1:8,pelletSpreadDegrees=revolver?0:3.2f,muzzleVelocity=revolver?300:380,bulletGravity=9.81f,fullDamageRange=revolver?30:10,maximumRange=revolver?150:70,minimumDamageFraction=revolver?.5f:.15f,
+                    characterIdle=template.characterIdle,weaponIdle=idle,magazineSize=5,roundsPerMinute=revolver?150:80,automatic=false,damage=revolver?65:19,
+                    pelletCount=revolver?1:8,pelletSpreadDegrees=revolver?0:2.4f,muzzleVelocity=revolver?300:380,bulletGravity=9.81f,fullDamageRange=revolver?30:12,maximumRange=revolver?150:70,minimumDamageFraction=revolver?.5f:.2f,
                     proceduralEquipSeconds=revolver?.55f:.65f,proceduralReloadSeconds=revolver?3.4f:4.2f,cameraActionScale=revolver?.8f:1f,
                     reloadPositionOffset=revolver?new Vector3(-.02f,.03f,.02f):new Vector3(-.03f,.04f,.04f),
                     reloadRotationEuler=revolver?new Vector3(-4f,7f,-10f):new Vector3(-5f,9f,-12f),recoilKick=revolver?2f:1.8f,boltBoneName="__manual_action__",boltTravel=0,

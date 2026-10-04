@@ -118,6 +118,8 @@ public static class InstallUCP
             var ik=new SerializedObject(root.GetComponentInChildren<WeaponHandIK>(true));
             var left=(Transform)ik.FindProperty("leftHand").objectReferenceValue;var right=(Transform)ik.FindProperty("rightHand").objectReferenceValue;
             var leftGrip=Marker("LeftGrip",left.position,left.rotation);var rightGrip=Marker("RightGrip",right.position,right.rotation);
+            var motion=weapon.AddComponent<WeaponMagazineMotion>();motion.source=sync;motion.leftGrip=leftGrip;motion.rightGrip=rightGrip;
+            motion.magazine=body.Find("mag");motion.bolt=body.Find("slide");motion.boltAction=true;
             for(int i=0;i<transforms.Length;i++){transforms[i].localPosition=positions[i];transforms[i].localRotation=rotations[i];transforms[i].localScale=scales[i];}
             foreach(var renderer in weapon.GetComponentsInChildren<Renderer>(true))
             {
@@ -153,6 +155,9 @@ public static class InstallUCP
             entry.FindPropertyRelative("characterIdle").objectReferenceValue=Clip("Idle","Character");
             entry.FindPropertyRelative("weaponIdle").objectReferenceValue=Clip("Idle","Weapon");
             entry.FindPropertyRelative("characterEquip").objectReferenceValue=Clip("Equip","Character");
+            entry.FindPropertyRelative("proceduralEquipSeconds").floatValue=.5f;
+            entry.FindPropertyRelative("proceduralReloadSeconds").floatValue=2.1f;
+            entry.FindPropertyRelative("cameraActionScale").floatValue=.7f;
             entry.FindPropertyRelative("weaponEquip").objectReferenceValue=Clip("Equip","Weapon");
             var actions=entry.FindPropertyRelative("actions");actions.arraySize=1;var reload=actions.GetArrayElementAtIndex(0);
             reload.FindPropertyRelative("id").stringValue="reload";

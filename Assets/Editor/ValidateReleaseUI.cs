@@ -32,6 +32,14 @@ public static class ValidateReleaseUI
         DeploymentScreen screen = null;
         try
         {
+            Check(YG.YG2.infoYG.AutoTranslateLangs.languages.ru && YG.YG2.infoYG.AutoTranslateLangs.languages.en &&
+                !YG.YG2.infoYG.AutoTranslateLangs.languages.tr, "YGames language configuration");
+            Check(YG.LanguageLegacy.LanguageYG.ParseTranslationResponse != null &&
+                YG.LanguageLegacy.LanguageYG.ParseTranslationResponse("[[[\"Hello\",\"Привет\",null,null],[\" world\",\" мир\",null,null]],null,\"ru\"]") == "Hello world",
+                "YGames auto-translation JSON adapter");
+            foreach(var target in new[] { UnityEditor.Build.NamedBuildTarget.Standalone, UnityEditor.Build.NamedBuildTarget.WebGL })
+                Check(PlayerSettings.GetScriptingDefineSymbols(target).Contains("Localization_yg") &&
+                    PlayerSettings.GetScriptingDefineSymbols(target).Contains("NJSON_YG2"), "YGames modules must stay enabled for builds");
             Check(PlayerSettings.WebGL.template == "PROJECT:YandexGames", "WebGL must use YandexGames HTML");
             Check(File.ReadAllText("Assets/WebGLTemplates/YandexGames/index.html").Contains("/sdk.js"), "SDK script missing");
             Check(GameLocalization.Normalize("ru-RU") == "ru" && GameLocalization.Normalize("RU") == "ru" && GameLocalization.Normalize("tr") == "en", "Locale normalization");
@@ -65,14 +73,17 @@ public static class ValidateReleaseUI
             foreach (string language in new[] { "ru", "en" })
             {
                 GameLocalization.SetLanguage(language);
+                // Preview scenes do not run MonoBehaviour enable/update callbacks.
+                foreach (var label in screen.GetComponentsInChildren<LocalizedGameText>(true))
+                    typeof(LocalizedGameText).GetMethod("Refresh", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(label, null);
                 Check(screen.GetComponentsInChildren<Text>(true).Any(t => t.text == (language == "ru" ? "Подготовка к бою" : "Prepare for battle")), "Preparation title must refresh");
                 Render(camera, "Documentation/ReleaseChecks/start-" + language + ".png");
                 shop.ShowPreview(YandexPlayerData.CreateDefault(), ShopCategory.Primary);
-                Check(shop.GetComponentsInChildren<Text>(true).Any(t => t.text == (language == "ru" ? "МАГАЗИН" : "SHOP")), "Shop labels must refresh while inactive");
+                Check(shop.transform.Find("Shop Panel/Title").GetComponent<Text>().text == GameLocalization.T("МАГАЗИН / СНАРЯЖЕНИЕ"), "Shop labels must refresh while inactive");
                 Render(camera, "Documentation/ReleaseChecks/shop-" + language + ".png");
                 shop.Close();
             }
-            File.WriteAllText("Documentation/ReleaseChecks/validation.txt", "PASS: Yandex HTML and SDK reference; ru/en/fallback; formatted time; all catalog text; live and inactive label refresh; deployment screen without player; guarded pre-deployment shop.\nPreview images: start-ru/en.png, shop-ru/en.png.\nBrowser SDK, actual WebGL build, and live network deployment require separate checks.\n");
+            File.WriteAllText("Documentation/ReleaseChecks/validation.txt", "PASS: Yandex HTML and SDK reference; ru/en/fallback; formatted time; all catalog text; explicit Edit Mode label refresh; deployment screen without player; guarded pre-deployment shop.\nPreview images: start-ru/en.png, shop-ru/en.png.\nBrowser SDK, actual WebGL build, and live network deployment require separate checks.\n");
         }
         finally
         {
@@ -93,7 +104,12 @@ public static class ValidateReleaseUI
         try
         {
             camera.targetTexture = target; camera.aspect = 1280f / 720;
-            Canvas.ForceUpdateCanvases(); camera.Render(); RenderTexture.active = target;
+            foreach (var group in camera.scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<CanvasGroup>(true)))
+                group.alpha = 1;
+            Canvas.ForceUpdateCanvases();
+            foreach (var preview in camera.scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<ShopWeaponPreview>()))
+                typeof(ShopWeaponPreview).GetMethod("LateUpdate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(preview, null);
+            camera.Render(); RenderTexture.active = target;
             image.ReadPixels(new Rect(0,0,1280,720),0,0); image.Apply(); File.WriteAllBytes(path,image.EncodeToPNG());
         }
         finally { camera.targetTexture = null; RenderTexture.active = previous; target.Release(); UnityEngine.Object.DestroyImmediate(target); UnityEngine.Object.DestroyImmediate(image); }

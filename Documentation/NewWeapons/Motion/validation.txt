@@ -1,0 +1,31 @@
+PASS Player ak74 equip: 53 frames, max grip gap=0,0000m, camera peak=3,09deg, maximum frame rotation=0,00deg.
+PASS Player ak74 reload: 173 frames, max grip gap=0,0000m, camera peak=7,53deg, maximum frame rotation=0,00deg.
+PASS Player ucp equip: 30 frames, max grip gap=0,0000m, camera peak=1,40deg, maximum frame rotation=3,86deg.
+PASS Player ucp reload: 126 frames, max grip gap=0,0000m, camera peak=2,11deg, maximum frame rotation=3,40deg.
+PASS Player milkor equip: 44 frames, max grip gap=0,0000m, camera peak=2,51deg, maximum frame rotation=1,89deg.
+PASS Player hk416 equip: 29 frames, max grip gap=0,0000m, camera peak=1,71deg, maximum frame rotation=4,02deg.
+PASS Player hk416 reload: 147 frames, max grip gap=0,0000m, camera peak=2,56deg, maximum frame rotation=3,18deg.
+PASS Player l115a3 equip: 44 frames, max grip gap=0,0000m, camera peak=2,21deg, maximum frame rotation=2,66deg.
+PASS Player l115a3 reload: 192 frames, max grip gap=0,0000m, camera peak=3,31deg, maximum frame rotation=1,88deg.
+PASS Player rsh12 equip: 33 frames, max grip gap=0,0000m, camera peak=1,60deg, maximum frame rotation=3,51deg.
+PASS Player rsh12 reload: 77 frames, max grip gap=0,0000m, camera peak=0,00deg, maximum frame rotation=4,40deg.
+PASS Player winchester1897 equip: 39 frames, max grip gap=0,0000m, camera peak=2,00deg, maximum frame rotation=3,00deg.
+PASS Player winchester1897 reload: 87 frames, max grip gap=0,0000m, camera peak=0,17deg, maximum frame rotation=3,95deg.
+PASS Player Winchester hip pump: 61 frames, fixed shoulder attachments, repeatable solve, max grip gap=0,0000m.
+PASS Player Winchester ADS pump: 61 frames, fixed shoulder attachments, repeatable solve, max grip gap=0,0000m.
+PASS Bot ak74 equip: 53 frames, max grip gap=0,0000m, camera peak=3,09deg, maximum frame rotation=0,00deg.
+PASS Bot ak74 reload: 173 frames, max grip gap=0,0000m, camera peak=7,53deg, maximum frame rotation=0,00deg.
+PASS Bot ucp equip: 30 frames, max grip gap=0,0000m, camera peak=1,40deg, maximum frame rotation=3,86deg.
+PASS Bot ucp reload: 126 frames, max grip gap=0,0000m, camera peak=2,11deg, maximum frame rotation=3,40deg.
+PASS Bot rsh12 equip: 33 frames, max grip gap=0,0000m, camera peak=1,60deg, maximum frame rotation=3,51deg.
+PASS Bot rsh12 reload: 77 frames, max grip gap=0,0000m, camera peak=0,00deg, maximum frame rotation=4,40deg.
+PASS Bot winchester1897 equip: 39 frames, max grip gap=0,0111m, camera peak=2,00deg, maximum frame rotation=3,00deg.
+PASS Bot winchester1897 reload: 87 frames, max grip gap=0,0000m, camera peak=0,17deg, maximum frame rotation=3,95deg.
+PASS Bot milkor equip: 44 frames, max grip gap=0,0000m, camera peak=2,51deg, maximum frame rotation=1,89deg.
+PASS Bot hk416 equip: 29 frames, max grip gap=0,0000m, camera peak=1,71deg, maximum frame rotation=4,02deg.
+PASS Bot hk416 reload: 147 frames, max grip gap=0,0000m, camera peak=2,56deg, maximum frame rotation=3,18deg.
+PASS Bot l115a3 equip: 44 frames, max grip gap=0,0000m, camera peak=2,21deg, maximum frame rotation=2,66deg.
+PASS Bot l115a3 reload: 192 frames, max grip gap=0,0000m, camera peak=3,31deg, maximum frame rotation=1,88deg.
+PASS Bot Winchester hip pump: 61 frames, fixed shoulder attachments, repeatable solve, max grip gap=0,0000m.
+PASS Bot Winchester ADS pump: 61 frames, fixed shoulder attachments, repeatable solve, max grip gap=0,0034m.
+PASS frame sampling, finite poses, grip reach, idle endpoints; AK74 authored clips unchanged. Milkor remains finite-ammo with no reload. No player build or two-client session.

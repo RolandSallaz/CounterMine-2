@@ -35,6 +35,7 @@ public sealed class StartMenuScreen : MonoBehaviour
     private RoomBrowserScreen roomBrowser;
     private float reveal;
     private Vector3 portraitFocus, portraitDirection;
+    private Button playButton;
 
     public static StartMenuScreen Create(LobbyManager lobby, GameObject playerPrefab, Vector3 position)
     {
@@ -106,40 +107,47 @@ public sealed class StartMenuScreen : MonoBehaviour
         shadeTexture.wrapMode = TextureWrapMode.Clamp;
         for (int x = 0; x < 64; x++)
         {
-            float alpha = Mathf.Lerp(.91f, .04f, Mathf.SmoothStep(0, 1, x / 50f));
-            shadeTexture.SetPixel(x, 0, new Color(.018f, .027f, .033f, alpha));
+            float alpha = Mathf.Lerp(.97f, .14f, Mathf.SmoothStep(0, 1, x / 57f));
+            shadeTexture.SetPixel(x, 0, new Color(.014f, .022f, .035f, alpha));
         }
         shadeTexture.Apply(); shade.texture = shadeTexture; shade.raycastTarget = false;
 
-        var panel = Rect("Mode Selection", transform, new Vector2(.065f, .19f), new Vector2(.40f, .79f));
+        var panel = Rect("Mode Selection", transform, new Vector2(.065f, .17f), new Vector2(.435f, .84f));
         modePanel = panel;
         menuGroup = panel.gameObject.AddComponent<CanvasGroup>();
-        var eyebrow = Label(panel, "TACTICAL OPERATIONS", 16, new Vector2(0, .92f), Vector2.one);
+        var eyebrow = Label(panel, "TACTICAL OPERATIONS", 14, new Vector2(0, .93f), Vector2.one);
         eyebrow.color = GameUIStyle.Accent;
-        var title = Label(panel, "BLOCKFIELD", 42, new Vector2(0, .77f), new Vector2(1, .93f));
+        var title = Label(panel, "BLOCKFIELD", 50, new Vector2(0, .77f), new Vector2(1, .93f));
         title.fontStyle = FontStyle.Bold;
-        var line = Rect("Gold Accent", panel, new Vector2(0, .70f), new Vector2(.15f, .70f));
+        var intro=Label(panel,"Выберите режим. Соберите снаряжение. Вступайте в бой.",16,new Vector2(0,.65f),new Vector2(.94f,.77f));
+        intro.color=GameUIStyle.Muted;
+        var line = Rect("Gold Accent", panel, new Vector2(0, .62f), new Vector2(.12f, .62f));
         line.sizeDelta = new Vector2(0, 2);
         line.gameObject.AddComponent<Image>().color = GameUIStyle.Accent;
-        ModeButton(panel, "Single player", .43f, .63f, true, () => lobby.StartGame(true), "Тренировка с ботами");
-        ModeButton(panel, "Multiplayer", .20f, .40f, false, lobby.BrowseRooms, "Сражения с другими игроками");
-        ModeButton(panel, "МАГАЗИН", -.03f, .17f, false, OpenShop, "Оружие и снаряжение");
-        var account = Rect("Wallet", transform, new Vector2(.76f,.88f), new Vector2(.95f,.95f));
+        playButton=ModeButton(panel, "Single player", .38f, .56f, true, () => lobby.StartGame(true), "Тренировка с ботами");
+        ModeButton(panel, "Multiplayer", .17f, .35f, false, lobby.BrowseRooms, "Сражения с другими игроками");
+        ModeButton(panel, "МАГАЗИН", -.04f, .14f, false, OpenShop, "Оружие и снаряжение");
+        var account = Rect("Wallet", transform, new Vector2(.79f,.88f), new Vector2(.95f,.965f));
         walletPanel = account.gameObject;
-        GameUIStyle.Surface(account.gameObject.AddComponent<Image>(), GameUIStyle.Panel);
-        wallet = Label(account, "", 20, new Vector2(.10f,0), new Vector2(.90f,1));
+        GameUIStyle.PanelSurface(account.gameObject.AddComponent<Image>());
+        var walletTitle=Label(account,"БАЛАНС",11,new Vector2(.10f,.58f),new Vector2(.90f,.94f));walletTitle.color=GameUIStyle.Muted;
+        wallet = Label(account, "", 23, new Vector2(.10f,.05f), new Vector2(.90f,.65f));
         wallet.alignment = TextAnchor.MiddleRight; wallet.color = GameUIStyle.Accent;
-        var caption = Rect("Weapon Caption", transform, new Vector2(.66f,.055f), new Vector2(.94f,.155f));
-        GameUIStyle.Surface(caption.gameObject.AddComponent<Image>(), GameUIStyle.Panel);
+        var caption = Rect("Weapon Caption", transform, new Vector2(.64f,.10f), new Vector2(.94f,.205f));
+        GameUIStyle.PanelSurface(caption.gameObject.AddComponent<Image>(),true);
+        var captionRail=Rect("Loadout accent",caption,Vector2.zero,new Vector2(0,1));captionRail.sizeDelta=new Vector2(3,0);
+        captionRail.gameObject.AddComponent<Image>().color=GameUIStyle.Accent;
         var captionTitle = Label(caption, "ТЕКУЩЕЕ ОРУЖИЕ", 14, new Vector2(.07f,.55f), new Vector2(.93f,.90f));
         captionTitle.color = GameUIStyle.Muted;
         weaponCaption = Label(caption, "", 23, new Vector2(.07f,.08f), new Vector2(.93f,.57f));
-        var footer = Label(transform, "Выберите режим и вступайте в бой", 16, new Vector2(.065f,.05f), new Vector2(.55f,.10f));
+        var footer = Label(transform, "Снаряжение сохраняется между боями", 14, new Vector2(.065f,.045f), new Vector2(.64f,.09f));
         menuFooter = footer.gameObject;
         footer.color = GameUIStyle.Muted;
         shop = DeathShopUI.Create(transform, null, null, () => isActiveAndEnabled, mainMenu: true);
         shop.ItemEquipped += ShowEquippedItem;
         roomBrowser = RoomBrowserScreen.Create(transform, lobby);
+        events.firstSelectedGameObject=playButton.gameObject;
+        events.SetSelectedGameObject(playButton.gameObject);
         ResizeTargets();
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
     }
@@ -215,6 +223,7 @@ public sealed class StartMenuScreen : MonoBehaviour
     {
         if (roomBrowser != null) roomBrowser.gameObject.SetActive(visible);
         if (modePanel != null) modePanel.gameObject.SetActive(!visible && (shop == null || !shop.IsOpen));
+        if(!visible&&playButton!=null&&playButton.gameObject.activeInHierarchy)EventSystem.current?.SetSelectedGameObject(playButton.gameObject);
     }
 
     private void ShowEquippedItem(string id)
@@ -238,6 +247,7 @@ public sealed class StartMenuScreen : MonoBehaviour
     private static void CopyTransforms(Transform source, Transform parent, Dictionary<Transform, Transform> copies)
     {
         var copy = new GameObject(source.name).transform;
+        if(source.name=="ReloadRound")copy.gameObject.SetActive(false);
         copy.gameObject.layer = PreviewLayer; copy.SetParent(parent, false);
         copy.localPosition = source.localPosition; copy.localRotation = source.localRotation; copy.localScale = source.localScale;
         copies.Add(source, copy);
@@ -286,18 +296,26 @@ public sealed class StartMenuScreen : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         bool browsing = roomBrowser != null && roomBrowser.gameObject.activeSelf;
-        if (shop != null) modePanel.gameObject.SetActive(!shop.IsOpen && !browsing);
+        bool portraitVisible = shop == null || !shop.IsOpen;
+        backgroundCamera.enabled = portraitVisible;
+        characterCamera.enabled = portraitVisible;
+        bool modesVisible=(shop==null||!shop.IsOpen)&&!browsing;
+        if(modePanel.gameObject.activeSelf!=modesVisible)
+        {
+            modePanel.gameObject.SetActive(modesVisible);
+            if(modesVisible&&playButton!=null)EventSystem.current?.SetSelectedGameObject(playButton.gameObject);
+        }
         if (walletPanel != null) walletPanel.SetActive(shop == null || !shop.IsOpen);
         if (menuFooter != null) menuFooter.SetActive((shop == null || !shop.IsOpen) && !browsing);
-        if (weaponCaption != null) weaponCaption.transform.parent.gameObject.SetActive(!browsing);
+        if (weaponCaption != null) weaponCaption.transform.parent.gameObject.SetActive(modesVisible);
         reveal = Mathf.Min(1, reveal + Time.unscaledDeltaTime / .3f);
-        if (menuGroup != null) menuGroup.alpha = Mathf.SmoothStep(0, 1, reveal);
+        if (menuGroup != null){menuGroup.alpha = Mathf.SmoothStep(0, 1, reveal);modePanel.anchoredPosition=Vector2.up*((1-menuGroup.alpha)*-12f);}
         if (wallet != null) wallet.text = YandexPlayerData.IsLoaded ? YandexPlayerData.Current.money.ToString("N0") + "  $" : GameLocalization.T("ЗАГРУЗКА…");
         if (weaponCaption != null) weaponCaption.text = GameLocalization.T(ShopCatalog.Find(displayedWeapon)?.title ?? "AK-74");
         if (YandexPlayerData.IsLoaded && equippedPrimary != YandexPlayerData.Current.equippedWeapon)
             ShowEquippedItem(YandexPlayerData.Current.equippedWeapon);
         elapsed += Time.unscaledDeltaTime;
-        SamplePose(elapsed);
+        if (portraitVisible) SamplePose(elapsed);
         ResizeTargets();
     }
 
@@ -362,13 +380,13 @@ public sealed class StartMenuScreen : MonoBehaviour
     private static Text Label(Transform parent, string text, int size, Vector2 min, Vector2 max)
     {
         var label = Rect(text, parent, min, max).gameObject.AddComponent<Text>();
-        label.font = GameUIStyle.Font; label.fontSize = size; label.color = new Color(.94f, .95f, .91f);
+        label.font = GameUIStyle.Font; label.fontSize = size; label.color = GameUIStyle.Text;
         label.alignment = TextAnchor.MiddleLeft; label.raycastTarget = false;
         label.resizeTextForBestFit = true; label.resizeTextMinSize = Mathf.Min(16, size); label.resizeTextMaxSize = size;
         GameLocalization.Bind(label, text); return label;
     }
 
-    private static void ModeButton(Transform parent, string title, float bottom, float top, bool primary, UnityEngine.Events.UnityAction action, string description)
+    private static Button ModeButton(Transform parent, string title, float bottom, float top, bool primary, UnityEngine.Events.UnityAction action, string description)
     {
         var rect = Rect(title, parent, new Vector2(0, bottom), new Vector2(1, top));
         var image = rect.gameObject.AddComponent<Image>(); image.color = Color.white;
@@ -384,5 +402,6 @@ public sealed class StartMenuScreen : MonoBehaviour
         hint.color = primary ? new Color(.22f,.23f,.20f) : GameUIStyle.Muted;
         var arrow = Label(rect, "›", 28, new Vector2(.89f,.1f), new Vector2(.97f,.9f));
         arrow.color = label.color;
+        return button;
     }
 }

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
+using YG;
+using YG.LanguageLegacy;
 
-/// <summary>Game text selected by the Yandex SDK locale. Unknown locales use English.</summary>
+/// <summary>PluginYG2 language, shared translations and live dynamic game text.</summary>
 public static class GameLocalization
 {
     [Serializable] public sealed class Entry { public string source, ru, en; }
@@ -24,6 +26,14 @@ public static class GameLocalization
     public static void SetLanguage(string language)
     {
         string next = Normalize(language);
+        YG2.SwitchLanguage(next);
+        ApplyLanguage(next);
+    }
+
+    public static void ApplyLanguage(string language)
+    {
+        string next = Normalize(language);
+        YG2.lang = next;
         if (Language == next) return;
         Language = next;
         Changed?.Invoke();
@@ -53,15 +63,50 @@ public static class GameLocalization
     // Bind only authored labels. Dynamic HUD values are translated by their owner.
     public static void Bind(Text text, string source)
     {
-        if (string.IsNullOrEmpty(source)) { text.text = ""; return; }
-        Bind(text, () => T(source));
+        if (string.IsNullOrEmpty(source))
+        {
+            PrepareDynamic(text);
+            text.GetComponent<LocalizedGameText>()?.SetValue(null);
+            text.text = "";
+            return;
+        }
+        var binding = text.GetComponent<LocalizedGameText>();
+        if (binding == null) binding = text.gameObject.AddComponent<LocalizedGameText>();
+        binding.SetSource(source ?? "");
     }
 
     public static void Bind(Text text, Func<string> value)
     {
         var binding = text.GetComponent<LocalizedGameText>();
         if (binding == null) binding = text.gameObject.AddComponent<LocalizedGameText>();
+        PrepareDynamic(text);
         binding.SetValue(value);
+    }
+
+    public static LanguageYG PrepareDynamic(Text text)
+    {
+        var translator = text.GetComponent<LanguageYG>();
+        if (translator == null) translator = text.gameObject.AddComponent<LanguageYG>();
+        // Owners update numbers, names and formatted messages. Do not replace them
+        // with serialized placeholders when the plugin switches language.
+        translator.enabled = false;
+        translator.Serialize();
+        translator.uniqueFont = text.font;
+        translator.changeOnlyFont = true;
+        return translator;
+    }
+
+    public static LanguageYG Configure(Text text, string source)
+    {
+        var translator = PrepareDynamic(text);
+        T(source);
+        if (entries == null) T("VITALS");
+        entries.TryGetValue(source, out var item);
+        translator.text = source;
+        translator.ru = item != null ? item.ru : source;
+        translator.en = item != null ? item.en : source;
+        translator.changeOnlyFont = false;
+        return translator;
     }
 
     public static void BindHUD(Transform root)
@@ -69,5 +114,6 @@ public static class GameLocalization
         var staticLabels = new HashSet<string> { "TACTICAL OPERATIONS", "VITALS", "HEALTH", "STAMINA", "01  /  PRIMARY", "RMB  AIM     /     SHIFT  SPRINT" };
         foreach (var text in root.GetComponentsInChildren<Text>(true))
             if (staticLabels.Contains(text.text)) Bind(text, text.text);
+            else PrepareDynamic(text);
     }
 }

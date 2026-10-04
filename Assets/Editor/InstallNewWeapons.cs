@@ -102,7 +102,7 @@ public static class InstallNewWeapons
                 var rig=weapon.AddComponent<WeaponAimRig>();Set(rig,"handling",handling);Set(rig,"defaultSight",sight);
                 weapon.transform.position+=rightHand.position-right.position;
                 if(!sniper) weapon.transform.position += player.transform.forward * .04f;
-                var magazine=weapon.AddComponent<WeaponMagazineMotion>();magazine.source=sync;magazine.magazine=model.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mag");magazine.leftGrip=left;
+                var magazine=weapon.AddComponent<WeaponMagazineMotion>();magazine.source=sync;magazine.magazine=model.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mag");magazine.leftGrip=left;magazine.rightGrip=right;
                 if(sniper)
                 {
                     magazine.boltAction=true;

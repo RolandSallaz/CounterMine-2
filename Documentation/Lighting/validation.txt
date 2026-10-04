@@ -1,0 +1,2 @@
+PASS: ambient illumination >0.2 linear RGB in all six directions; sky sun matches directional light; soft shadows; saved camera post processing. Three fixed views captured with display-only enemy models.
+No additional realtime lights or per-frame ambient calculation.

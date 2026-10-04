@@ -1,0 +1,2 @@
+AutoTranslateLangs v1.003
+Localization v1.02

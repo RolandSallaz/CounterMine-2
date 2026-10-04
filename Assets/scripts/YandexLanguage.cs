@@ -1,40 +1,43 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
 using YG;
 
-/// <summary>The optional PluginYG language module is not required by this bridge.</summary>
+/// <summary>Connects PluginYG2 language events to live game text.</summary>
 public sealed class YandexLanguage : MonoBehaviour
 {
-#if UNITY_WEBGL && !UNITY_EDITOR
-    [DllImport("__Internal")] private static extern string CounterMineLanguage_js();
+#if UNITY_EDITOR
+    private string simulationLanguage;
 #endif
-    private float nextRead;
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
     {
-        var root = new GameObject("CounterMineLanguage");
+        var root = new GameObject("Game language / PluginYG2");
         DontDestroyOnLoad(root);
         root.AddComponent<YandexLanguage>();
     }
-
-    private void OnEnable() { YG2.onGetSDKData += Read; Read(); }
-    private void OnDisable() => YG2.onGetSDKData -= Read;
-    private void Update()
+    private void OnEnable()
     {
-        // Also handles SDK initialization after Unity and language simulation changes.
-        if (Time.unscaledTime < nextRead) return;
-        nextRead = Time.unscaledTime + 1f;
+        YG2.onSwitchLang += GameLocalization.ApplyLanguage;
+        YG2.onGetSDKData += Read;
         Read();
+    }
+    private void OnDisable()
+    {
+        YG2.onSwitchLang -= GameLocalization.ApplyLanguage;
+        YG2.onGetSDKData -= Read;
     }
     private void Read()
     {
 #if UNITY_EDITOR
-        GameLocalization.SetLanguage(YG2.infoYG.Simulation.language);
-#elif UNITY_WEBGL
-        GameLocalization.SetLanguage(CounterMineLanguage_js());
-#else
-        GameLocalization.SetLanguage(Application.systemLanguage == SystemLanguage.Russian ? "ru" : "en");
+        simulationLanguage = YG2.infoYG.Simulation.language;
 #endif
+        GameLocalization.ApplyLanguage(YG2.lang);
     }
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (simulationLanguage == YG2.infoYG.Simulation.language) return;
+        simulationLanguage = YG2.infoYG.Simulation.language;
+        YG2.GetLanguage();
+    }
+#endif
 }

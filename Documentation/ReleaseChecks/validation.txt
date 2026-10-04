@@ -1,4 +1,3 @@
-FAIL
-System.Exception: Preparation title must refresh
-  at ValidateReleaseUI.Run () [0x0033d] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateReleaseUI.cs:68 
-  at ValidateReleaseUI.Poll () [0x00025] in C:\Users\Roland\CounterMine 2\Assets\Editor\ValidateReleaseUI.cs:19 
+PASS: Yandex HTML and SDK reference; ru/en/fallback; formatted time; all catalog text; explicit Edit Mode label refresh; deployment screen without player; guarded pre-deployment shop.
+Preview images: start-ru/en.png, shop-ru/en.png.
+Browser SDK, actual WebGL build, and live network deployment require separate checks.

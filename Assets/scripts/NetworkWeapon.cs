@@ -100,7 +100,9 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     {
         if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health)) return false;
         if (!BotController.IsBot(this) || (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient) ||
-            muzzle == null || health == null || health.IsDead || weaponAnimation == null || !weaponAnimation.CanFire) return false;
+            muzzle == null || health == null || health.IsDead || weaponAnimation == null) return false;
+        if (ammo != null && ammo.IsReloading) ammo.TryInterruptReloadForShot();
+        if (!weaponAnimation.CanFire) return false;
         if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
         nextSequence = Mathf.Max(nextSequence, lastAcceptedSequence, lastConfirmedSequence) + 1;
         Vector3 deviated = Deviate(direction, spreadDegrees);
@@ -148,12 +150,13 @@ public sealed class NetworkWeapon : MonoBehaviourPunCallbacks
     {
         if (PlatformLifecycle.InputBlocked) return false;
         if (!ConquestMatch.CombatAllowed || TeamSafeZone.BlocksWeapons(health)) return false;
-        if (weaponAnimation != null && !weaponAnimation.CanFire) return false;
         if ((movement != null && movement.IsSprinting) || (weaponSway != null && weaponSway.SprintAmount > .05f)) return false;
-        if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
         if (!photonView.IsMine || (PhotonNetwork.InRoom && photonView.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber) ||
             playerCamera == null || muzzle == null || (health != null && health.IsDead) || lastLocalShotFrame == Time.frameCount) return false;
         if (TeamSafeZone.ContainsAny(playerCamera.transform.position) || TeamSafeZone.ContainsAny(muzzle.position)) return false;
+        if (ammo != null && ammo.IsReloading) ammo.TryInterruptReloadForShot();
+        if (weaponAnimation != null && !weaponAnimation.CanFire) return false;
+        if (ammo != null && !ammo.CanShoot) { ammo.HandleDryFire(); return false; }
         lastLocalShotFrame = Time.frameCount;
         if (weaponAnimation != null && weaponAnimation.WeaponId == MilkorSkill.WeaponId)
         {

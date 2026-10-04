@@ -46,7 +46,7 @@ public sealed class YandexAds : MonoBehaviour
     private void PluginClosed() => OnAdEvent(request + ":closed");
     private void Update()
     {
-        if (label != null) label.text = GameLocalization.Language == "ru" ? "РЕКЛАМА…" : "ADVERTISEMENT…";
+        if (label != null) GameLocalization.Bind(label, "РЕКЛАМА…");
         if (!startupRequested && YG2.isSDKEnabled && !PlatformLifecycle.InputBlocked && !YG2.isPauseGame &&
             FindFirstObjectByType<StartMenuScreen>() != null)
         { startupRequested = true; Show(); }
@@ -111,7 +111,7 @@ public sealed class YandexAds : MonoBehaviour
             var text = new GameObject("Status", typeof(RectTransform), typeof(Text)); text.transform.SetParent(panel.transform, false);
             rect = text.GetComponent<RectTransform>(); rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero;
             label = text.GetComponent<Text>(); label.font = GameUIStyle.Font; label.fontSize = 24; label.alignment = TextAnchor.MiddleCenter; label.color = Color.white;
-            label.text = GameLocalization.Language == "ru" ? "РЕКЛАМА…" : "ADVERTISEMENT…";
+            GameLocalization.Bind(label, "РЕКЛАМА…");
         }
         if (overlay != null) overlay.SetActive(visible);
     }

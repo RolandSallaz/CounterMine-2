@@ -26,7 +26,6 @@ public sealed class DesktopControls : MonoBehaviour
     private FullscreenIcon fullscreenIcon;
     private Button cloud, local;
     private bool opened, relock, credits;
-    private static string L(string ru, string en) => GameLocalization.Language == "ru" ? ru : en;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
     {
@@ -42,6 +41,7 @@ public sealed class DesktopControls : MonoBehaviour
     {
         var text = Rect(name, parent, min, max).gameObject.AddComponent<Text>();
         text.font = GameUIStyle.Font; text.fontSize = size; text.color = GameUIStyle.Text;
+        GameLocalization.PrepareDynamic(text);
         text.alignment = TextAnchor.MiddleCenter; text.raycastTarget = false; return text;
     }
     private Button ActionButton(Transform parent, string name, Vector2 min, Vector2 max, UnityEngine.Events.UnityAction action)
@@ -91,13 +91,13 @@ public sealed class DesktopControls : MonoBehaviour
         body = Label(panel.transform, "Instructions", new Vector2(.04f,.23f), new Vector2(.96f,.94f), 23);
         mode = ActionButton(panel.transform, "Mode", new Vector2(.05f,.12f), new Vector2(.95f,.21f), SwitchMode).GetComponentInChildren<Text>();
         var close = ActionButton(panel.transform, "Close", new Vector2(.35f,.02f), new Vector2(.65f,.1f), Toggle);
-        GameLocalization.Bind(close.GetComponentInChildren<Text>(), () => L("ЗАКРЫТЬ / H", "CLOSE / H"));
+        GameLocalization.Bind(close.GetComponentInChildren<Text>(), () => GameLocalization.T("ЗАКРЫТЬ / H"));
         var attribution = ActionButton(panel.transform, "Credits", new Vector2(.05f,.02f), new Vector2(.32f,.1f), () => credits = !credits);
-        GameLocalization.Bind(attribution.GetComponentInChildren<Text>(), () => L("АВТОРЫ / A", "CREDITS / A"));
+        GameLocalization.Bind(attribution.GetComponentInChildren<Text>(), () => GameLocalization.T("АВТОРЫ / A"));
         cloud = ActionButton(panel.transform, "Cloud", new Vector2(.05f,.12f), new Vector2(.48f,.22f), () => YandexCloudSave.ResolveConflict(false));
         local = ActionButton(panel.transform, "Local", new Vector2(.52f,.12f), new Vector2(.95f,.22f), () => YandexCloudSave.ResolveConflict(true));
-        GameLocalization.Bind(cloud.GetComponentInChildren<Text>(), () => L("ПРОГРЕСС ИЗ ОБЛАКА", "CLOUD PROGRESS"));
-        GameLocalization.Bind(local.GetComponentInChildren<Text>(), () => L("ПРОГРЕСС УСТРОЙСТВА", "DEVICE PROGRESS"));
+        GameLocalization.Bind(cloud.GetComponentInChildren<Text>(), () => GameLocalization.T("ПРОГРЕСС ИЗ ОБЛАКА"));
+        GameLocalization.Bind(local.GetComponentInChildren<Text>(), () => GameLocalization.T("ПРОГРЕСС УСТРОЙСТВА"));
         panel.SetActive(false);
     }
     private void SwitchMode() { OneHand = !OneHand; PlayerPrefs.SetInt("KeyboardOnlyControls", OneHand ? 1 : 0); PlayerPrefs.Save(); }
@@ -138,30 +138,30 @@ public sealed class DesktopControls : MonoBehaviour
         backdrop.SetActive(show);
         if (opened && !conflict && Keyboard.current?.aKey.wasPressedThisFrame == true) credits = !credits;
         if (opened && !conflict && Keyboard.current?.bKey.wasPressedThisFrame == true) SwitchMode();
-        help.text = L("УПРАВЛЕНИЕ / H", "CONTROLS / H");
+        help.text = GameLocalization.T("УПРАВЛЕНИЕ / H");
         help.transform.parent.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked);
         fullscreen.gameObject.SetActive(Cursor.lockState != CursorLockMode.Locked && !show && !YandexAds.Busy);
         bool isFullscreen = FullscreenActive;
         fullscreenIcon.SetRestore(isFullscreen);
-        fullscreenLabel.text = isFullscreen ? L("ОКОННЫЙ РЕЖИМ", "WINDOWED MODE") : L("ПОЛНЫЙ ЭКРАН", "FULL SCREEN");
+        fullscreenLabel.text = isFullscreen ? GameLocalization.T("ОКОННЫЙ РЕЖИМ") : GameLocalization.T("ПОЛНЫЙ ЭКРАН");
         cloud.gameObject.SetActive(conflict); local.gameObject.SetActive(conflict); mode.transform.parent.gameObject.SetActive(!conflict);
-        mode.text = L("B — РЕЖИМ: ", "B — MODE: ") + (OneHand ? L("ОДНА РУКА / КЛАВИАТУРА", "ONE HAND / KEYBOARD") : L("КЛАВИАТУРА И МЫШЬ", "KEYBOARD AND MOUSE"));
-        body.text = conflict ? L("Обнаружены разные сохранения.\nВыберите прогресс, который нужно продолжить.\nДругой вариант останется в локальной резервной копии.", "Different saves were found.\nChoose the progress you want to continue.\nThe other version is kept in a local backup.") :
-            L("УПРАВЛЕНИЕ\n\nWASD — движение · Shift — бег\nSpace — прыжок · C — присесть / подкат\n1 / 2 — оружие · G — граната\n3 / 4 / 5 — способности\nEsc — освободить курсор · H — справка\n\n", "CONTROLS\n\nWASD — move · Shift — sprint\nSpace — jump · C — crouch / slide\n1 / 2 — weapons · G — grenade\n3 / 4 / 5 — abilities\nEsc — release cursor · H — help\n\n") +
-            (OneHand ? L("Q / E — взгляд влево / вправо\nR / F — взгляд вверх / вниз\nX — огонь / продолжить · Z — прицел · T — перезарядка", "Q / E — look left / right\nR / F — look up / down\nX — fire / resume · Z — aim · T — reload") : L("Мышь — обзор · ЛКМ — огонь / продолжить\nПКМ — прицел · R — перезарядка", "Mouse — look · LMB — fire / resume\nRMB — aim · R — reload"));
-        if (credits && !conflict) body.text = L("МУЗЫКА\n", "MUSIC\n") +
+        mode.text = GameLocalization.T("B — РЕЖИМ: ") + (OneHand ? GameLocalization.T("ОДНА РУКА / КЛАВИАТУРА") : GameLocalization.T("КЛАВИАТУРА И МЫШЬ"));
+        body.text = conflict ? GameLocalization.T("Обнаружены разные сохранения.\nВыберите прогресс, который нужно продолжить.\nДругой вариант останется в локальной резервной копии.") :
+            GameLocalization.T("УПРАВЛЕНИЕ\n\nWASD — движение · Shift — бег\nSpace — прыжок · C — присесть / подкат\n1 / 2 — оружие · G — граната\n3 / 4 / 5 — способности\nEsc — освободить курсор · H — справка\n\n") +
+            (OneHand ? GameLocalization.T("Q / E — взгляд влево / вправо\nR / F — взгляд вверх / вниз\nX — огонь / продолжить · Z — прицел · T — перезарядка") : GameLocalization.T("Мышь — обзор · ЛКМ — огонь / продолжить\nПКМ — прицел · R — перезарядка"));
+        if (credits && !conflict) body.text = GameLocalization.T("МУЗЫКА\n") +
             "LOOP BOX #2 — Of Far Different Nature\nhttps://fardifferent.carrd.co/\nhttps://opengameart.org/node/116122\nCC BY 4.0 — https://creativecommons.org/licenses/by/4.0/\n\n" +
-            L("Изменения: громкость воспроизведения.\nForce Field: конвертация в WAV, громкость,\nсглаживание границы петли (8 мс).\n\nA — вернуться к управлению", "Changes: playback gain adjustment.\nForce Field: WAV conversion, gain adjustment,\n8 ms loop boundary blend.\n\nA — return to controls");
+            GameLocalization.T("Изменения: громкость воспроизведения.\nForce Field: конвертация в WAV, громкость,\nсглаживание границы петли (8 мс).\n\nA — вернуться к управлению");
         switch (YandexCloudSave.State)
         {
             case "saved": status.text = ""; break;
-            case "cloud-only": status.text = L("Прогресс сохранён в облаке", "Progress saved in the cloud"); break;
-            case "storage-unavailable": status.text = L("Локальная копия недоступна. Отправляем в облако…", "Local backup unavailable. Syncing to cloud…"); break;
-            case "pending": status.text = L("Прогресс ожидает отправки в облако", "Progress awaiting cloud sync"); break;
-            case "loading": status.text = L("Загрузка прогресса…", "Loading progress…"); break;
-            case "conflict": status.text = L("Выберите сохранение", "Choose a save"); break;
-            case "invalid": status.text = L("Сохранение не прочитано. Перезапустите игру.", "Save could not be read. Restart the game."); break;
-            default: status.text = L("Облако недоступно. Повторяем подключение…", "Cloud unavailable. Retrying…"); break;
+            case "cloud-only": status.text = GameLocalization.T("Прогресс сохранён в облаке"); break;
+            case "storage-unavailable": status.text = GameLocalization.T("Локальная копия недоступна. Отправляем в облако…"); break;
+            case "pending": status.text = GameLocalization.T("Прогресс ожидает отправки в облако"); break;
+            case "loading": status.text = GameLocalization.T("Загрузка прогресса…"); break;
+            case "conflict": status.text = GameLocalization.T("Выберите сохранение"); break;
+            case "invalid": status.text = GameLocalization.T("Сохранение не прочитано. Перезапустите игру."); break;
+            default: status.text = GameLocalization.T("Облако недоступно. Повторяем подключение…"); break;
         }
     }
     private void OnDestroy() { ModalOpen = false; }

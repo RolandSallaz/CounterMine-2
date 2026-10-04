@@ -20,10 +20,12 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
     private WeaponIdleSynchronizer animationSource;
     private AnimancerComponent worldAnimation, fpsAnimation;
     private WeaponHandIK worldIK;
+    private WeaponHandIK fpsIK;
     private SkinnedMeshRenderer[] worldRenderers;
     private readonly Dictionary<Transform, Transform> copies = new Dictionary<Transform, Transform>();
     private bool configured, localView, inRagdoll;
     private Transform lastWeapon;
+    private Vector3 fpsRestPosition;
 
     private void Start() => ConfigureView(!PhotonNetwork.InRoom || photonView.IsMine);
 
@@ -77,12 +79,27 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
             weaponPresentationPivot.SetParent(aim.transform.parent, false);
             aim.transform.SetParent(weaponPresentationPivot, false);
         }
-        weaponPresentationPivot.localPosition = localView ? Vector3.zero : thirdPersonWeaponOffset;
+        var offset = thirdPersonWeaponOffset;
+        if (!localView && animationSource != null && animationSource.WeaponId == "winchester1897")
+            offset.z -= .20f;
+        if (!localView && animationSource != null && (animationSource.WeaponId == "ucp" || animationSource.WeaponId == "rsh12"))
+            offset.z -= .16f;
+        if (!localView && animationSource != null && (animationSource.WeaponId == "hk416" || animationSource.WeaponId == "l115a3" ||
+            animationSource.WeaponId == "milkor" || animationSource.WeaponId == "winchester1897"))
+            offset.z -= .08f;
+        weaponPresentationPivot.localPosition = localView ? Vector3.zero : offset;
     }
 
     private bool IsArms(SkinnedMeshRenderer renderer) =>
         string.Equals(renderer.name, armsMeshName, StringComparison.OrdinalIgnoreCase) ||
         (renderer.sharedMesh != null && string.Equals(renderer.sharedMesh.name, armsMeshName, StringComparison.OrdinalIgnoreCase));
+
+    public void PrepareWeaponPose()
+    {
+        // ADS must calculate alignment against the base pivot, otherwise it
+        // compensates last frame's reach offset and pushes the gun away again.
+        if (configured && !inRagdoll) ConfigureWeaponPosition();
+    }
 
     private Transform CopyHierarchy(Transform source, Transform parent)
     {
@@ -102,6 +119,7 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
         fpsModel.name = "FPSArms";
         // Preserve the authored origin while making camera motion drive the viewmodel.
         fpsModel.SetPositionAndRotation(worldModel.position + transform.forward * bodyBackOffset, worldModel.rotation);
+        fpsRestPosition = fpsModel.localPosition;
         foreach (var source in worldRenderers)
         {
             if (!IsArms(source)) continue;
@@ -120,6 +138,7 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
         {
             var ik = fpsModel.gameObject.AddComponent<WeaponHandIK>();
             worldIK.CopyConfigurationTo(ik, copies);
+            fpsIK = ik;
         }
         worldAnimation.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
     }
@@ -127,9 +146,33 @@ public sealed class PlayerModelPresentation : MonoBehaviourPun
     private void LateUpdate()
     {
         if (!configured || inRagdoll) return;
+        if(fpsModel != null) fpsModel.localPosition = fpsRestPosition;
         if (localView && fpsModel != null && animationSource.LastEvaluatedFrame == Time.frameCount)
             CopyAnimatedPoseToBody(); // Before both arm IK solvers (order 300).
-        if (lastWeapon != animationSource.WeaponRoot) UpdateWeaponShadows();
+        if (lastWeapon != animationSource.WeaponRoot)
+        {
+            ConfigureWeaponPosition();
+            UpdateWeaponShadows();
+        }
+        if (animationSource.WeaponId == "winchester1897" && weaponPresentationPivot != null)
+        {
+            // Preserve the local gun distance. Remote bodies can bring the gun
+            // closer, while camera arms fit their independent origin instead.
+            ConfigureWeaponPosition();
+            Vector3 forward = viewCamera.transform.forward;
+            if (localView && fpsIK != null && fpsModel.gameObject.activeInHierarchy)
+            {
+                // Camera arms have their own origin. Fit that origin to the gun,
+                // leaving the viewmodel distance and sight eye relief intact.
+                fpsModel.position += viewCamera.transform.up * .10f;
+                fpsModel.position += forward * Mathf.Min(fpsIK.GetWeaponRetreat(forward), .30f);
+            }
+            else
+            {
+                float retreat = worldIK != null ? worldIK.GetWeaponRetreat(forward) : 0f;
+                weaponPresentationPivot.position -= forward * Mathf.Min(retreat, .35f);
+            }
+        }
     }
 
     private void CopyAnimatedPoseToBody()

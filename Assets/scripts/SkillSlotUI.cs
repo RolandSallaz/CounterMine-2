@@ -26,8 +26,7 @@ public sealed class SkillSlotUI : MonoBehaviour
         rect.sizeDelta = new Vector2(96, 96);
         var card = go.GetComponent<SkillSlotUI>();
         card.background = go.GetComponent<Image>(); card.background.raycastTarget = false;
-        card.background.color = new Color(.02f, .035f, .045f, .94f);
-        var outline = go.AddComponent<Outline>(); outline.effectColor = new Color(.25f, .4f, .46f, .5f); outline.effectDistance = new Vector2(1, -1);
+        GameUIStyle.PanelSurface(card.background);
         card.launcherIcon = Graphic(go.transform, "Launcher Icon", new Vector2(0, 3), new Vector2(78, 78), true);
         card.launcherIcon.Launcher = true; card.launcherIcon.color = new Color(.5f,.8f,.9f,.22f);
         card.launcherIcon.transform.SetAsFirstSibling();
@@ -59,6 +58,7 @@ public sealed class SkillSlotUI : MonoBehaviour
         var go = new GameObject(name, typeof(RectTransform), typeof(Text)); go.transform.SetParent(parent, false);
         var text = go.GetComponent<Text>(); text.font = GameUIStyle.Font;
         text.fontSize = fontSize; text.alignment = TextAnchor.MiddleCenter; text.raycastTarget = false;
+        GameLocalization.PrepareDynamic(text);
         text.rectTransform.anchoredPosition = position; text.rectTransform.sizeDelta = size;
         return text;
     }

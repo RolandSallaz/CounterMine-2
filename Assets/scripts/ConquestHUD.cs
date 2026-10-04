@@ -20,7 +20,7 @@ public sealed class ConquestHUD : MonoBehaviour
         var rt = (RectTransform)go.transform;
         rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(.5f,1);
         rt.sizeDelta = size; rt.anchoredPosition = offset;
-        if (background) { var image = go.AddComponent<Image>(); image.color = new Color(.018f,.027f,.04f,.88f); image.raycastTarget = false; }
+        if (background) { var image = go.AddComponent<Image>(); GameUIStyle.Surface(image,new Color(GameUIStyle.Panel.r,GameUIStyle.Panel.g,GameUIStyle.Panel.b,.88f)); image.raycastTarget = false; }
         return rt;
     }
     private Text Label(Transform parent, string text, int size, Vector2 dimensions, Vector2 offset)
@@ -28,6 +28,7 @@ public sealed class ConquestHUD : MonoBehaviour
         var rt = Panel(text, parent, new Vector2(.5f,1), dimensions, offset, false);
         var label = rt.gameObject.AddComponent<Text>(); label.font = GameUIStyle.Font;
         label.text = text; label.fontSize = size; label.color = Color.white;
+        GameLocalization.PrepareDynamic(label);
         label.alignment = TextAnchor.MiddleCenter; label.raycastTarget = false;
         label.horizontalOverflow = HorizontalWrapMode.Wrap; label.verticalOverflow = VerticalWrapMode.Overflow;
         return label;

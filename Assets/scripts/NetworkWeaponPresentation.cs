@@ -99,7 +99,7 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
     {
         if (!PhotonNetwork.InRoom || !photonView.IsMine || animationSource.WeaponId == null) return;
         var properties = new Hashtable { [StateKey] = new object[] {
-            animationSource.WeaponId, animationSource.ActionId, animationSource.StartedAt, animationSource.PlaybackSpeed } };
+            animationSource.WeaponId, animationSource.ActionId, animationSource.StartedAt, animationSource.PlaybackSpeed, animationSource.ReloadRoundCount } };
         if (IsBot) PhotonNetwork.CurrentRoom.SetCustomProperties(properties);
         else photonView.Owner.SetCustomProperties(properties);
     }
@@ -113,9 +113,9 @@ public sealed class NetworkWeaponPresentation : MonoBehaviourPunCallbacks, IPunO
     {
         if (animationSource == null || (ragdoll != null && ragdoll.IsRagdoll)) return;
         object snapshot = IsBot ? PhotonNetwork.CurrentRoom?.CustomProperties[StateKey] : photonView.Owner?.CustomProperties[StateKey];
-        if (snapshot is object[] state && state.Length == 4 &&
+        if (snapshot is object[] state && (state.Length == 4 || state.Length == 5) &&
             state[0] is string weapon && state[1] is string action && state[2] is double time && state[3] is float speed)
-            if (!animationSource.ApplyNetworkState(weapon, action, time, speed))
+            if (!animationSource.ApplyNetworkState(weapon, action, time, speed,state.Length==5&&state[4] is int rounds?rounds:0))
                 Debug.LogWarning("Unknown or unavailable network weapon/action: " + weapon + "/" + action, this);
     }
 

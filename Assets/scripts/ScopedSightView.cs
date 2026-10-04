@@ -111,6 +111,7 @@ public sealed class ScopedSightView : MonoBehaviour
             labelCanvas = root.GetComponent<Canvas>(); labelCanvas.renderMode = RenderMode.ScreenSpaceOverlay; labelCanvas.sortingOrder = 30;
             var go = new GameObject("Zoom", typeof(RectTransform), typeof(Text), typeof(Outline)); go.transform.SetParent(root.transform, false);
             zoomLabel = go.GetComponent<Text>(); zoomLabel.font = GameUIStyle.Font; zoomLabel.fontSize = 18; zoomLabel.alignment = TextAnchor.MiddleCenter;
+            GameLocalization.PrepareDynamic(zoomLabel);
             zoomLabel.color = Color.white; zoomLabel.raycastTarget = false; zoomLabel.rectTransform.sizeDelta = new Vector2(100, 30);
             go.GetComponent<Outline>().effectColor = new Color(0, 0, 0, .85f);
         }
