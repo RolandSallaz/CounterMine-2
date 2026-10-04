@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
+    <title>BlockField</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -53,14 +54,14 @@
     <script>
         const hideFullScreenButton = "";
         const buildUrl = "Build";
-        const loaderUrl = buildUrl + "/webgl-out.loader.js";
+        const loaderUrl = buildUrl + "/cmbuid.loader.js";
         const config = {
-            dataUrl: buildUrl + "/webgl-out.data.unityweb",
-            frameworkUrl: buildUrl + "/webgl-out.framework.js.unityweb",
-            codeUrl: buildUrl + "/webgl-out.wasm.unityweb",
+            dataUrl: buildUrl + "/cmbuid.data.br",
+            frameworkUrl: buildUrl + "/cmbuid.framework.js.br",
+            codeUrl: buildUrl + "/cmbuid.wasm.br",
         streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
-            productName: "CounterMine 2",
+            productName: "BlockField",
             productVersion: "0.1.0"
         };
 
@@ -96,9 +97,11 @@
         loadingCover.style.display = "";
 
         let StartUnityInstance;
+        let unityStarted = false;
         let ygGameInstance = null;
         let ysdk = null;
         let initYSDK = false;
+        let counterMineStandalone = false;
         let initGame = false;
         let syncInit = false;
         let isVisibility = true;
@@ -182,9 +185,11 @@
                 isVisibility = visibility;
                 if (!visibility) {
                     YG2Instance('SetFocusWindowGame', 'false');
+                    if (ygGameInstance) ygGameInstance.SendMessage('PlatformLifecycle', 'SetBrowserFocus', 'false');
                 }
                 else {
                     YG2Instance('SetFocusWindowGame', 'true');
+                    if (ygGameInstance) ygGameInstance.SendMessage('PlatformLifecycle', 'SetBrowserFocus', 'true');
                 }
             }
         }
@@ -228,8 +233,7 @@
         };
 
         function StartUnityInstance_IfUnloaded() {
-            if (spinner.style.display !== "none")
-                StartUnityInstance();
+            if (!unityStarted && StartUnityInstance) { unityStarted = true; StartUnityInstance(); }
         }
 
         function IsLocalHost() {
@@ -284,8 +288,9 @@
         }
 
         async function InitYSDK() {
+            if (initYSDK) return;
             try {
-                if (IsLocalHost()) return;
+                if (IsLocalHost()) { counterMineStandalone = true; return; }
 
                 ysdk = await YaGames.init();
                 ysdk.on('game_api_pause', PauseCallback);
@@ -306,7 +311,9 @@
                 LogStyledMessage('Init YandexSDK Success');
 
             } catch (e) {
-                console.error('CRASH Initialization SDK: ', e);
+                counterMineStandalone = typeof YaGames === 'undefined' && window.self === window.top;
+                console.warn('SDK initialization unavailable; retrying.', e);
+                if (!counterMineStandalone) setTimeout(InitYSDK, 20000);
             }
 
             if (!IsLocalHost() && !syncInit)
@@ -317,6 +324,7 @@
             initGame = true;
 
             setTimeout(function () {
+                if (ygGameInstance) ygGameInstance.SendMessage('PlatformLifecycle', 'SetBrowserFocus', document.hidden ? 'false' : 'true');
                 if (isPausedGame == true)
                     YG2Instance('SetPauseGame', 'true');
             }, 100);
@@ -325,7 +333,7 @@
         }
 
         // Additional script modules
-LogStyledMessage('[PluginYG2 v0] [Build: 25] [Platform: YandexGames]');
+LogStyledMessage('[PluginYG2 v2.0092] [Build: 0] [Platform: YandexGames]');
 
 
         document.body.appendChild(script);

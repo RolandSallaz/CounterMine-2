@@ -22,7 +22,10 @@ body {
 #unity-container {
     width: 100%;
     height: 100%;
-    position: relative;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #unity-canvas {
@@ -115,15 +118,54 @@ body {
         transform: rotate(360deg);
     }
 }
+/* Keep the active field 16:9 on every desktop window, with no page scrolling. */
+#unity-container { width: min(100vw, 177.777778vh); height: min(100vh, 56.25vw); }
+body { background: #10161b; }
 
 
 
+#unity-canvas {
+    background: linear-gradient(140deg, rgba(255, 211, 37, 1) 0%, rgba(91, 22, 255, 1) 100%);
+}
 
 
 
+.spinner {
+    border-top: 1.1em solid rgba(255, 211, 37, 0.2);
+    border-right: 1.1em solid rgba(255, 211, 37, 0.2);
+    border-bottom: 1.1em solid rgba(255, 211, 37, 0.2);
+    border-left: 1.1em solid rgba(63, 162, 255, 1);
+}
+
+#unity-progress-bar-empty {
+    border-color: rgba(255, 211, 37, 0.7);
+    width: 30%;
+}
+
+#unity-progress-bar-full {
+    background: rgba(63, 162, 255, 1);
+}
+
+.light #unity-progress-bar-empty {
+    border-color: rgba(255, 211, 37, 0.7);
+}
+
+.light #unity-progress-bar-full {
+    background: rgba(63, 162, 255, 1);
+}
 
 
 
+#unity-progress-bar-empty {
+    height: 24px;
+}
 
 
+#unity-progress-bar-empty {
+    border-radius: 12px;
+}
 
+#unity-progress-bar-full {
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
